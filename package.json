@@ -13,7 +13,8 @@
     "lint": "run-s lint:eslint lint:tsc",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
     "lint:tsc": "lerna run lint:tsc --parallel",
-    "prettier": "prettier 'packages/**/*.@(ts|tsx|html|json)' --write"
+    "prettier": "prettier 'packages/**/*.@(ts|tsx|html|json)' --write",
+    "test": "jest"
   },
   "husky": {
     "hooks": {
