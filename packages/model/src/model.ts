@@ -39,6 +39,8 @@ export abstract class Model<S> {
     getState: () => this.state,
     onStateUpdate: (newState) => {
       if (!this.isDisposed) {
+        // After call BehaviorSubject's `complete` method.
+        // Calling 'next' will still affect BehaviorSubject's value.
         this.stateSource.next(newState)
       }
     },
