@@ -1,41 +1,29 @@
 import produce from 'immer'
-import { Observable, Subject, BehaviorSubject, Subscription, TeardownLogic } from 'rxjs'
-import { tap, catchError } from 'rxjs/operators'
+import { Observable, BehaviorSubject, Subscription, TeardownLogic } from 'rxjs'
 
-import { Dispatcher, ReducerFunc, EffectFunc, Action } from './types'
-import { dispatcherFactory, noop } from './utils'
+import { reducerFactory, effectFactory, EMPTY_ACTION } from './dispatchers'
 
 export abstract class Model<S> {
   get state() {
-    return this._state
+    return this.stateSource.value
+  }
+
+  get isDisposed() {
+    return this.subscription.closed
   }
 
   readonly state$: Observable<Readonly<S>>
+
+  private readonly stateSource: BehaviorSubject<Readonly<S>>
 
   protected readonly defaultState: Readonly<S>
 
   protected readonly subscription = new Subscription()
 
-  private readonly _state$: Subject<Readonly<S>>
-
-  private _state: Readonly<S>
-
   constructor(defaultState: Readonly<S>) {
     this.defaultState = produce(defaultState, () => {})
-    this._state = this.defaultState
-
-    this._state$ = new BehaviorSubject(this.defaultState)
-    this.state$ = this._state$.asObservable()
-
-    this._autoSyncState()
-  }
-
-  private _autoSyncState() {
-    this.subscription.add(
-      this.state$.subscribe((state) => {
-        this._state = state
-      }),
-    )
+    this.stateSource = new BehaviorSubject(this.defaultState)
+    this.state$ = this.stateSource.asObservable()
   }
 
   onDispose(teardown: TeardownLogic) {
@@ -45,36 +33,21 @@ export abstract class Model<S> {
 
   dispose() {
     this.subscription.unsubscribe()
-    this._state$.complete()
+    this.stateSource.complete()
   }
 
-  protected reducer<P>(callback: ReducerFunc<S, P>): Dispatcher<P> {
-    return dispatcherFactory<P>((payload) => {
-      // `produce` support return `Promise` and `nothing`, but `reducer` don't.
-      const newState = produce(this._state, (state) => callback(state, payload)) as S
-      this._state$.next(newState)
-    })
-  }
+  protected readonly reducer = reducerFactory({
+    getState: () => this.state,
+    onStateUpdate: (newState) => {
+      if (!this.isDisposed) {
+        this.stateSource.next(newState)
+      }
+    },
+  })
 
-  protected readonly EMPTY_ACTION: Action = noop
+  protected readonly effect = effectFactory({
+    subscription: this.subscription,
+  })
 
-  protected effect<P>(callback: EffectFunc<P>): Dispatcher<P> {
-    const payload$ = new Subject<P>()
-
-    this.subscription.add(
-      callback(payload$.asObservable())
-        .pipe(
-          tap((action) => action()),
-          catchError((err, caught$) => {
-            console.error(err, callback)
-            return caught$
-          }),
-        )
-        .subscribe(),
-    )
-
-    return dispatcherFactory<P>((payload) => {
-      payload$.next(payload)
-    })
-  }
+  protected readonly EMPTY_ACTION = EMPTY_ACTION
 }
