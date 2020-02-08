@@ -35,6 +35,20 @@ class CountModel extends Model<CountState> {
       }),
     ),
   )
+
+  setCountButIgnore4 = this.effect<number>((count$) =>
+    count$.pipe(
+      map((count) => {
+        if (count === 4) {
+          return this.EMPTY_ACTION
+        } else {
+          return this.setCount.asAction(count)
+        }
+      }),
+    ),
+  )
+
+  fakeActionTest = this.effect<any>((payload$) => payload$)
 }
 
 jest.useFakeTimers()
@@ -113,6 +127,29 @@ describe('@orch/model', () => {
       countModel.setCountAndThrowErrorIf4(9)
       countModel.setCountAndThrowErrorIf4(9)
       expect(countModel.state).toEqual({ count: 9 })
+    })
+
+    it('should ignore invalid action', () => {
+      const fakeAction = jest.fn()
+      countModel.fakeActionTest(fakeAction)
+      expect(fakeAction.mock.calls.length).toBe(0)
+
+      // those payloads should not throw error.
+      countModel.fakeActionTest({})
+      countModel.fakeActionTest(Symbol(''))
+      countModel.fakeActionTest(null)
+      countModel.fakeActionTest(1)
+      countModel.fakeActionTest('0')
+      countModel.fakeActionTest(undefined)
+      countModel.fakeActionTest(true)
+    })
+
+    it('should able to handle EMPTY_ACTION', () => {
+      countModel.setCountButIgnore4(4)
+      expect(countModel.state).toEqual({ count: 0 })
+
+      countModel.setCountButIgnore4(3)
+      expect(countModel.state).toEqual({ count: 3 })
     })
   })
 
