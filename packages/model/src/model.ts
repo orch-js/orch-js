@@ -16,13 +16,12 @@ export abstract class Model<S> {
 
   private readonly stateSource: BehaviorSubject<Readonly<S>>
 
-  protected readonly defaultState: Readonly<S>
-
   protected readonly subscription = new Subscription()
 
   constructor(defaultState: Readonly<S>) {
-    this.defaultState = produce(defaultState, () => {})
-    this.stateSource = new BehaviorSubject(this.defaultState)
+    const readonlyState = produce(defaultState, () => {})
+
+    this.stateSource = new BehaviorSubject(readonlyState)
     this.state$ = this.stateSource.asObservable()
   }
 
