@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs'
 import { Draft } from 'immer'
 
-import { ActionSymbol } from './symbols'
+import { ActionSymbol } from '../symbols'
 
 // https://stackoverflow.com/questions/55541275/typescript-check-for-the-any-type
 type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N

@@ -1,22 +1,22 @@
 import { Subscription } from 'rxjs'
 import { debounceTime, map, withLatestFrom } from 'rxjs/operators'
 
-import { Model } from '@orch/model'
+import { Model, effect, reducer, EMPTY_ACTION } from '@orch/model'
 
 type CountState = {
   count: number
 }
 
 class CountModel extends Model<CountState> {
-  setCount = this.reducer<number>((state, count) => {
+  setCount = reducer(this)<number>((state, count) => {
     state.count = count
   })
 
-  addTwoCount = this.reducer<void>((state) => {
+  addTwoCount = reducer(this)((state) => {
     state.count += 2
   })
 
-  debounceAddCount = this.effect<number>((count$) =>
+  debounceAddCount = effect(this)<number>((count$) =>
     count$.pipe(
       withLatestFrom(this.state$),
       debounceTime(1000),
@@ -24,7 +24,7 @@ class CountModel extends Model<CountState> {
     ),
   )
 
-  setCountAndThrowErrorIf4 = this.effect<number>((payload$) =>
+  setCountAndThrowErrorIf4 = effect(this)<number>((payload$) =>
     payload$.pipe(
       map((count) => {
         if (count === 4) {
@@ -36,11 +36,11 @@ class CountModel extends Model<CountState> {
     ),
   )
 
-  setCountButIgnore4 = this.effect<number>((count$) =>
+  setCountButIgnore4 = effect(this)<number>((count$) =>
     count$.pipe(
       map((count) => {
         if (count === 4) {
-          return this.EMPTY_ACTION
+          return EMPTY_ACTION
         } else {
           return this.setCount.asAction(count)
         }
@@ -48,7 +48,7 @@ class CountModel extends Model<CountState> {
     ),
   )
 
-  fakeActionTest = this.effect<any>((payload$) => payload$)
+  fakeActionTest = effect(this)<any>((payload$) => payload$)
 }
 
 jest.useFakeTimers()

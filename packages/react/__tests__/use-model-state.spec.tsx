@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { create, act, ReactTestRenderer } from 'react-test-renderer'
 
-import { Model } from '@orch/model'
+import { Model, reducer } from '@orch/model'
 import { useModelInstance, useModelState } from '@orch/react'
 
 type CountState = {
@@ -9,7 +9,7 @@ type CountState = {
 }
 
 class CountModel extends Model<CountState> {
-  increaseCount = this.reducer((state) => {
+  increaseCount = reducer(this)((state) => {
     state.count += 1
   })
 }

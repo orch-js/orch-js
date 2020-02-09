@@ -1,2 +1,2 @@
-export * from './reducer-factory'
-export * from './effect-factory'
+export * from './reducer'
+export * from './effect'
