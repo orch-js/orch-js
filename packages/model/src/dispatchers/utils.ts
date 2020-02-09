@@ -1,9 +1,10 @@
 import { Action, Dispatcher } from './types'
 import { ActionSymbol } from './symbols'
 
-export function dispatcher<P>(callback: (payload: P) => void): Dispatcher<P> {
+export function dispatcher<P>(callback: (payload: P) => void): Dispatcher<P>
+export function dispatcher(callback: (payload: any) => void): Dispatcher<any> {
   return Object.assign(callback, {
-    asAction(payload: P): Action {
+    asAction(payload: any): Action {
       return action(() => callback(payload))
     },
   })
