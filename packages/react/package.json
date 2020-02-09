@@ -10,7 +10,8 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "@orch/model": "^0.0.0"
+    "@orch/model": "^0.0.0",
+    "immer": "^5.3.4"
   },
   "peerDependencies": {
     "react": "^16.12.0"
