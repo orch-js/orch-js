@@ -12,5 +12,8 @@
   "dependencies": {
     "immer": "^5.3.4",
     "rxjs": "^6.5.4"
+  },
+  "devDependencies": {
+    "conditional-type-checks": "^1.0.5"
   }
 }
