@@ -3,14 +3,14 @@
  * Check https://github.com/LeetCode-OpenSource/typed-path-generator for more details.
  * */
 
-import { makePathsFrom } from "typed-path-generator";
+import { makePathsFrom, Params } from "typed-path-generator";
 
 interface ParamsInterface {
   home: void;
-  detail: void;
+  detail: Params<"id">;
 }
 
-const staticPath = { home: "/", detail: "/detail/" };
+const staticPath = { home: "/", detail: "/detail/:id" };
 
 const pathFactory = {
   home: makePathsFrom<ParamsInterface["home"]>(staticPath.home),

@@ -1,13 +1,40 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
+import { useModelInstance, useModelState } from '@orch/react'
 
 import { paths } from '../../routers'
+import { HomeModel, HomeStatus, HomeState } from './model'
+
+// TODO: - defaultState support
+const defaultState: HomeState = { status: HomeStatus.idle, list: [] }
 
 export function Home() {
+  // TODO: - singleton support
+  const homeModel = useModelInstance(HomeModel, [defaultState])
+  // TODO: - derive state support (eg: isLoading)
+  const state = useModelState(homeModel)
+
+  React.useEffect(() => {
+    homeModel.fetchData()
+  }, [])
+
   return (
     <div>
       <h1>home</h1>
-      <Link to={paths.detail()}>go to detail</Link>
+
+      {state.status === HomeStatus.loading && <p>Loading...</p>}
+
+      {state.status === HomeStatus.failed && <button onClick={homeModel.fetchData}>Retry!</button>}
+
+      {state.status === HomeStatus.idle && (
+        <ul>
+          {state.list.map((data) => (
+            <li key={data.id}>
+              <Link to={paths.detail({ id: data.id })}>👉 {data.title}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
