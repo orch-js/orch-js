@@ -2,7 +2,8 @@
   "extends": "./tsconfig.base.json",
   "references": [
     { "path": "packages/model/tsconfig.build.json" },
-    { "path": "packages/react/tsconfig.build.json" }
+    { "path": "packages/react/tsconfig.build.json" },
+    { "path": "packages/demo/tsconfig.json" }
   ],
   "include": ["packages/**/*"],
   "files": []

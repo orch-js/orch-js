@@ -1,0 +1,12 @@
+# https://github.com/LeetCode-OpenSource/typed-path-generator#readme
+# run `yarn gen:router` to generate a relative Typescript file.
+
+options:
+  variableName:
+    staticPath: PATH
+    pathFactory: paths
+    ParamsInterface: PathParams
+
+paths:
+  home: /
+  detail: /detail/
