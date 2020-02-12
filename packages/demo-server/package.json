@@ -10,7 +10,8 @@
     "clean": "rm -rf ./dist",
     "prestart": "run-s clean build",
     "start": "node dist/index",
-    "build": "tsc"
+    "build": "tsc",
+    "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "express": "^4.17.1"

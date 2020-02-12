@@ -9,7 +9,8 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "start:dev": "webpack-dev-server",
-    "gen:router": "typed-path-generator ./src/routers/routers.yaml"
+    "gen:router": "typed-path-generator ./src/routers/routers.yaml",
+    "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@orch/model": "^0.0.0",
