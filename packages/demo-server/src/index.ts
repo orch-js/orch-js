@@ -7,5 +7,6 @@ const app = express()
 app.use('/resource', express.static(path.join(__dirname, '../resource')))
 
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`Example app listening on port ${port}!`)
 })
