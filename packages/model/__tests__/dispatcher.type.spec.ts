@@ -1,6 +1,6 @@
 import { assert, IsExact } from 'conditional-type-checks'
 
-import { Dispatcher } from '@orch/model/dispatchers/types'
+import { Dispatcher } from '@orch/model/types'
 
 type ParameterLengthShouldBe<D extends Dispatcher<any>, L extends number> = IsExact<
   Parameters<D>['length'],

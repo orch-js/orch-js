@@ -1,10 +1,9 @@
 import { Observable, Subject } from 'rxjs'
 import { skipUntil, take, catchError } from 'rxjs/operators'
 
-import { Model } from '@orch/model'
-
+import { Model } from '../model'
+import { Action, Dispatcher } from '../types'
 import { ActionSymbol, StateSourceSymbol } from '../symbols'
-import { Action, Dispatcher } from './types'
 
 export interface DispatcherFactoryConfig<S, P> {
   state$: Observable<S>
