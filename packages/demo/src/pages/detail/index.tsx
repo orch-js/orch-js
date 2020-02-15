@@ -2,14 +2,12 @@ import * as React from 'react'
 import { useModelInstance, useModelState } from '@orch/react'
 import { useParams } from 'react-router'
 
-import { DetailModel, DetailState, DetailStatus } from './model'
+import { DetailModel, DetailStatus } from './model'
 import { DetailData } from './types'
-
-const defaultState: DetailState = { status: DetailStatus.idle, data: null }
 
 export function Detail() {
   const { id } = useParams<Pick<DetailData, 'id'>>()
-  const model = useModelInstance(DetailModel, [defaultState])
+  const model = useModelInstance(DetailModel, [])
   const state = useModelState(model)
 
   React.useEffect(() => {

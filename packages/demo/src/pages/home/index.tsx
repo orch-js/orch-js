@@ -3,14 +3,11 @@ import { Link } from 'react-router-dom'
 import { useModelInstance, useModelState } from '@orch/react'
 
 import { paths } from '../../routers'
-import { HomeModel, HomeStatus, HomeState } from './model'
-
-// TODO: - defaultState support
-const defaultState: HomeState = { status: HomeStatus.idle, list: [] }
+import { HomeModel, HomeStatus } from './model'
 
 export function Home() {
   // TODO: - singleton support
-  const homeModel = useModelInstance(HomeModel, [defaultState])
+  const homeModel = useModelInstance(HomeModel, [])
   // TODO: - derive state support (eg: isLoading)
   const state = useModelState(homeModel)
 

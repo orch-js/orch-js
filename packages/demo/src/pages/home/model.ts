@@ -16,6 +16,8 @@ export type HomeState = {
 }
 
 export class HomeModel extends Model<HomeState> {
+  defaultState = { status: HomeStatus.idle, list: [] }
+
   private updateStatus = reducer(this)<HomeStatus>((state, status) => {
     state.status = status
   })

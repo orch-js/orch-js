@@ -16,6 +16,8 @@ export type DetailState = {
 }
 
 export class DetailModel extends Model<DetailState> {
+  defaultState = { status: DetailStatus.idle, data: null }
+
   private updateStatus = reducer(this)<DetailStatus>((state, status) => {
     state.status = status
   })
