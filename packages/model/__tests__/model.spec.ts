@@ -95,6 +95,28 @@ describe('@orch/model', () => {
     })
   })
 
+  describe(`isActivated`, () => {
+    it(`should return 'false' before calling 'activateModel'`, () => {
+      const countModel = new CountModel()
+      expect(countModel.isActivated).toBe(false)
+    })
+
+    it(`should return 'true' after calling 'activateModel'`, () => {
+      const countModel = new CountModel()
+      countModel.activateModel()
+      expect(countModel.isActivated).toBe(true)
+    })
+
+    it(`it should not being affected by 'disposeModel'`, () => {
+      const countModel = new CountModel()
+      expect(countModel.isActivated).toBe(false)
+      countModel.activateModel()
+      expect(countModel.isActivated).toBe(true)
+      countModel.disposeModel()
+      expect(countModel.isActivated).toBe(true)
+    })
+  })
+
   describe('state', () => {
     it('should throw error if mutate state directly', () => {
       const state = getModelState(countModel)
@@ -115,6 +137,12 @@ describe('@orch/model', () => {
   })
 
   describe('reducer', () => {
+    it(`should be omitted if model not activated`, () => {
+      const countModel = new CountModel()
+      countModel.setCount(5)
+      expect(getModelState(countModel)).toBe(null)
+    })
+
     it('should able to use reducer to update state', () => {
       countModel.setCount(10)
       expect(getModelState(countModel)).toEqual({ count: 10 })
@@ -127,6 +155,13 @@ describe('@orch/model', () => {
   })
 
   describe('effect', () => {
+    it(`should be omitted if model not activated`, () => {
+      const countModel = new CountModel()
+      countModel.debounceAddCount(5)
+      jest.runAllTimers()
+      expect(getModelState(countModel)).toBe(null)
+    })
+
     it('should work properly with rxjs', () => {
       countModel.debounceAddCount(4)
       countModel.debounceAddCount(4)
@@ -170,7 +205,7 @@ describe('@orch/model', () => {
     })
   })
 
-  describe('dispose', () => {
+  describe('disposeModel', () => {
     it('should trigger onDispose callback', () => {
       const disposeSpy = jest.fn()
 
@@ -211,6 +246,28 @@ describe('@orch/model', () => {
       jest.runAllTimers()
 
       expect(getModelState(countModel)).toEqual({ count: 0 })
+    })
+  })
+
+  describe(`isDisposed`, () => {
+    it(`should return 'false' before calling 'disposeModel'`, () => {
+      const countModel = new CountModel()
+      expect(countModel.isDisposed).toBe(false)
+    })
+
+    it(`should return 'true' after calling 'disposeModel'`, () => {
+      const countModel = new CountModel()
+      countModel.disposeModel()
+      expect(countModel.isDisposed).toBe(true)
+    })
+
+    it(`it should not being affected by 'activateModel'`, () => {
+      const countModel = new CountModel()
+      expect(countModel.isDisposed).toBe(false)
+      countModel.activateModel()
+      expect(countModel.isDisposed).toBe(false)
+      countModel.disposeModel()
+      expect(countModel.isDisposed).toBe(true)
     })
   })
 })
