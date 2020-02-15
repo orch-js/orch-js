@@ -1,9 +1,11 @@
-import produce from 'immer'
+import produce, { Draft } from 'immer'
 import { map, tap, withLatestFrom } from 'rxjs/operators'
 
-import { Model } from '../model'
-import { ReducerFunc } from './types'
-import { dispatcherFactory } from './utils'
+import { Model } from '@orch/model/model'
+
+import { dispatcherFactory } from '../utils'
+
+export type ReducerFunc<S, P> = (state: Draft<S>, payload: P) => S | void
 
 export function reducer<S>(model: Model<S>) {
   return <P>(reducerFunc: ReducerFunc<S, P>) => {
