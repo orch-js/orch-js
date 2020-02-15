@@ -22,7 +22,7 @@ export function effect<S>(model: Model<S>) {
       )
       .subscribe()
 
-    model.onDispose(() => subscription.unsubscribe())
+    model.onModelDispose(() => subscription.unsubscribe())
 
     return dispatcherFactory((payload: P) => {
       payload$.next(payload)

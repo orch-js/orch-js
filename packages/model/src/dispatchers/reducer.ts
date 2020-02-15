@@ -2,25 +2,20 @@ import produce from 'immer'
 
 import { Model } from '../model'
 import { StateSourceSymbol } from '../symbols'
+import { getModelState } from '../utils'
 import { ReducerFunc, Dispatcher } from './types'
 import { dispatcherFactory } from './utils'
 
 export function reducer<S>(model: Model<S>) {
   return <P>(reducerFunc: ReducerFunc<S, P>): Dispatcher<P> => {
-    function getState() {
-      return model.state
-    }
+    return dispatcherFactory((payload: P) => {
+      const currentState = getModelState(model)
 
-    function onStateUpdate(newState: any) {
-      if (!model.isDisposed) {
+      if (currentState) {
+        // `produce` support return `Promise` and `nothing`, but `reducer` don't.
+        const newState = produce(currentState, (state) => reducerFunc(state, payload)) as S
         model[StateSourceSymbol].next(newState)
       }
-    }
-
-    return dispatcherFactory((payload: P) => {
-      // `produce` support return `Promise` and `nothing`, but `reducer` don't.
-      const newState = produce(getState(), (state) => reducerFunc(state, payload)) as S
-      onStateUpdate(newState)
     })
   }
 }

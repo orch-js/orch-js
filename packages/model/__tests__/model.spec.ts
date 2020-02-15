@@ -1,13 +1,15 @@
 import { Subscription } from 'rxjs'
 import { debounceTime, map, withLatestFrom } from 'rxjs/operators'
 
-import { Model, effect, reducer, EMPTY_ACTION } from '@orch/model'
+import { Model, effect, reducer, EMPTY_ACTION, getModelState } from '@orch/model'
 
 type CountState = {
   count: number
 }
 
 class CountModel extends Model<CountState> {
+  defaultState = { count: 0 }
+
   setCount = reducer(this)<number>((state, count) => {
     state.count = count
   })
@@ -64,25 +66,40 @@ describe('@orch/model', () => {
     consoleErrorSpy = jest.fn()
     console.error = consoleErrorSpy
 
-    countModel = new CountModel({ count: 0 })
+    countModel = new CountModel()
+    countModel.activateModel()
     subscription = countModel.state$.subscribe(state$spy)
   })
 
   afterEach(() => {
-    countModel.dispose()
+    countModel.disposeModel()
     subscription.unsubscribe()
   })
 
-  describe('state', () => {
-    it('should able to custom default state', () => {
-      const model = new CountModel({ count: 100 })
-      expect(model.state).toEqual({ count: 100 })
+  describe(`activateModel`, () => {
+    it(`should not able to get state if model is not active`, () => {
+      const model = new CountModel()
+      expect(getModelState(model)).toBe(null)
     })
 
+    it(`should able to get state if model is active`, () => {
+      const model = new CountModel()
+      model.activateModel()
+      expect(getModelState(model)).toEqual({ count: 0 })
+    })
+
+    it('should able to specify default state', () => {
+      const model = new CountModel()
+      model.activateModel({ count: 100 })
+      expect(getModelState(model)).toEqual({ count: 100 })
+    })
+  })
+
+  describe('state', () => {
     it('should throw error if mutate state directly', () => {
-      // @ts-ignore
-      expect(() => (countModel.state['count'] = 10)).toThrow()
-      expect(countModel.state.count).toBe(0)
+      const state = getModelState(countModel)
+      expect(() => state && (state.count = 10)).toThrow()
+      expect(state?.count).toBe(0)
     })
   })
 
@@ -100,12 +117,12 @@ describe('@orch/model', () => {
   describe('reducer', () => {
     it('should able to use reducer to update state', () => {
       countModel.setCount(10)
-      expect(countModel.state).toEqual({ count: 10 })
+      expect(getModelState(countModel)).toEqual({ count: 10 })
     })
 
     it('should able to call without payload if payload is void', () => {
       countModel.addTwoCount()
-      expect(countModel.state).toEqual({ count: 2 })
+      expect(getModelState(countModel)).toEqual({ count: 2 })
     })
   })
 
@@ -114,19 +131,19 @@ describe('@orch/model', () => {
       countModel.debounceAddCount(4)
       countModel.debounceAddCount(4)
 
-      expect(countModel.state).toEqual({ count: 0 })
+      expect(getModelState(countModel)).toEqual({ count: 0 })
       jest.runAllTimers()
-      expect(countModel.state).toEqual({ count: 4 })
+      expect(getModelState(countModel)).toEqual({ count: 4 })
     })
 
     it('should catch and log error', () => {
       countModel.setCountAndThrowErrorIf4(4)
       expect(consoleErrorSpy.mock.calls.length).toBe(1)
-      expect(countModel.state).toEqual({ count: 0 })
+      expect(getModelState(countModel)).toEqual({ count: 0 })
 
       countModel.setCountAndThrowErrorIf4(9)
       countModel.setCountAndThrowErrorIf4(9)
-      expect(countModel.state).toEqual({ count: 9 })
+      expect(getModelState(countModel)).toEqual({ count: 9 })
     })
 
     it('should ignore invalid action', () => {
@@ -146,10 +163,10 @@ describe('@orch/model', () => {
 
     it('should able to handle EMPTY_ACTION', () => {
       countModel.setCountButIgnore4(4)
-      expect(countModel.state).toEqual({ count: 0 })
+      expect(getModelState(countModel)).toEqual({ count: 0 })
 
       countModel.setCountButIgnore4(3)
-      expect(countModel.state).toEqual({ count: 3 })
+      expect(getModelState(countModel)).toEqual({ count: 3 })
     })
   })
 
@@ -157,43 +174,43 @@ describe('@orch/model', () => {
     it('should trigger onDispose callback', () => {
       const disposeSpy = jest.fn()
 
-      countModel.onDispose(disposeSpy)
-      countModel.dispose()
+      countModel.onModelDispose(disposeSpy)
+      countModel.disposeModel()
 
       expect(disposeSpy.mock.calls).toEqual([[]])
     })
 
     it('should not trigger onDispose callback if callback is removed', () => {
       const disposeSpy = jest.fn()
-      const cancel = countModel.onDispose(disposeSpy)
+      const cancel = countModel.onModelDispose(disposeSpy)
 
       cancel()
-      countModel.dispose()
+      countModel.disposeModel()
 
       expect(disposeSpy.mock.calls).toEqual([])
     })
 
     it('should ignore reducer action after dispose', () => {
-      countModel.dispose()
+      countModel.disposeModel()
       countModel.setCount(21)
 
-      expect(countModel.state).toEqual({ count: 0 })
+      expect(getModelState(countModel)).toEqual({ count: 0 })
     })
 
     it('should ignore effect action after dispose #1(async action after dispose)', () => {
-      countModel.dispose()
+      countModel.disposeModel()
       countModel.debounceAddCount(21)
       jest.runAllTimers()
 
-      expect(countModel.state).toEqual({ count: 0 })
+      expect(getModelState(countModel)).toEqual({ count: 0 })
     })
 
     it('should ignore effect action after dispose #2(async action before dispose)', () => {
       countModel.debounceAddCount(21)
-      countModel.dispose()
+      countModel.disposeModel()
       jest.runAllTimers()
 
-      expect(countModel.state).toEqual({ count: 0 })
+      expect(getModelState(countModel)).toEqual({ count: 0 })
     })
   })
 })
