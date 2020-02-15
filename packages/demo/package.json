@@ -15,6 +15,7 @@
   "dependencies": {
     "@orch/model": "^0.0.0",
     "@orch/react": "^0.0.0",
+    "path-to-regexp": "^3.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router": "^5.1.2",
