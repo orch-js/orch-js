@@ -8,7 +8,9 @@ type CountState = {
   count: number
 }
 
-class CountModel extends Model<CountState> {}
+class CountModel extends Model<CountState> {
+  defaultState = { count: 0 }
+}
 
 type CommonProps = {
   id: string
@@ -20,7 +22,7 @@ type AppProps = CommonProps & {
 }
 
 const App = ({ defaultState, children, id }: AppProps) => {
-  const countModel = useModelInstance(CountModel, [defaultState])
+  const countModel = useModelInstance(CountModel, [], defaultState)
   return (
     <ContextModelProvider data-id={id} model={countModel}>
       {children}

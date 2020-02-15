@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Model } from '@orch/model'
 
 export function useModelState<S>(model: Model<S>): S {
-  const [state, updateState] = React.useState(model.state)
+  const [state, updateState] = React.useState<S>(model.defaultState)
 
   const subscription = React.useMemo(() => {
     // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops

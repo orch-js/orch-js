@@ -9,26 +9,26 @@ type CountState = {
 }
 
 class CountModel extends Model<CountState> {
+  defaultState = { count: 0 }
+
   increaseCount = reducer(this)((state) => {
     state.count += 1
   })
 }
 
-const App = ({ defaultState }: { defaultState: CountState }) => {
-  const countModel = useModelInstance(CountModel, [defaultState])
+const App = () => {
+  const countModel = useModelInstance(CountModel, [])
   const state = useModelState(countModel)
 
   return <div data-state={state} onClick={countModel.increaseCount} />
 }
 
-const AppDerivedStateTest = ({
-  defaultState,
+const AppSimulateGetDerivedStateFromPropsTest = ({
   renderTimesSpy,
 }: {
-  defaultState: CountState
   renderTimesSpy: jest.Mock
 }) => {
-  const countModel = useModelInstance(CountModel, [defaultState])
+  const countModel = useModelInstance(CountModel, [])
   const state = useModelState(countModel)
 
   renderTimesSpy()
@@ -48,12 +48,12 @@ const increaseCount = (testRenderer: ReactTestRenderer): void =>
 
 describe('useModelState', () => {
   it(`should return model's state`, () => {
-    const testRenderer = create(<App defaultState={{ count: 2 }} />)
-    expect(getState(testRenderer)).toEqual({ count: 2 })
+    const testRenderer = create(<App />)
+    expect(getState(testRenderer)).toEqual({ count: 0 })
   })
 
   it(`should sync state change`, () => {
-    const testRenderer = create(<App defaultState={{ count: 0 }} />)
+    const testRenderer = create(<App />)
 
     act(() => increaseCount(testRenderer))
 
@@ -63,7 +63,7 @@ describe('useModelState', () => {
   it(`should implement getDerivedStateFromProps`, () => {
     const renderTimesSpy = jest.fn()
     const testRenderer = create(
-      <AppDerivedStateTest defaultState={{ count: 0 }} renderTimesSpy={renderTimesSpy} />,
+      <AppSimulateGetDerivedStateFromPropsTest renderTimesSpy={renderTimesSpy} />,
     )
 
     expect(renderTimesSpy.mock.calls.length).toBe(2)

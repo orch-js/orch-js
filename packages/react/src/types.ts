@@ -1,3 +1,7 @@
-export type ConstructorType<Instance, Params extends any[]> = new (...params: Params) => Instance
+import { Model } from '@orch/model'
 
-export type ConstructorParams<CT> = CT extends ConstructorType<any, infer Params> ? Params : void
+export type ModelConstructor<Instance extends Model<any>, Params extends any[]> = new (
+  ...params: Params
+) => Instance
+
+export type ConstructorParams<CT> = CT extends ModelConstructor<any, infer Params> ? Params : void

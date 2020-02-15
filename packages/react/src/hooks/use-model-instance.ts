@@ -1,15 +1,22 @@
 import * as React from 'react'
 import { Model } from '@orch/model'
 
-import { ConstructorType, ConstructorParams } from '../types'
+import { ModelConstructor, ConstructorParams } from '../types'
 
 export function useModelInstance<Instance extends Model<any>, Params extends any[]>(
-  ModelClass: ConstructorType<Instance, Params>,
-  params: ConstructorParams<ConstructorType<Instance, Params>>,
+  ModelClass: ModelConstructor<Instance, Params>,
+  params: ConstructorParams<ModelConstructor<Instance, Params>>,
+  defaultState?: Instance extends Model<infer SS> ? SS : never,
 ): Instance {
-  const model = React.useMemo(() => new ModelClass(...params), params)
+  const model = React.useMemo(() => {
+    const instance = new ModelClass(...params)
 
-  React.useEffect(() => () => model.dispose(), [model])
+    instance.activateModel(defaultState)
+
+    return instance
+  }, [ModelClass, ...params])
+
+  React.useEffect(() => () => model.disposeModel(), [model])
 
   return model
 }
