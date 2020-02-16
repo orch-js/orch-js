@@ -1,4 +1,4 @@
-import { Model } from './model'
+import { Model } from '@orch/model'
 
 export function getModelState<S>(model: Model<S>): S | null {
   let state: S | null = null
