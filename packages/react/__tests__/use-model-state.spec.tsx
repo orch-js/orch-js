@@ -23,6 +23,13 @@ const App = () => {
   return <div data-state={state} onClick={countModel.increaseCount} />
 }
 
+const AppWithSelector = () => {
+  const countModel = useModelInstance(CountModel, [])
+  const state = useModelState(countModel, (state) => ({ isZero: state.count === 0 }))
+
+  return <div data-state={state} onClick={countModel.increaseCount} />
+}
+
 const AppSimulateGetDerivedStateFromPropsTest = ({
   renderTimesSpy,
 }: {
@@ -58,6 +65,20 @@ describe('useModelState', () => {
     act(() => increaseCount(testRenderer))
 
     expect(getState(testRenderer)).toEqual({ count: 1 })
+  })
+
+  it(`should able to using selector to derive a new state`, () => {
+    const testRenderer = create(<AppWithSelector />)
+
+    expect(getState(testRenderer)).toEqual({ isZero: true })
+  })
+
+  it(`should sync derived state change`, () => {
+    const testRenderer = create(<AppWithSelector />)
+
+    act(() => increaseCount(testRenderer))
+
+    expect(getState(testRenderer)).toEqual({ isZero: false })
   })
 
   it(`should implement getDerivedStateFromProps`, () => {
