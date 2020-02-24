@@ -1,0 +1,19 @@
+{
+  "name": "@orch/store",
+  "version": "0.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Runjuu",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "lint:tsc": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "conditional-type-checks": "^1.0.5"
+  },
+  "dependencies": {
+    "rxjs": "^6.5.4"
+  }
+}
