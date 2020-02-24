@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@orch/*": ["packages/*/src"],
+      "@orch/store/*": ["packages/store/src/*"],
       "@orch/model/*": ["packages/model/src/*"],
       "@orch/react/*": ["packages/react/src/*"]
     },
