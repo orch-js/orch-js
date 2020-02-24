@@ -51,6 +51,20 @@ export class OrchStore {
     })
   }
 
+  toJSON() {
+    const result: Record<Namespace, Record<CaseId, object>> = {}
+
+    this.orchMap.forEach((caseMap, namespace) => {
+      result[namespace] = {}
+
+      caseMap.forEach((orch, caseId) => {
+        result[namespace][caseId] = orch.getState()
+      })
+    })
+
+    return result
+  }
+
   private getOrCreateCaseMap(namespace: Namespace): Map<CaseId, Orch<any, any>> {
     const caseMap = this.orchMap.get(namespace)
 
