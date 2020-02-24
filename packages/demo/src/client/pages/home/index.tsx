@@ -1,19 +1,22 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { useModelInstance, useModelState } from '@orch/react'
+import { useModel } from '@orch/react'
 
 import { paths } from '../../routers'
 import { HomeModel, HomeStatus } from './model'
 
 export function Home() {
-  // TODO: - singleton support
-  const homeModel = useModelInstance(HomeModel, [])
-  // TODO: - derive state support (eg: isLoading)
-  const state = useModelState(homeModel)
+  const [state, actions] = useModel(HomeModel, {
+    selector: (state) => ({ hasData: state.list.length > 0, ...state }),
+  })
 
   React.useEffect(() => {
-    homeModel.fetchData()
-  }, [])
+    if (!state.hasData) {
+      actions.fetchData()
+    }
+
+    return () => actions.cancelFetchData()
+  }, [actions])
 
   return (
     <div>
@@ -21,7 +24,7 @@ export function Home() {
 
       {state.status === HomeStatus.loading && <p>Loading...</p>}
 
-      {state.status === HomeStatus.failed && <button onClick={homeModel.fetchData}>Retry!</button>}
+      {state.status === HomeStatus.failed && <button onClick={actions.fetchData}>Retry!</button>}
 
       {state.status === HomeStatus.idle && (
         <ul>

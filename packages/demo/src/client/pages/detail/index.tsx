@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useModelInstance, useModelState } from '@orch/react'
+import { useModel } from '@orch/react'
 import { useParams } from 'react-router'
 
 import { DetailModel, DetailStatus } from './model'
@@ -7,20 +7,25 @@ import { DetailData } from './types'
 
 export function Detail() {
   const { id } = useParams<Pick<DetailData, 'id'>>()
-  const model = useModelInstance(DetailModel, [])
-  const state = useModelState(model)
+  const [state, actions] = useModel(DetailModel, {
+    caseId: id,
+    defaultState: (defaultState) => ({ ...defaultState, detailId: id }),
+    selector: (state) => ({ hasData: state.data !== null, ...state }),
+  })
 
   React.useEffect(() => {
-    model.fetchData(id)
-  }, [id])
+    if (!state.hasData) {
+      actions.fetchData()
+    }
+
+    return () => actions.cancelFetchData()
+  }, [actions])
 
   return (
     <div>
       {state.status === DetailStatus.loading && <h1>Loading...</h1>}
 
-      {state.status === DetailStatus.failed && (
-        <button onClick={model.fetchData.asAction(id)}>Retry!</button>
-      )}
+      {state.status === DetailStatus.failed && <button onClick={actions.fetchData}>Retry!</button>}
 
       {state.status === DetailStatus.idle && (
         <div>

@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./dist",
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "outDir": "./dist/src",
+    "tsBuildInfoFile": "./dist/src/.tsbuildinfo"
   },
   "references": [
     { "path": "../model/tsconfig.build.json" },

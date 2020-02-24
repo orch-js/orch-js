@@ -2,7 +2,9 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  entry: './src/index.tsx',
+  mode: process.env.NODE_ENV,
+
+  entry: './src/client/index.tsx',
 
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
@@ -10,7 +12,8 @@ module.exports = {
 
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist', 'webpack'),
+    publicPath: process.env.NODE_ENV === 'production' ? '/build/' : '',
   },
 
   module: {
@@ -40,7 +43,6 @@ module.exports = {
 
   devServer: {
     historyApiFallback: true,
-    contentBase: path.join(__dirname, 'dist'),
     compress: true,
     port: 9000,
     proxy: {
