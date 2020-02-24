@@ -1,0 +1,16 @@
+{
+  "name": "@orch/utility-types",
+  "version": "0.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Runjuu",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "lint:tsc": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "ts-essentials": "^6.0.1"
+  }
+}
