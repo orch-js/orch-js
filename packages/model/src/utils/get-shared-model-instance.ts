@@ -1,4 +1,4 @@
-import { Model } from '@orch/model'
+import { Model } from '../model'
 
 function isSharedModelClass(ModelClass: any): ModelClass is typeof Model {
   return Object.prototype.isPrototypeOf.call(Model, ModelClass)
@@ -6,9 +6,11 @@ function isSharedModelClass(ModelClass: any): ModelClass is typeof Model {
 
 const cacheMap = new Map<Function, Model<any>>()
 
-getSharedModel.clear = () => cacheMap.clear()
+getSharedModelInstance.cacheMap = cacheMap
 
-export function getSharedModel<M extends Model<any>>(ModelClass: new (...params: any) => M): M {
+export function getSharedModelInstance<M extends Model<any>>(
+  ModelClass: new (...params: any) => M,
+): M {
   if (isSharedModelClass(ModelClass)) {
     const cachedModel = cacheMap.get(ModelClass)
 
@@ -18,7 +20,6 @@ export function getSharedModel<M extends Model<any>>(ModelClass: new (...params:
 
     const model = ModelClass.createSharedInstance()
 
-    model.activateModel()
     cacheMap.set(ModelClass, model)
 
     return model as M

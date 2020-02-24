@@ -1,3 +1,7 @@
 {
-  "extends": "../../tsconfig.base.json"
+  "extends": "../../tsconfig.base.json",
+  "references": [
+    { "path": "../utility-types/tsconfig.build.json" },
+    { "path": "../store/tsconfig.build.json" }
+  ]
 }

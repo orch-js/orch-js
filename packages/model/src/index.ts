@@ -1,3 +1,5 @@
+export * from './types'
 export * from './model'
+export * from './performers'
+export * from './store-utils'
 export * from './utils'
-export * from './dispatchers'

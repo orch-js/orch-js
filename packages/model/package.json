@@ -11,10 +11,12 @@
     "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@orch/store": "^0.0.0",
     "immer": "^5.3.4",
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
+    "@orch/utility-types": "^0.0.0",
     "conditional-type-checks": "^1.0.5"
   }
 }

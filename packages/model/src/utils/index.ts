@@ -1,3 +1,4 @@
-export * from './get-model'
-export * from './get-model-state'
-export * from './get-shared-model'
+export * from './get-shared-model-instance'
+export * from './get-model-display-name'
+export * from './get-model-namespace'
+export * from './uuid'

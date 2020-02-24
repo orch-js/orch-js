@@ -1,7 +1,15 @@
 import { Subscription } from 'rxjs'
 import { debounceTime, map, withLatestFrom } from 'rxjs/operators'
 
-import { Model, effect, reducer, EMPTY_ACTION, getModelState } from '@orch/model'
+import {
+  Model,
+  effect,
+  reducer,
+  EMPTY_ACTION,
+  getModelState,
+  ModelActions,
+  modelToOrch,
+} from '@orch/model'
 
 type CountState = {
   count: number
@@ -60,6 +68,7 @@ describe('@orch/model', () => {
   let state$spy: jest.Mock
   let subscription: Subscription
   let consoleErrorSpy: jest.Mock
+  let actions: ModelActions<CountModel>
 
   beforeEach(() => {
     state$spy = jest.fn()
@@ -69,6 +78,8 @@ describe('@orch/model', () => {
     countModel = new CountModel()
     countModel.activateModel()
     subscription = countModel.state$.subscribe(state$spy)
+
+    modelToOrch(countModel).state.state
   })
 
   afterEach(() => {
