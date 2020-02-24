@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@orch/model": "^0.0.0",
+    "@orch/store": "^0.0.0",
     "immer": "^5.3.4",
     "shallowequal": "^1.1.0"
   },
@@ -22,6 +23,7 @@
     "@types/react-test-renderer": "^16.9.2",
     "@types/shallowequal": "^1.1.1",
     "react": "^16.12.0",
-    "react-test-renderer": "^16.12.0"
+    "react-test-renderer": "^16.12.0",
+    "ts-essentials": "^6.0.1"
   }
 }

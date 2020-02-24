@@ -5,6 +5,9 @@
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "references": [{ "path": "../model/tsconfig.build.json" }],
+  "references": [
+    { "path": "../store/tsconfig.build.json" },
+    { "path": "../model/tsconfig.build.json" }
+  ],
   "include": ["src/**/*"]
 }

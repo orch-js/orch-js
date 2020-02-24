@@ -2,7 +2,7 @@ import * as React from 'react'
 import { create, ReactTestRenderer } from 'react-test-renderer'
 
 import { Model, getModelState } from '@orch/model'
-import { useModelInstance } from '@orch/react'
+import { useGetModelInstance } from '@orch/react'
 
 type CountState = {
   count: number
@@ -17,7 +17,7 @@ class CountModel extends Model<CountState> {
 }
 
 const App = ({ defaultState, id }: { defaultState?: CountState; id: number }) => {
-  const countModel = useModelInstance(CountModel, [id], defaultState)
+  const countModel = useGetModelInstance(CountModel, [id], defaultState)
   return <div data-model={countModel} />
 }
 

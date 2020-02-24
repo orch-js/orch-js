@@ -2,7 +2,8 @@ import * as React from 'react'
 import { create, act, ReactTestRenderer } from 'react-test-renderer'
 
 import { Model, reducer } from '@orch/model'
-import { useModelInstance, useModelState } from '@orch/react'
+import { useRegisterModel, useOrchState, useModel } from '@orch/react'
+import { withTempStore } from '@orch/react/test-utils'
 
 type CountState = {
   count: number
@@ -11,41 +12,52 @@ type CountState = {
 class CountModel extends Model<CountState> {
   defaultState = { count: 0 }
 
-  increaseCount = reducer(this)((state) => {
+  increaseCount = reducer<CountState>((state) => {
     state.count += 1
   })
 }
 
-const App = () => {
-  const countModel = useModelInstance(CountModel, [])
-  const state = useModelState(countModel)
+const countModel = new CountModel()
 
-  return <div data-state={state} onClick={countModel.increaseCount} />
-}
+const App = withTempStore(
+  ({
+    caseId,
+    renderSpy,
+    defaultState,
+  }: {
+    caseId?: string
+    renderSpy?: jest.Mock
+    defaultState?: CountState
+  }) => {
+    const [state, actions] = useModel(CountModel, { caseId, defaultState })
 
-const AppWithSelector = () => {
-  const countModel = useModelInstance(CountModel, [])
-  const state = useModelState(countModel, (state) => ({ isZero: state.count === 0 }))
+    renderSpy?.()
 
-  return <div data-state={state} onClick={countModel.increaseCount} />
-}
+    return <div data-state={state} onClick={actions.increaseCount} />
+  },
+)
 
-const AppSimulateGetDerivedStateFromPropsTest = ({
-  renderTimesSpy,
-}: {
-  renderTimesSpy: jest.Mock
-}) => {
-  const countModel = useModelInstance(CountModel, [])
-  const state = useModelState(countModel)
+const AppWithSelector = withTempStore(({ caseId }: { caseId?: string }) => {
+  const count = useRegisterModel(countModel, { caseId })
+  const state = useOrchState(count, (state) => ({ isZero: state.count === 0 }))
 
-  renderTimesSpy()
+  return <div data-state={state} onClick={count.actions.increaseCount} />
+})
 
-  if (state.count === 0) {
-    countModel.increaseCount()
-  }
+const AppSimulateGetDerivedStateFromPropsTest = withTempStore(
+  ({ renderTimesSpy, caseId }: { renderTimesSpy: jest.Mock; caseId?: string }) => {
+    const count = useRegisterModel(countModel, { caseId })
+    const state = useOrchState(count)
 
-  return <div data-state={state} onClick={countModel.increaseCount} />
-}
+    renderTimesSpy()
+
+    if (state.count === 0) {
+      count.actions.increaseCount()
+    }
+
+    return <div data-state={state} onClick={count.actions.increaseCount} />
+  },
+)
 
 const getState = (testRenderer: ReactTestRenderer): CountState =>
   testRenderer.root.findByType('div').props['data-state']
@@ -89,5 +101,21 @@ describe('useModelState', () => {
 
     expect(renderTimesSpy.mock.calls.length).toBe(2)
     expect(getState(testRenderer)).toEqual({ count: 1 })
+  })
+
+  it(`should not trigger update at first render`, () => {
+    const renderSpy = jest.fn()
+
+    create(<App renderSpy={renderSpy} />)
+
+    expect(renderSpy.mock.calls.length).toBe(1)
+  })
+
+  it(`should sync state if model changed`, () => {
+    const testRenderer = create(<App caseId="1" />)
+
+    testRenderer.update(<App caseId="2" defaultState={{ count: 9 }} />)
+
+    expect(getState(testRenderer)).toEqual({ count: 9 })
   })
 })

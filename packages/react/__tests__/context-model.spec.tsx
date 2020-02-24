@@ -2,7 +2,7 @@ import * as React from 'react'
 import { create, ReactTestRenderer } from 'react-test-renderer'
 
 import { Model } from '@orch/model'
-import { ContextModelProvider, useContextModel, useModelInstance } from '@orch/react'
+import { ContextModelProvider, useContextModel, useGetModelInstance } from '@orch/react'
 
 type CountState = {
   count: number
@@ -22,7 +22,7 @@ type AppProps = CommonProps & {
 }
 
 const App = ({ defaultState, children, id }: AppProps) => {
-  const countModel = useModelInstance(CountModel, [], defaultState)
+  const countModel = useGetModelInstance(CountModel, [])
   return (
     <ContextModelProvider data-id={id} model={countModel}>
       {children}
