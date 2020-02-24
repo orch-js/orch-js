@@ -6,8 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "run-s clean build:lib",
+    "build": "run-s clean build:lib build:lerna",
     "build:lib": "tsc -b packages/*/tsconfig.build.json",
+    "build:lerna": "lerna run build --parallel",
     "clean": "lerna run clean --parallel",
     "format:package": "yarn format-package '**/package.json' -w -c format-package.json",
     "lint": "run-s lint:eslint lint:tsc",
