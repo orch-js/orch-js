@@ -1,8 +1,8 @@
-import { Orch } from './orch'
-
-import { Namespace, CaseId } from './types'
 import { PerformerAction } from './performer'
+import { Namespace, CaseId, NamespaceMap } from './types'
 import { DEFAULT_CASE_ID } from './const'
+import { Orch } from './orch'
+import { serializeNamespaceMap, disposeAllOrches, getOrCreateCaseMap } from './orch-store.utils'
 
 type CommonConfig = {
   namespace: Namespace
@@ -14,25 +14,27 @@ export type RegisterOrchConfig = CommonConfig & {
 }
 
 export class OrchStore {
-  private orchMap = new Map<Namespace, Map<CaseId, Orch<any, any>>>()
+  private readonly namespaceMap: NamespaceMap = new Map()
 
-  dispatch({ namespace, actionName, payload, caseId = DEFAULT_CASE_ID }: PerformerAction) {
-    const orch = this.orchMap.get(namespace)?.get(caseId)
+  getRegisteredOrch({ namespace, caseId = DEFAULT_CASE_ID }: CommonConfig): Orch<any, any> | null {
+    const orch = this.namespaceMap.get(namespace)?.get(caseId)
+
+    return orch instanceof Orch ? orch : null
+  }
+
+  dispatch({ namespace, caseId, actionName, payload }: PerformerAction) {
+    const orch = this.getRegisteredOrch({ namespace, caseId })
     orch?.actions[actionName]?.(payload)
   }
 
-  getRegisteredOrch({ namespace, caseId = DEFAULT_CASE_ID }: CommonConfig) {
-    return this.orchMap.get(namespace)?.get(caseId)
-  }
-
   registerOrch({ namespace, orch, caseId = DEFAULT_CASE_ID }: RegisterOrchConfig) {
-    if (this.orchMap.get(namespace)?.has(caseId)) {
+    if (!!this.getRegisteredOrch({ namespace, caseId })) {
       throw new Error(
         `There is already a namespace "${namespace}" with caseId "${caseId}" in store.`,
       )
     }
 
-    const caseMap = this.getOrCreateCaseMap(namespace)
+    const caseMap = getOrCreateCaseMap(this.namespaceMap, namespace)
     const subscription = orch.process$.subscribe((action) => this.dispatch(action))
 
     caseMap.set(caseId, orch)
@@ -44,36 +46,11 @@ export class OrchStore {
   }
 
   destroyStore() {
-    this.orchMap.forEach((caseMap) => {
-      caseMap.forEach((orch) => {
-        orch.dispose()
-      })
-    })
+    disposeAllOrches(this.namespaceMap)
+    this.namespaceMap.clear()
   }
 
   toJSON() {
-    const result: Record<Namespace, Record<CaseId, object>> = {}
-
-    this.orchMap.forEach((caseMap, namespace) => {
-      result[namespace] = {}
-
-      caseMap.forEach((orch, caseId) => {
-        result[namespace][caseId] = orch.getState()
-      })
-    })
-
-    return result
-  }
-
-  private getOrCreateCaseMap(namespace: Namespace): Map<CaseId, Orch<any, any>> {
-    const caseMap = this.orchMap.get(namespace)
-
-    if (caseMap) {
-      return caseMap
-    } else {
-      const newCaseMap = new Map<CaseId, Orch<any, any>>()
-      this.orchMap.set(namespace, newCaseMap)
-      return newCaseMap
-    }
+    return serializeNamespaceMap(this.namespaceMap)
   }
 }
