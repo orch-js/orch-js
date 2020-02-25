@@ -10,7 +10,10 @@ export function deserializeNamespaceMap(namespaceMapEntries: SerializedOrchStore
 export function serializeNamespaceMap(namespaceMap: NamespaceMap): SerializedOrchStore {
   return Array.from(namespaceMap.entries()).map(([namespace, caseMap]) => [
     namespace,
-    Array.from(caseMap.entries()),
+    Array.from(caseMap.entries()).map(([caseId, orch]) => [
+      caseId,
+      orch instanceof Orch ? orch.getState() : orch,
+    ]),
   ])
 }
 
