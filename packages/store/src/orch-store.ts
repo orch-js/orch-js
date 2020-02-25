@@ -1,8 +1,13 @@
 import { PerformerAction } from './performer'
-import { Namespace, CaseId, NamespaceMap } from './types'
+import { Namespace, CaseId, NamespaceMap, SerializedOrchStore } from './types'
 import { DEFAULT_CASE_ID } from './const'
 import { Orch } from './orch'
-import { serializeNamespaceMap, disposeAllOrches, getOrCreateCaseMap } from './orch-store.utils'
+import {
+  serializeNamespaceMap,
+  deserializeNamespaceMap,
+  disposeAllOrches,
+  getOrCreateCaseMap,
+} from './orch-store.utils'
 
 type CommonConfig = {
   namespace: Namespace
@@ -10,11 +15,17 @@ type CommonConfig = {
 }
 
 export type RegisterOrchConfig = CommonConfig & {
-  orch: Orch<any, any>
+  createOrch: (ssrState: any) => Orch<any, any>
 }
 
 export class OrchStore {
   private readonly namespaceMap: NamespaceMap = new Map()
+
+  constructor(serializedOrchStore?: SerializedOrchStore) {
+    this.namespaceMap = serializedOrchStore
+      ? deserializeNamespaceMap(serializedOrchStore)
+      : new Map()
+  }
 
   getRegisteredOrch({ namespace, caseId = DEFAULT_CASE_ID }: CommonConfig): Orch<any, any> | null {
     const orch = this.namespaceMap.get(namespace)?.get(caseId)
@@ -27,13 +38,19 @@ export class OrchStore {
     orch?.actions[actionName]?.(payload)
   }
 
-  registerOrch({ namespace, orch, caseId = DEFAULT_CASE_ID }: RegisterOrchConfig) {
+  registerOrch({
+    namespace,
+    createOrch,
+    caseId = DEFAULT_CASE_ID,
+  }: RegisterOrchConfig): Orch<any, any> {
     if (!!this.getRegisteredOrch({ namespace, caseId })) {
       throw new Error(
         `There is already a namespace "${namespace}" with caseId "${caseId}" in store.`,
       )
     }
 
+    const ssrState = this.getSsrState({ namespace, caseId })
+    const orch = createOrch(ssrState)
     const caseMap = getOrCreateCaseMap(this.namespaceMap, namespace)
     const subscription = orch.process$.subscribe((action) => this.dispatch(action))
 
@@ -43,6 +60,8 @@ export class OrchStore {
       caseMap.delete(caseId)
       subscription.unsubscribe()
     })
+
+    return orch
   }
 
   destroyStore() {
@@ -52,5 +71,11 @@ export class OrchStore {
 
   toJSON() {
     return serializeNamespaceMap(this.namespaceMap)
+  }
+
+  private getSsrState({ namespace, caseId = DEFAULT_CASE_ID }: CommonConfig): object | null {
+    const orch = this.namespaceMap.get(namespace)?.get(caseId) ?? null
+
+    return orch instanceof Orch ? null : orch
   }
 }

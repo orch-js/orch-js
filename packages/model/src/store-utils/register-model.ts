@@ -20,9 +20,17 @@ export function registerModel<M extends Model<any>>({
   defaultState,
 }: RegisterModelConfig<M>): ModelToOrch<M> {
   const namespace = getModelNamespace(model)
-  const orch = modelToOrch({ model, defaultState, caseId, namespace })
 
-  store.registerOrch({ namespace, orch, caseId })
-
-  return orch
+  return store.registerOrch({
+    namespace,
+    caseId,
+    createOrch: (ssrState) => {
+      return modelToOrch({
+        model,
+        caseId,
+        namespace,
+        defaultState: ssrState ?? defaultState,
+      })
+    },
+  })
 }
