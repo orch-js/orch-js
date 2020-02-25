@@ -1,8 +1,7 @@
 import { NEVER, Observable, Subject } from 'rxjs'
 import { switchMapTo, filter, map, tap } from 'rxjs/operators'
 
-import { Performer } from '@orch/store'
-import { CaseId } from '@orch/store/types'
+import { Performer, CaseId } from '@orch/store'
 
 export class SignalPerformer<P> extends Performer<P, any> {
   private signalSource = new Subject<{ caseId: string; payload: P }>()

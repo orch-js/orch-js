@@ -1,8 +1,7 @@
 import { merge, Observable } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 
-import { Orch, Performer, registerPerformer, PerformerAction } from '@orch/store'
-import { CaseId, Namespace } from '@orch/store/types'
+import { Orch, Performer, registerPerformer, PerformerAction, CaseId, Namespace } from '@orch/store'
 
 import { Model } from '../model'
 import { getModelDisplayName } from '../utils'

@@ -1,8 +1,7 @@
 import { Observable } from 'rxjs'
 import { filter, map } from 'rxjs/operators'
 
-import { Performer, performerAction, PerformerAction } from '@orch/store'
-import { CaseId } from '@orch/store/types'
+import { Performer, performerAction, PerformerAction, CaseId } from '@orch/store'
 
 export type EffectFunc<P, S> = (
   payload$: Observable<P>,

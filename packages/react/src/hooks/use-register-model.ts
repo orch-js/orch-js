@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react'
 
-import { CaseId } from '@orch/store/types'
+import { CaseId } from '@orch/store'
 import { Model, getRegisteredOrch, registerModel, ModelToOrch, ModelState } from '@orch/model'
 
 import { StoreContext } from '../store-context'

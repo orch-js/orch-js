@@ -1,5 +1,4 @@
-import { OrchStore } from '@orch/store'
-import { CaseId } from '@orch/store/types'
+import { OrchStore, CaseId } from '@orch/store'
 
 import { ModelToOrch } from '../types'
 import { getModelNamespace } from '../utils'
