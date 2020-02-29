@@ -1,4 +1,6 @@
 export abstract class Model<S> {
+  static namespace: string | null = null
+
   static createSharedInstance<M>(this: new (...params: any) => M): M {
     if (this.length === 0) {
       return new this()
