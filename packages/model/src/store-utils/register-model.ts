@@ -26,6 +26,7 @@ export function registerModel<M extends Model<any>>({
     caseId,
     createOrch: (ssrState) => {
       return modelToOrch({
+        store,
         model,
         caseId,
         namespace,

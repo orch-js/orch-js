@@ -1,7 +1,15 @@
 import { merge, Observable } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 
-import { Orch, Performer, registerPerformer, PerformerAction, CaseId, Namespace } from '@orch/store'
+import {
+  OrchStore,
+  Orch,
+  Performer,
+  registerPerformer,
+  PerformerAction,
+  CaseId,
+  Namespace,
+} from '@orch/store'
 
 import { Model } from '../model'
 import { getModelDisplayName } from '../utils'
@@ -12,12 +20,14 @@ type ModelToOrchConfig<M extends Model<any>> = {
   defaultState?: ModelState<M>
   caseId: CaseId | undefined
   namespace: Namespace
+  store: OrchStore
 }
 
 export function modelToOrch<M extends Model<any>>({
   model,
-  defaultState = model.defaultState,
   caseId,
+  store,
+  defaultState = model.defaultState,
   namespace,
 }: ModelToOrchConfig<M>): ModelToOrch<M> {
   return new Orch<ModelState<M>, ModelActions<M>>({ defaultState }, (orchState) => {
@@ -28,7 +38,7 @@ export function modelToOrch<M extends Model<any>>({
       const performer = (model as any)[key]
 
       if (performer instanceof Performer) {
-        const { action, process$ } = performer.record(orchState, { caseId, namespace })
+        const { action, process$ } = performer.record(orchState, { caseId, namespace, store })
 
         const processWithErrorCatch$ = process$.pipe(
           catchError((err, caught$) => {

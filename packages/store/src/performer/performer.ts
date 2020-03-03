@@ -1,6 +1,7 @@
 import { Observable, Subject } from 'rxjs'
 
 import { OrchState } from '../orch-state'
+import { OrchStore } from '../orch-store'
 import { Namespace, CaseId, ActionName } from '../types'
 import { DEFAULT_CASE_ID } from '../const'
 
@@ -14,6 +15,7 @@ export type PerformerAction = {
 type PerformerFactoryMeta = {
   caseId?: CaseId
   namespace: Namespace
+  store: OrchStore
 }
 
 export type PerformerFactory<P, S> = (
