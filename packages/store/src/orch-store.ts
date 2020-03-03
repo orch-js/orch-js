@@ -2,6 +2,7 @@ import { PerformerAction } from './performer'
 import { Namespace, CaseId, NamespaceMap, SerializedOrchStore } from './types'
 import { DEFAULT_CASE_ID } from './const'
 import { Orch } from './orch'
+import { SsrWaitingGroup } from './ssr-waiting-group'
 import {
   serializeNamespaceMap,
   deserializeNamespaceMap,
@@ -14,6 +15,11 @@ type CommonConfig = {
   caseId?: CaseId
 }
 
+export type OrchStoreInitConfig = {
+  serializedOrchStore?: SerializedOrchStore
+  enableSsrWaitingGroup?: boolean
+}
+
 export type RegisterOrchConfig = CommonConfig & {
   createOrch: (ssrState: any) => Orch<any, any>
 }
@@ -21,10 +27,14 @@ export type RegisterOrchConfig = CommonConfig & {
 export class OrchStore {
   private readonly namespaceMap: NamespaceMap = new Map()
 
-  constructor(serializedOrchStore?: SerializedOrchStore) {
+  readonly ssrWaitingGroup: SsrWaitingGroup
+
+  constructor({ serializedOrchStore, enableSsrWaitingGroup }: OrchStoreInitConfig = {}) {
     this.namespaceMap = serializedOrchStore
       ? deserializeNamespaceMap(serializedOrchStore)
       : new Map()
+
+    this.ssrWaitingGroup = new SsrWaitingGroup(!!enableSsrWaitingGroup)
   }
 
   getRegisteredOrch({ namespace, caseId = DEFAULT_CASE_ID }: CommonConfig): Orch<any, any> | null {
