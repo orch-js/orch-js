@@ -1,4 +1,3 @@
-import { fromFetch } from 'rxjs/fetch'
 import {
   startWith,
   switchMap,
@@ -11,6 +10,7 @@ import {
 } from 'rxjs/operators'
 import { Model, effect, reducer, action, signal } from '@orch/model'
 
+import { RxAxios } from '../../utils'
 import { DetailData } from './types'
 
 export enum DetailStatus {
@@ -44,9 +44,8 @@ export class DetailModel extends Model<DetailState> {
       map(([, { detailId }]) => detailId),
       filter(<T>(detailId: T): detailId is NonNullable<T> => !!detailId),
       switchMap((detailId) =>
-        fromFetch(`/resource/${detailId}.json`).pipe(
+        RxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
           takeUntil(this.cancelFetchData.signal$(caseId)),
-          switchMap((data): Promise<DetailData> => data.json()),
           map((data) => action(this.updateData, data)),
           endWith(action(this.updateStatus, DetailStatus.idle)),
           startWith(action(this.updateStatus, DetailStatus.loading)),

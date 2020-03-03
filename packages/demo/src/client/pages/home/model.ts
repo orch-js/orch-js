@@ -1,7 +1,7 @@
-import { fromFetch } from 'rxjs/fetch'
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 import { Model, effect, reducer, action, signal } from '@orch/model'
 
+import { RxAxios } from '../../utils'
 import { ListValue } from './types'
 
 export enum HomeStatus {
@@ -31,9 +31,8 @@ export class HomeModel extends Model<HomeState> {
   fetchData = effect((payload$, _, caseId) =>
     payload$.pipe(
       switchMap(() =>
-        fromFetch('/resource/list.json').pipe(
+        RxAxios.get<ListValue[]>('/resource/list.json').pipe(
           takeUntil(this.cancelFetchData.signal$(caseId)),
-          switchMap((data): Promise<ListValue[]> => data.json()),
           map((data) => action(this.updateListData, data)),
           endWith(action(this.updateStatus, HomeStatus.idle)),
           startWith(action(this.updateStatus, HomeStatus.loading)),
