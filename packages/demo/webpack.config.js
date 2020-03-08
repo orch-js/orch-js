@@ -13,7 +13,7 @@ module.exports = {
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist', 'webpack'),
-    publicPath: process.env.NODE_ENV === 'production' ? '/build/' : '',
+    publicPath: process.env.NODE_ENV === 'production' ? 'http://127.0.0.1:9001/build/' : '',
   },
 
   module: {

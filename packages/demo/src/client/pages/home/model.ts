@@ -1,5 +1,5 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
-import { Model, effect, reducer, action, signal } from '@orch/model'
+import { Model, effect, reducer, action, signal, ssrAware } from '@orch/model'
 
 import { RxAxios } from '../../utils'
 import { ListValue } from './types'
@@ -31,11 +31,13 @@ export class HomeModel extends Model<HomeState> {
   fetchData = effect((payload$, _, caseId) =>
     payload$.pipe(
       switchMap(() =>
-        RxAxios.get<ListValue[]>('/resource/list.json').pipe(
-          takeUntil(this.cancelFetchData.signal$(caseId)),
-          map((data) => action(this.updateListData, data)),
-          endWith(action(this.updateStatus, HomeStatus.idle)),
-          startWith(action(this.updateStatus, HomeStatus.loading)),
+        ssrAware(
+          RxAxios.get<ListValue[]>('/resource/list.json').pipe(
+            takeUntil(this.cancelFetchData.signal$(caseId)),
+            map((data) => action(this.updateListData, data)),
+            endWith(action(this.updateStatus, HomeStatus.idle)),
+            startWith(action(this.updateStatus, HomeStatus.loading)),
+          ),
         ),
       ),
     ),
