@@ -6,11 +6,9 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter, StaticRouterContext } from 'react-router'
 
 import { OrchStore } from '@orch/store'
-import { registerModel } from '@orch/model'
 import { StoreProvider } from '@orch/react'
 
 import { App } from '../client/app'
-import { HomeModel } from '../client/pages/home/model'
 
 const port = 9002
 const app = express()
@@ -20,19 +18,19 @@ app.get('/*', async (req, res) => {
   const context: StaticRouterContext = {}
   const orchStore = new OrchStore({ enableSsrWaitingGroup: true })
 
-  const home = registerModel({ store: orchStore, model: new HomeModel() })
-
-  home.actions.fetchData()
-
-  await orchStore.ssrWaitingGroup.waitUntil(1000)
-
-  const app = renderToString(
+  const app = (
     <StoreProvider value={orchStore}>
       <StaticRouter context={context} location={req.url}>
         <App />
       </StaticRouter>
-    </StoreProvider>,
+    </StoreProvider>
   )
+
+  renderToString(app)
+
+  await orchStore.ssrWaitingGroup.waitUntil(1000)
+
+  const renderedApp = renderToString(app)
 
   console.log('========= \n', JSON.stringify(orchStore, null, 2))
 
@@ -44,7 +42,7 @@ app.get('/*', async (req, res) => {
 
     return res.send(
       data
-        .replace('<div id="app"></div>', `<div id="app">${app}</div>`)
+        .replace('<div id="app"></div>', `<div id="app">${renderedApp}</div>`)
         .replace(
           `<html lang="en">`,
           `<html lang="en"><script type="text/javascript">window.STORE_DATA = ${JSON.stringify(

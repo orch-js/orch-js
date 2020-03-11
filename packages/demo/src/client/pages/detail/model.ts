@@ -8,7 +8,7 @@ import {
   filter,
   takeUntil,
 } from 'rxjs/operators'
-import { Model, effect, reducer, action, signal } from '@orch/model'
+import { Model, effect, reducer, action, signal, ssrAware } from '@orch/model'
 
 import { RxAxios } from '../../utils'
 import { DetailData } from './types'
@@ -44,12 +44,14 @@ export class DetailModel extends Model<DetailState> {
       map(([, { detailId }]) => detailId),
       filter(<T>(detailId: T): detailId is NonNullable<T> => !!detailId),
       switchMap((detailId) =>
-        RxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
-          takeUntil(this.cancelFetchData.signal$(caseId)),
-          map((data) => action(this.updateData, data)),
-          endWith(action(this.updateStatus, DetailStatus.idle)),
-          startWith(action(this.updateStatus, DetailStatus.loading)),
-          catchError(() => [action(this.updateStatus, DetailStatus.failed)]),
+        ssrAware(
+          RxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
+            takeUntil(this.cancelFetchData.signal$(caseId)),
+            map((data) => action(this.updateData, data)),
+            endWith(action(this.updateStatus, DetailStatus.idle)),
+            startWith(action(this.updateStatus, DetailStatus.loading)),
+            catchError(() => [action(this.updateStatus, DetailStatus.failed)]),
+          ),
         ),
       ),
     ),

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { useModel } from '@orch/react'
+import { useModel, useFetchEffect } from '@orch/react'
 
 import { paths } from '../../routers'
 import { HomeModel, HomeStatus } from './model'
@@ -10,7 +10,7 @@ export function Home() {
     selector: (state) => ({ hasData: state.list.length > 0, ...state }),
   })
 
-  React.useEffect(() => {
+  useFetchEffect(() => {
     if (!state.hasData) {
       actions.fetchData()
     }
