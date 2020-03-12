@@ -1,5 +1,6 @@
 import { Observable, Observer } from 'rxjs'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
+import { autoInjectable } from 'tsyringe'
 
 type RequestMethods = 'GET' | 'POST' | 'DELETE' | 'PUT'
 
@@ -38,6 +39,7 @@ function requestFactory(method: RequestMethods) {
   }
 }
 
-export const RxAxios = {
-  get: requestFactory('GET'),
+@autoInjectable()
+export class RxAxios {
+  get = requestFactory('GET')
 }

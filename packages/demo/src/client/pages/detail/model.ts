@@ -9,6 +9,7 @@ import {
   takeUntil,
 } from 'rxjs/operators'
 import { Model, effect, reducer, action, signal, ssrAware } from '@orch/model'
+import { autoInjectable } from 'tsyringe'
 
 import { RxAxios } from '../../utils'
 import { DetailData } from './types'
@@ -25,10 +26,15 @@ export type DetailState = {
   detailId: string | null
 }
 
+@autoInjectable()
 export class DetailModel extends Model<DetailState> {
   defaultState: DetailState = { detailId: null, status: DetailStatus.idle, data: null }
 
   cancelFetchData = signal()
+
+  constructor(private readonly rxAxios: RxAxios) {
+    super()
+  }
 
   private updateStatus = reducer<DetailState, DetailStatus>((state, status) => {
     state.status = status
@@ -45,7 +51,7 @@ export class DetailModel extends Model<DetailState> {
       filter(<T>(detailId: T): detailId is NonNullable<T> => !!detailId),
       switchMap((detailId) =>
         ssrAware(
-          RxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
+          this.rxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
             takeUntil(this.cancelFetchData.signal$(caseId)),
             map((data) => action(this.updateData, data)),
             endWith(action(this.updateStatus, DetailStatus.idle)),

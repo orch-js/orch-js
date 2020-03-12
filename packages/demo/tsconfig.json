@@ -1,5 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
   "references": [
     { "path": "../model/tsconfig.build.json" },
     { "path": "../react/tsconfig.build.json" }

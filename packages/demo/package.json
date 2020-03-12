@@ -29,7 +29,9 @@
     "react-dom": "^16.12.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "rxjs": "^6.5.4"
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.5.4",
+    "tsyringe": "^4.1.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
