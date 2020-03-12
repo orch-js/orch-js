@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { MarkRequired } from 'ts-essentials'
 
-import { Model, ModelState, ModelActions, getSharedModelInstance } from '@orch/model'
+import { Model, ModelState, ModelActions, ModelConfig } from '@orch/model'
 
 import { UseRegisterModel } from './use-register-model'
 import { useModelInstance } from './use-model-instance'
@@ -25,6 +25,6 @@ export function useModel(
   ModelClass: new (...params: any) => Model<any>,
   config: UseModelConfig<Model<any>, any> = {},
 ) {
-  const model = React.useMemo(() => getSharedModelInstance(ModelClass), [ModelClass])
+  const model = React.useMemo(() => ModelConfig.resolveModel(ModelClass), [ModelClass])
   return useModelInstance(model, config)
 }
