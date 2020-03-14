@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs'
 import { filter, groupBy, mergeMap } from 'rxjs/operators'
-import { Performer, performerAction, PerformerAction, CaseId } from '@orch/store'
+import { Performer, performerAction, PerformerAction, PerformerFactoryMeta } from '@orch/store'
 
 import { nonNullable, addCaseIdIfIsCurrentModelAction } from './effect.utils'
 import { ssrAware, isSsrAction, handleSsrAction, SsrActionType } from './effect.ssr'
@@ -8,7 +8,7 @@ import { ssrAware, isSsrAction, handleSsrAction, SsrActionType } from './effect.
 export type EffectFunc<P, S> = (
   payload$: Observable<P>,
   state$: Observable<S>,
-  caseId: CaseId,
+  meta: Required<PerformerFactoryMeta>,
 ) => Observable<PerformerAction | null | SsrActionType>
 
 export { ssrAware, performerAction as action }
@@ -16,8 +16,10 @@ export { ssrAware, performerAction as action }
 export const EMPTY_ACTION = null
 
 export function effect<P, S = void>(effect: EffectFunc<P, S>) {
-  return new Performer<P, S>((payload$, orchState, { namespace, caseId, store }) =>
-    effect(payload$, orchState.state$, caseId).pipe(
+  return new Performer<P, S>((payload$, orchState, meta) => {
+    const { store, namespace, caseId } = meta
+
+    return effect(payload$, orchState.state$, meta).pipe(
       filter(nonNullable),
       groupBy(isSsrAction),
       mergeMap(
@@ -33,6 +35,6 @@ export function effect<P, S = void>(effect: EffectFunc<P, S>) {
           }
         },
       ),
-    ),
-  )
+    )
+  })
 }

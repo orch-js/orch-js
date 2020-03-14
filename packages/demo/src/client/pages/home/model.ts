@@ -34,12 +34,12 @@ export class HomeModel extends Model<HomeState> {
     state.list = list
   })
 
-  fetchData = effect((payload$, _, caseId) =>
+  fetchData = effect((payload$, _, meta) =>
     payload$.pipe(
       switchMap(() =>
         ssrAware(
           this.rxAxios.get<ListValue[]>('/resource/list.json').pipe(
-            takeUntil(this.cancelFetchData.signal$(caseId)),
+            takeUntil(this.cancelFetchData.signal$(meta)),
             map((data) => action(this.updateListData, data)),
             endWith(action(this.updateStatus, HomeStatus.idle)),
             startWith(action(this.updateStatus, HomeStatus.loading)),

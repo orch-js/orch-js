@@ -11,9 +11,11 @@
     "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "@types/shallowequal": "^1.1.1",
     "conditional-type-checks": "^1.0.5"
   },
   "dependencies": {
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "shallowequal": "^1.1.0"
   }
 }

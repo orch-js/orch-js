@@ -44,7 +44,7 @@ export class DetailModel extends Model<DetailState> {
     state.data = data
   })
 
-  fetchData = effect<void, DetailState>((payload$, state$, caseId) =>
+  fetchData = effect<void, DetailState>((payload$, state$, meta) =>
     payload$.pipe(
       withLatestFrom(state$),
       map(([, { detailId }]) => detailId),
@@ -52,7 +52,7 @@ export class DetailModel extends Model<DetailState> {
       switchMap((detailId) =>
         ssrAware(
           this.rxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
-            takeUntil(this.cancelFetchData.signal$(caseId)),
+            takeUntil(this.cancelFetchData.signal$(meta)),
             map((data) => action(this.updateData, data)),
             endWith(action(this.updateStatus, DetailStatus.idle)),
             startWith(action(this.updateStatus, DetailStatus.loading)),

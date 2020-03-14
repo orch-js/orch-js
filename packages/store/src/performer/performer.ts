@@ -1,4 +1,5 @@
 import { Observable, Subject } from 'rxjs'
+import * as shallowequal from 'shallowequal'
 
 import { OrchState } from '../orch-state'
 import { OrchStore } from '../orch-store'
@@ -12,7 +13,7 @@ export type PerformerAction = {
   payload: any
 }
 
-type PerformerFactoryMeta = {
+export type PerformerFactoryMeta = {
   caseId?: CaseId
   namespace: Namespace
   store: OrchStore
@@ -30,6 +31,10 @@ export type PerformerRecordResult<P> = {
 }
 
 export class Performer<P, S> {
+  static isIdenticalMeta(metaA: PerformerFactoryMeta, metaB: PerformerFactoryMeta) {
+    return shallowequal(metaA, metaB)
+  }
+
   constructor(private readonly factory: PerformerFactory<P, S>) {}
 
   record(

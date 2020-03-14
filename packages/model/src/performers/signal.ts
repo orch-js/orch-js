@@ -1,22 +1,22 @@
 import { NEVER, Observable, Subject } from 'rxjs'
 import { switchMapTo, filter, map, tap } from 'rxjs/operators'
 
-import { Performer, CaseId } from '@orch/store'
+import { Performer, PerformerFactoryMeta } from '@orch/store'
 
 export class SignalPerformer<P> extends Performer<P, any> {
-  private signalSource = new Subject<{ caseId: string; payload: P }>()
+  private signalSource = new Subject<{ meta: PerformerFactoryMeta; payload: P }>()
 
-  signal$(caseId: CaseId): Observable<P> {
+  signal$(meta: PerformerFactoryMeta): Observable<P> {
     return this.signalSource.pipe(
-      filter((signal) => signal.caseId === caseId),
+      filter((signal) => Performer.isIdenticalMeta(signal.meta, meta)),
       map(({ payload }) => payload),
     )
   }
 
   constructor() {
-    super((payload$, _, { caseId }) =>
+    super((payload$, _, meta) =>
       payload$.pipe(
-        map((payload) => ({ caseId, payload })),
+        map((payload) => ({ meta, payload })),
         tap(this.signalSource),
         switchMapTo(NEVER),
       ),
