@@ -32,6 +32,7 @@ app.get('/*', async (req, res) => {
 
   const renderedApp = renderToString(app)
 
+  // eslint-disable-next-line no-console
   console.log('========= \n', JSON.stringify(orchStore, null, 2))
 
   fs.readFile(indexHtmlFile, 'utf8', (err, data) => {
