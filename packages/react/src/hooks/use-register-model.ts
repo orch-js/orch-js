@@ -1,7 +1,14 @@
 import { useContext, useMemo } from 'react'
 
 import { CaseId } from '@orch/store'
-import { Model, getRegisteredOrch, registerModel, ModelToOrch, ModelState } from '@orch/model'
+import {
+  Model,
+  getRegisteredOrch,
+  registerModel,
+  ModelToOrch,
+  ModelState,
+  ModelConfig,
+} from '@orch/model'
 
 import { StoreContext } from '../store-context'
 
@@ -22,9 +29,10 @@ function getDefaultState<M extends Model<any>>(
 }
 
 export function useRegisterModel<M extends Model<any>>(
-  model: M,
+  ModelClass: new (...params: any) => M,
   { caseId, defaultState }: UseRegisterModel<M> = {},
 ): ModelToOrch<M> {
+  const model = useMemo(() => ModelConfig.resolveModel(ModelClass), [ModelClass])
   const store = useContext(StoreContext)
 
   return useMemo((): ModelToOrch<M> => {

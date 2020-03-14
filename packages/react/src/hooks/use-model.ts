@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { MarkRequired } from 'ts-essentials'
 
-import { Model, ModelState, ModelActions, ModelConfig } from '@orch/model'
+import { Model, ModelState, ModelActions } from '@orch/model'
 
-import { UseRegisterModel } from './use-register-model'
-import { useModelInstance } from './use-model-instance'
+import { useRegisterModel, UseRegisterModel } from './use-register-model'
+import { useOrchState } from './use-orch-state'
 
 type UseModelConfig<M extends Model<any>, S> = UseRegisterModel<M> & {
   selector?: (state: ModelState<M>) => S
@@ -23,8 +23,11 @@ export function useModel<M extends Model<any>>(
 
 export function useModel(
   ModelClass: new (...params: any) => Model<any>,
-  config: UseModelConfig<Model<any>, any> = {},
+  { selector, selectorDeps, ...registerModelConfig }: UseModelConfig<Model<any>, any> = {},
 ) {
-  const model = React.useMemo(() => ModelConfig.resolveModel(ModelClass), [ModelClass])
-  return useModelInstance(model, config)
+  const orch = useRegisterModel(ModelClass, registerModelConfig)
+
+  const state = useOrchState(orch, selector, selectorDeps)
+
+  return [state, orch.actions]
 }
