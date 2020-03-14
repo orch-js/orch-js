@@ -27,7 +27,7 @@ export function useModel(
 ) {
   const orch = useRegisterModel(ModelClass, registerModelConfig)
 
-  const state = useOrchState(orch, selector, selectorDeps)
+  const state = useOrchState(orch.state, selector, selectorDeps)
 
   return [state, orch.actions]
 }

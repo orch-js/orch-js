@@ -12,7 +12,7 @@ export function serializeNamespaceMap(namespaceMap: NamespaceMap): SerializedOrc
     namespace,
     Array.from(caseMap.entries()).map(([caseId, orch]) => [
       caseId,
-      orch instanceof Orch ? orch.getState() : orch,
+      orch instanceof Orch ? orch.state.getState() : orch,
     ]),
   ])
 }

@@ -11,34 +11,26 @@ export type OrchActionsFactory<State, Actions> = (
 }
 
 export class Orch<State, Actions> {
-  get state$() {
-    return this.orchState.state$
-  }
-
   readonly actions: Actions
 
   readonly process$: Observable<PerformerAction>
 
-  private readonly orchState: OrchState<State>
+  readonly state: OrchState<State>
 
   constructor(config: OrchStateConfig<State>, actionsFactory: OrchActionsFactory<State, Actions>) {
     const orchState = new OrchState(config)
     const { actions, process$ } = actionsFactory(orchState)
 
-    this.orchState = orchState
+    this.state = orchState
     this.actions = actions
     this.process$ = process$
   }
 
-  getState() {
-    return this.orchState.getState()
-  }
-
   onDispose(callback: () => void) {
-    this.orchState.onDispose(callback)
+    this.state.onDispose(callback)
   }
 
   dispose() {
-    this.orchState.dispose()
+    this.state.dispose()
   }
 }
