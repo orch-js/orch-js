@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useFetchEffect, useContextModelProvider, useContextModel } from '@orch/react'
+import { useFetchEffect, useContextModel, withContextModelProvider } from '@orch/react'
 import { useParams } from 'react-router'
 
 import { PathParams } from '../../routers'
@@ -34,17 +34,11 @@ function DetailComponent() {
   )
 }
 
-export function Detail() {
+export const Detail = withContextModelProvider(DetailComponent, DetailModel, () => {
   const { detailId } = useParams<Record<keyof PathParams['detail'], string>>()
 
-  const ContextModelProvider = useContextModelProvider(DetailModel, {
+  return {
     caseId: detailId,
     defaultState: (defaultState) => ({ ...defaultState, detailId }),
-  })
-
-  return (
-    <ContextModelProvider>
-      <DetailComponent />
-    </ContextModelProvider>
-  )
-}
+  }
+})
