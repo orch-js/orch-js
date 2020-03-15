@@ -9,4 +9,4 @@ options:
 
 paths:
   home: /
-  detail: /detail/:id
+  detail: /detail/:detailId

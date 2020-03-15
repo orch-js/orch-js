@@ -1,16 +1,12 @@
 import * as React from 'react'
-import { useModel, useFetchEffect } from '@orch/react'
+import { useFetchEffect, useContextModelProvider, useContextModel } from '@orch/react'
 import { useParams } from 'react-router'
 
+import { PathParams } from '../../routers'
 import { DetailModel, DetailStatus } from './model'
-import { DetailData } from './types'
 
-export function Detail() {
-  const { id } = useParams<Pick<DetailData, 'id'>>()
-
-  const [state, actions] = useModel(DetailModel, {
-    caseId: id,
-    defaultState: (defaultState) => ({ ...defaultState, detailId: id }),
+function DetailComponent() {
+  const [state, actions] = useContextModel(DetailModel, {
     selector: (state) => ({ hasData: state.data !== null, ...state }),
   })
 
@@ -35,5 +31,20 @@ export function Detail() {
         </div>
       )}
     </div>
+  )
+}
+
+export function Detail() {
+  const { detailId } = useParams<Record<keyof PathParams['detail'], string>>()
+
+  const ContextModelProvider = useContextModelProvider(DetailModel, {
+    caseId: detailId,
+    defaultState: (defaultState) => ({ ...defaultState, detailId }),
+  })
+
+  return (
+    <ContextModelProvider>
+      <DetailComponent />
+    </ContextModelProvider>
   )
 }

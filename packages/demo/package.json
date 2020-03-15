@@ -15,7 +15,7 @@
     "start:dev": "NODE_ENV=development webpack-dev-server",
     "start:static-server": "yarn run build:server && node dist/src/static-server/index.js",
     "start:ssr-server": "yarn run build:server && node dist/src/ssr-server/index.js",
-    "gen:router": "typed-path-generator ./src/routers/routers.yaml",
+    "gen:router": "typed-path-generator ./src/client/routers/routers.yaml",
     "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

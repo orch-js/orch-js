@@ -7,10 +7,10 @@ import { makePathsFrom, Params } from 'typed-path-generator'
 
 interface ParamsInterface {
   home: void
-  detail: Params<'id'>
+  detail: Params<'detailId'>
 }
 
-const staticPath = { home: '/', detail: '/detail/:id' }
+const staticPath = { home: '/', detail: '/detail/:detailId' }
 
 const pathFactory = {
   home: makePathsFrom<ParamsInterface['home']>(staticPath.home),

@@ -30,7 +30,7 @@ export function Home() {
         <ul>
           {state.list.map((data) => (
             <li key={data.id}>
-              <Link to={paths.detail({ id: data.id })}>👉 {data.title}</Link>
+              <Link to={paths.detail({ detailId: data.id })}>👉 {data.title}</Link>
             </li>
           ))}
         </ul>
