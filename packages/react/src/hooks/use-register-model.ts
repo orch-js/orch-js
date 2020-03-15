@@ -12,14 +12,14 @@ import {
 
 import { StoreContext } from '../store-context'
 
-export type UseRegisterModel<M extends Model<any>> = {
+export type UseRegisterModelConfig<M extends Model<any>> = {
   caseId?: CaseId
   defaultState?: ModelState<M> | ((defaultState: ModelState<M>) => ModelState<M>)
 }
 
 function getDefaultState<M extends Model<any>>(
   model: M,
-  defaultState: UseRegisterModel<M>['defaultState'],
+  defaultState: UseRegisterModelConfig<M>['defaultState'],
 ): ModelState<M> | undefined {
   if (typeof defaultState === 'function') {
     return (defaultState as (defaultState: ModelState<M>) => ModelState<M>)(model.defaultState)
@@ -30,7 +30,7 @@ function getDefaultState<M extends Model<any>>(
 
 export function useRegisterModel<M extends Model<any>>(
   ModelClass: new (...params: any) => M,
-  { caseId, defaultState }: UseRegisterModel<M> = {},
+  { caseId, defaultState }: UseRegisterModelConfig<M> = {},
 ): ModelToOrch<M> {
   const model = useMemo(() => ModelConfig.resolveModel(ModelClass), [ModelClass])
   const store = useContext(StoreContext)
