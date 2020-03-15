@@ -2,34 +2,34 @@ import * as React from 'react'
 import * as shallowequal from 'shallowequal'
 import { skip, map, distinctUntilChanged } from 'rxjs/operators'
 
-import { OrchState } from '@orch/store'
+import { Orch } from '@orch/store'
 
 const defaultSelector = <S>(state: S): S => state
 
-export function useOrchState<S>(orchState: OrchState<S>): S
+export function useOrchState<S>(orch: Orch<S, any>): S
 export function useOrchState<S, R>(
-  orchState: OrchState<S>,
+  orch: Orch<S, any>,
   inlineSelector: (state: S) => R,
   inlineSelectorDeps?: React.DependencyList,
 ): R
 export function useOrchState<S, R>(
-  orchState: OrchState<S>,
+  orch: Orch<S, any>,
   inlineSelector?: (state: S) => R,
   inlineSelectorDeps?: React.DependencyList,
 ): R
 export function useOrchState(
-  orchState: OrchState<any>,
+  orch: Orch<any, any>,
   inlineSelector: (state: any) => any = defaultSelector,
   inlineSelectorDeps: React.DependencyList = [],
 ): any {
   const selector = React.useCallback(inlineSelector, inlineSelectorDeps)
-  const [state, updateState] = React.useState(() => selector(orchState.getState()))
+  const [state, updateState] = React.useState(() => selector(orch.state.getState()))
   const isFirstRender = useIsFirstRender()
 
   const subscription = React.useMemo(() => {
     // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
     // To implement getDerivedStateFromProps, we need to subscribe state$ immediately.
-    return orchState.state$
+    return orch.state.state$
       .pipe(
         map(selector),
         distinctUntilChanged(shallowequal),
@@ -39,7 +39,7 @@ export function useOrchState(
         skip(isFirstRender ? 1 : 0),
       )
       .subscribe(updateState)
-  }, [orchState, selector, updateState])
+  }, [orch, selector, updateState])
 
   React.useEffect(() => () => subscription.unsubscribe(), [subscription])
 
