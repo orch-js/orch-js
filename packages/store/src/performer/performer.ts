@@ -19,11 +19,11 @@ export type PerformerFactoryMeta = {
   store: OrchStore
 }
 
-export type PerformerFactory<P, S> = (
-  payload$: Observable<P>,
-  orchState: OrchState<S>,
-  meta: Required<PerformerFactoryMeta>,
-) => Observable<PerformerAction>
+export type PerformerFactory<P, S> = (params: {
+  payload$: Observable<P>
+  orchState: OrchState<S>
+  meta: Required<PerformerFactoryMeta>
+}) => Observable<PerformerAction>
 
 export type PerformerRecordResult<P> = {
   action: (payload: P) => void
@@ -42,7 +42,11 @@ export class Performer<P, S> {
     { caseId = DEFAULT_CASE_ID, ...meta }: PerformerFactoryMeta,
   ): PerformerRecordResult<P> {
     const payloadSource = new Subject<P>()
-    const process$ = this.factory(payloadSource.asObservable(), orchState, { caseId, ...meta })
+    const process$ = this.factory({
+      orchState,
+      meta: { caseId, ...meta },
+      payload$: payloadSource.asObservable(),
+    })
 
     orchState.onDispose(() => {
       payloadSource.complete()

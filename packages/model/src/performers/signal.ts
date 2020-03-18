@@ -11,7 +11,7 @@ export class SignalPerformer<P, R = P> extends Performer<P, unknown> {
   private readonly signalSource = new Subject<SignalOriginPayload<P>>()
 
   constructor(private readonly signalWrapper: SignalWrapper<P, R>) {
-    super((payload$, _, meta) =>
+    super(({ payload$, meta }) =>
       payload$.pipe(
         map((payload) => ({ meta, payload })),
         tap(this.signalSource),

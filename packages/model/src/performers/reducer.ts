@@ -7,7 +7,7 @@ import { Performer } from '@orch/store'
 export type ReducerFunc<S, P> = (state: Draft<S>, payload: P) => S | void
 
 export function reducer<S, P = void>(reducerFunc: ReducerFunc<S, P>) {
-  return new Performer<P, S>((payload$, orchState) =>
+  return new Performer<P, S>(({ payload$, orchState }) =>
     payload$.pipe(
       withLatestFrom(orchState.state$),
       map(([payload, currentState]) => {
