@@ -1,4 +1,4 @@
-import { Model } from '../model'
+import { OrchModel } from '../orch-model'
 
 const uuid = (() => {
   type Prefix = string
@@ -15,8 +15,8 @@ const uuid = (() => {
   }
 })()
 
-export function getModelNamespace(model: Model<any>): string {
-  const ModelClass = model.constructor as typeof Model
+export function getModelNamespace(model: OrchModel<any>): string {
+  const ModelClass = model.constructor as typeof OrchModel
 
   if (!ModelClass.namespace) {
     ModelClass.namespace = uuid(ModelClass.name)

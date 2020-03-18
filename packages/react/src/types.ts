@@ -1,6 +1,6 @@
-import { Model } from '@orch/model'
+import { OrchModel } from '@orch/model'
 
-export type ModelConstructor<Instance extends Model<any>, Params extends any[]> = new (
+export type ModelConstructor<Instance extends OrchModel<any>, Params extends any[]> = new (
   ...params: Params
 ) => Instance
 

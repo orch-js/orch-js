@@ -1,11 +1,11 @@
 import * as React from 'react'
 
-import { Model, ModelToOrch } from '@orch/model'
+import { OrchModel, ModelToOrch } from '@orch/model'
 
 import {} from '../hooks'
 import { ModelContext } from './model-context'
 
-export function useContextModelValue<M extends Model<any>>(
+export function useContextModelValue<M extends OrchModel<any>>(
   ModelClass: new (...params: any[]) => M,
 ): ModelToOrch<M> {
   const context = React.useContext(ModelContext)

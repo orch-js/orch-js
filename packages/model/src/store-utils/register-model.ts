@@ -1,19 +1,19 @@
 import { OrchStore, CaseId } from '@orch/store'
 
 import { ModelToOrch, ModelState } from '../types'
-import { Model } from '../model'
+import { OrchModel } from '../orch-model'
 import { getModelNamespace } from '../utils'
 
 import { modelToOrch } from './model-to-orch'
 
-export type RegisterModelConfig<M extends Model<any>> = {
+export type RegisterModelConfig<M extends OrchModel<any>> = {
   store: OrchStore
   model: M
   caseId?: CaseId
   defaultState?: ModelState<M>
 }
 
-export function registerModel<M extends Model<any>>({
+export function registerModel<M extends OrchModel<any>>({
   store,
   model,
   caseId,

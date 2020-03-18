@@ -2,7 +2,7 @@ import { useContext, useMemo } from 'react'
 
 import { CaseId } from '@orch/store'
 import {
-  Model,
+  OrchModel,
   getRegisteredOrch,
   registerModel,
   ModelToOrch,
@@ -12,12 +12,12 @@ import {
 
 import { StoreContext } from '../store-context'
 
-export type UseRegisterModelConfig<M extends Model<any>> = {
+export type UseRegisterModelConfig<M extends OrchModel<any>> = {
   caseId?: CaseId
   defaultState?: ModelState<M> | ((defaultState: ModelState<M>) => ModelState<M>)
 }
 
-function getDefaultState<M extends Model<any>>(
+function getDefaultState<M extends OrchModel<any>>(
   model: M,
   defaultState: UseRegisterModelConfig<M>['defaultState'],
 ): ModelState<M> | undefined {
@@ -28,7 +28,7 @@ function getDefaultState<M extends Model<any>>(
   }
 }
 
-export function useRegisterModel<M extends Model<any>>(
+export function useRegisterModel<M extends OrchModel<any>>(
   ModelClass: new (...params: any) => M,
   { caseId, defaultState }: UseRegisterModelConfig<M> = {},
 ): ModelToOrch<M> {

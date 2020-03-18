@@ -2,15 +2,15 @@ import { OrchStore, CaseId } from '@orch/store'
 
 import { ModelToOrch } from '../types'
 import { getModelNamespace } from '../utils'
-import { Model } from '../model'
+import { OrchModel } from '../orch-model'
 
-export type GetRegisteredOrchConfig<M extends Model<any>> = {
+export type GetRegisteredOrchConfig<M extends OrchModel<any>> = {
   store: OrchStore
   model: M
   caseId?: CaseId
 }
 
-export function getRegisteredOrch<M extends Model<any>>({
+export function getRegisteredOrch<M extends OrchModel<any>>({
   store,
   model,
   caseId,

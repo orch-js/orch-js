@@ -11,11 +11,11 @@ import {
   Namespace,
 } from '@orch/store'
 
-import { Model } from '../model'
+import { OrchModel } from '../orch-model'
 import { getModelDisplayName } from '../utils'
 import { ModelState, ModelActions, ModelToOrch } from '../types'
 
-type ModelToOrchConfig<M extends Model<any>> = {
+type ModelToOrchConfig<M extends OrchModel<any>> = {
   model: M
   defaultState?: ModelState<M>
   caseId: CaseId | undefined
@@ -23,7 +23,7 @@ type ModelToOrchConfig<M extends Model<any>> = {
   store: OrchStore
 }
 
-export function modelToOrch<M extends Model<any>>({
+export function modelToOrch<M extends OrchModel<any>>({
   model,
   caseId,
   store,

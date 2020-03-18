@@ -8,7 +8,7 @@ import {
   filter,
   takeUntil,
 } from 'rxjs/operators'
-import { Model, effect, reducer, action, signal, ssrAware } from '@orch/model'
+import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
 import { autoInjectable } from 'tsyringe'
 
 import { RxAxios } from '../../utils'
@@ -27,7 +27,7 @@ export type DetailState = {
 }
 
 @autoInjectable()
-export class DetailModel extends Model<DetailState> {
+export class DetailModel extends OrchModel<DetailState> {
   defaultState: DetailState = { detailId: null, status: DetailStatus.idle, data: null }
 
   cancelFetchData = signal()

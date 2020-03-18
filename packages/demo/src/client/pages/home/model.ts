@@ -1,5 +1,5 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
-import { Model, effect, reducer, action, signal, ssrAware } from '@orch/model'
+import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
 import { autoInjectable } from 'tsyringe'
 
 import { RxAxios } from '../../utils'
@@ -17,7 +17,7 @@ export type HomeState = {
 }
 
 @autoInjectable()
-export class HomeModel extends Model<HomeState> {
+export class HomeModel extends OrchModel<HomeState> {
   defaultState: HomeState = { status: HomeStatus.idle, list: [] }
 
   cancelFetchData = signal()
