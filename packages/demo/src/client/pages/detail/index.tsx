@@ -37,8 +37,5 @@ function DetailComponent() {
 export const Detail = withContextModelProvider(DetailComponent, DetailModel, () => {
   const { detailId } = useParams<Record<keyof PathParams['detail'], string>>()
 
-  return {
-    caseId: detailId,
-    defaultState: (defaultState) => ({ ...defaultState, detailId }),
-  }
+  return { caseId: detailId }
 })
