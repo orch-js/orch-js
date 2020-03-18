@@ -11,8 +11,10 @@ import { StoreProvider } from '@orch/react'
 import { App } from '../client/app'
 
 const port = 9002
+const packageRoot = path.join(__dirname, '../../')
+const indexHtmlFile = path.resolve(packageRoot, './dist/webpack/index.html')
+
 const app = express()
-const indexHtmlFile = path.resolve(__dirname, '../../webpack/index.html')
 
 app.get('/*', async (req, res) => {
   const context: StaticRouterContext = {}

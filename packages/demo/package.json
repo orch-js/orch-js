@@ -9,12 +9,12 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "prebuild": "yarn run clean",
-    "build": "run-p build:client build:server",
+    "build": "yarn run build:client",
     "build:client": "NODE_ENV=production webpack",
-    "build:server": "tsc -p tsconfig.build.json",
     "start:dev": "NODE_ENV=development webpack-dev-server",
-    "start:static-server": "yarn run build:server && node dist/src/static-server/index.js",
-    "start:ssr-server": "yarn run build:server && node dist/src/ssr-server/index.js",
+    "start:static-server": "yarn run:ts-node ./src/static-server",
+    "start:ssr-server": "yarn run:ts-node ./src/ssr-server",
+    "run:ts-node": "ts-node --compiler ttypescript --project ./tsconfig.build.json",
     "gen:router": "typed-path-generator ./src/client/routers/routers.yaml",
     "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
@@ -34,6 +34,7 @@
     "tsyringe": "^4.1.0"
   },
   "devDependencies": {
+    "@orch/ts-plugin": "^0.0.0",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.2",
     "@types/react": "^16.9.19",

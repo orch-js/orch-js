@@ -1,5 +1,8 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { createTransformer } = require('@orch/ts-plugin')
+
+const orchTransformer = createTransformer()
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -27,6 +30,7 @@ module.exports = {
               context: __dirname,
               configFile: 'tsconfig.build.json',
               projectReferences: true,
+              getCustomTransformers: () => ({ before: [orchTransformer] }),
             },
           },
         ],

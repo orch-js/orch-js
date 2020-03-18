@@ -5,11 +5,13 @@ import * as cors from 'cors'
 const port = 9001
 const app = express()
 
+const packageRoot = path.join(__dirname, '../../')
+
 app.use(cors())
 
-app.use('/resource', express.static(path.join(__dirname, '../../../resource')))
+app.use('/resource', express.static(path.join(packageRoot, './resource')))
 
-app.use('/build', express.static(path.join(__dirname, '../../webpack')))
+app.use('/build', express.static(path.join(packageRoot, './dist/webpack')))
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
