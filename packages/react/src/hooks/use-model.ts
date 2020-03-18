@@ -1,12 +1,15 @@
 import * as React from 'react'
-import { MarkRequired } from 'ts-essentials'
+import { MarkRequired, StrictOmit } from 'ts-essentials'
 
 import { OrchModel, ModelState, ModelActions } from '@orch/model'
 
 import { useRegisterModel, UseRegisterModelConfig } from './use-register-model'
 import { useOrchState } from './use-orch-state'
 
-type UseModelConfig<M extends OrchModel<any>, S> = UseRegisterModelConfig<M> & {
+type UseModelConfig<M extends OrchModel<any>, S> = StrictOmit<
+  UseRegisterModelConfig<M>,
+  'caseId'
+> & {
   selector?: (state: ModelState<M>) => S
   selectorDeps?: React.DependencyList
 }
@@ -18,7 +21,7 @@ export function useModel<M extends OrchModel<any>, S>(
 
 export function useModel<M extends OrchModel<any>>(
   ModelClass: new (...params: any) => M,
-  config?: UseRegisterModelConfig<M>,
+  config?: UseModelConfig<M, unknown>,
 ): [ModelState<M>, ModelActions<M>]
 
 export function useModel(
