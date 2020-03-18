@@ -3,31 +3,31 @@ import { useFetchEffect, useContextModel, withContextModelProvider } from '@orch
 import { useParams } from 'react-router'
 
 import { PathParams } from '../../routers'
-import { DetailModel, DetailStatus } from './model'
+import { DetailModel } from './model'
 
 function DetailComponent() {
-  const [state, actions] = useContextModel(DetailModel, {
-    selector: (state) => ({ hasData: state.data !== null, ...state }),
+  const [{ needFetchData, detail }, actions] = useContextModel(DetailModel, {
+    selector: (state) => ({ needFetchData: state.detail.status !== 'success', ...state }),
   })
 
   useFetchEffect(() => {
-    if (!state.hasData) {
+    if (needFetchData) {
       actions.fetchData()
     }
 
     return () => actions.cancelFetchData()
-  }, [actions])
+  }, [needFetchData, actions])
 
   return (
     <div>
-      {state.status === DetailStatus.loading && <h1>Loading...</h1>}
+      {detail.status === 'loading' && <h1>Loading...</h1>}
 
-      {state.status === DetailStatus.failed && <button onClick={actions.fetchData}>Retry!</button>}
+      {detail.status === 'failed' && <button onClick={actions.fetchData}>Retry!</button>}
 
-      {state.status === DetailStatus.idle && (
+      {detail.status === 'success' && (
         <div>
-          <h1>{state.data?.title}</h1>
-          <p>{state.data?.details}</p>
+          <h1>{detail.title}</h1>
+          <p>{detail.details}</p>
         </div>
       )}
     </div>

@@ -1,26 +1,27 @@
 import { autoInjectable } from 'tsyringe'
 import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
-import { startWith, switchMap, catchError, endWith, map, takeUntil } from 'rxjs/operators'
+import { startWith, switchMap, catchError, map, takeUntil } from 'rxjs/operators'
 
 import { RxAxios } from '../../utils'
 import { DetailData } from './types'
 
-export enum DetailStatus {
-  loading = 'loading',
-  failed = 'failed',
-  idle = 'idle',
-}
-
 export type DetailState = {
-  status: DetailStatus
-  data: DetailData | null
+  detail:
+    | {
+        status: 'loading'
+      }
+    | {
+        status: 'failed'
+      }
+    | (DetailData & {
+        status: 'success'
+      })
 }
 
 @autoInjectable()
 export class DetailModel extends OrchModel<DetailState> {
   defaultState: DetailState = {
-    status: DetailStatus.idle,
-    data: null,
+    detail: { status: 'loading' },
   }
 
   constructor(private readonly rxAxios: RxAxios) {
@@ -37,21 +38,16 @@ export class DetailModel extends OrchModel<DetailState> {
         ssrAware(
           this.rxAxios.get<DetailData>(`/resource/${detailId}.json`).pipe(
             takeUntil(this.cancelFetchData.signal$(meta)),
-            map((data) => action(this.updateData, data)),
-            endWith(action(this.updateStatus, DetailStatus.idle)),
-            startWith(action(this.updateStatus, DetailStatus.loading)),
-            catchError(() => [action(this.updateStatus, DetailStatus.failed)]),
+            map((data) => action(this.updateDetail, { status: 'success', ...data })),
+            startWith(action(this.updateDetail, { status: 'loading' })),
+            catchError(() => [action(this.updateDetail, { status: 'failed' })]),
           ),
         ),
       ),
     )
   })
 
-  private updateStatus = reducer<DetailState, DetailStatus>((state, status) => {
-    state.status = status
-  })
-
-  private updateData = reducer<DetailState, DetailData>((state, data) => {
-    state.data = data
+  private updateDetail = reducer<DetailState, DetailState['detail']>((state, detail) => {
+    state.detail = detail
   })
 }
