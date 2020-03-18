@@ -3,17 +3,14 @@ import { switchMapTo, filter, map, tap } from 'rxjs/operators'
 
 import { Performer, PerformerFactoryMeta } from '@orch/store'
 
-export class SignalPerformer<P> extends Performer<P, any> {
-  private signalSource = new Subject<{ meta: PerformerFactoryMeta; payload: P }>()
+type SignalWrapper<P, R> = (payload$: Observable<P>) => Observable<R>
 
-  signal$(meta: PerformerFactoryMeta): Observable<P> {
-    return this.signalSource.pipe(
-      filter((signal) => Performer.isIdenticalMeta(signal.meta, meta)),
-      map(({ payload }) => payload),
-    )
-  }
+type SignalOriginPayload<P> = { meta: PerformerFactoryMeta; payload: P }
 
-  constructor() {
+export class SignalPerformer<P, R = P> extends Performer<P, unknown> {
+  private readonly signalSource = new Subject<SignalOriginPayload<P>>()
+
+  constructor(private readonly signalWrapper: SignalWrapper<P, R>) {
     super((payload$, _, meta) =>
       payload$.pipe(
         map((payload) => ({ meta, payload })),
@@ -22,8 +19,19 @@ export class SignalPerformer<P> extends Performer<P, any> {
       ),
     )
   }
+
+  signal$(meta: PerformerFactoryMeta): Observable<R> {
+    return this.signalWrapper(
+      this.signalSource.pipe(
+        filter((signal) => Performer.isIdenticalMeta(signal.meta, meta)),
+        map(({ payload }) => payload),
+      ),
+    )
+  }
 }
 
-export function signal<P = void>() {
-  return new SignalPerformer<P>()
+const defaultWrapper: SignalWrapper<any, any> = (payload$) => payload$
+
+export function signal<P = void, R = P>(signalWrapper: SignalWrapper<P, R> = defaultWrapper) {
+  return new SignalPerformer<P, R>(signalWrapper)
 }
