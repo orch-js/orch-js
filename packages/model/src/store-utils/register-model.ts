@@ -19,7 +19,7 @@ export function registerModel<M extends OrchModel<any>>({
   caseId,
   defaultState,
 }: RegisterModelConfig<M>): ModelToOrch<M> {
-  const namespace = getModelNamespace(model)
+  const namespace = getModelNamespace(model, store.ssrWaitingGroup.enabled)
 
   return store.registerOrch({
     namespace,

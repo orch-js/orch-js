@@ -15,7 +15,7 @@ export function getRegisteredOrch<M extends OrchModel<any>>({
   model,
   caseId,
 }: GetRegisteredOrchConfig<M>): ModelToOrch<M> | null {
-  const namespace = getModelNamespace(model)
+  const namespace = getModelNamespace(model, store.ssrWaitingGroup.enabled)
 
   return store.getRegisteredOrch({ namespace, caseId }) ?? null
 }

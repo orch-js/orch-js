@@ -15,10 +15,16 @@ const uuid = (() => {
   }
 })()
 
-export function getModelNamespace(model: OrchModel<any>): string {
+export function getModelNamespace(model: OrchModel<any>, isSsrEnabled: boolean): string {
   const ModelClass = model.constructor as typeof OrchModel
 
   if (!ModelClass.namespace) {
+    if (isSsrEnabled) {
+      console.error(
+        'Namespace is required for SSR. Consider using @orch/ts-plugin to automatic generate.',
+      )
+    }
+
     ModelClass.namespace = uuid(ModelClass.name)
   }
 
