@@ -5,21 +5,21 @@ import { Performer, performerAction, PerformerAction, PerformerFactoryMeta } fro
 import { nonNullable, addCaseIdIfIsCurrentModelAction } from './effect.utils'
 import { ssrAware, isSsrAction, handleSsrAction, SsrActionType } from './effect.ssr'
 
-export type EffectFunc<P, S> = (
-  payload$: Observable<P>,
-  state$: Observable<S>,
-  meta: Required<PerformerFactoryMeta>,
-) => Observable<PerformerAction | null | SsrActionType>
+export type EffectFunc<S, P> = (params: {
+  payload$: Observable<P>
+  state$: Observable<S>
+  meta: Required<PerformerFactoryMeta>
+}) => Observable<PerformerAction | null | SsrActionType>
 
 export { ssrAware, performerAction as action }
 
 export const EMPTY_ACTION = null
 
-export function effect<P, S = void>(effect: EffectFunc<P, S>) {
+export function effect<S, P = void>(effect: EffectFunc<S, P>) {
   return new Performer<P, S>((payload$, orchState, meta) => {
     const { store, namespace, caseId } = meta
 
-    return effect(payload$, orchState.state$, meta).pipe(
+    return effect({ payload$, state$: orchState.state$, meta }).pipe(
       filter(nonNullable),
       groupBy(isSsrAction),
       mergeMap(

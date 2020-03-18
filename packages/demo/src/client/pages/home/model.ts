@@ -18,23 +18,18 @@ export type HomeState = {
 
 @autoInjectable()
 export class HomeModel extends OrchModel<HomeState> {
-  defaultState: HomeState = { status: HomeStatus.idle, list: [] }
-
-  cancelFetchData = signal()
+  defaultState: HomeState = {
+    status: HomeStatus.idle,
+    list: [],
+  }
 
   constructor(private readonly rxAxios: RxAxios) {
     super()
   }
 
-  private updateStatus = reducer<HomeState, HomeStatus>((state, status) => {
-    state.status = status
-  })
+  cancelFetchData = signal()
 
-  private updateListData = reducer<HomeState, ListValue[]>((state, list) => {
-    state.list = list
-  })
-
-  fetchData = effect((payload$, _, meta) =>
+  fetchData = effect<HomeState, void>(({ payload$, meta }) =>
     payload$.pipe(
       switchMap(() =>
         ssrAware(
@@ -48,4 +43,12 @@ export class HomeModel extends OrchModel<HomeState> {
       ),
     ),
   )
+
+  private updateStatus = reducer<HomeState, HomeStatus>((state, status) => {
+    state.status = status
+  })
+
+  private updateListData = reducer<HomeState, ListValue[]>((state, list) => {
+    state.list = list
+  })
 }

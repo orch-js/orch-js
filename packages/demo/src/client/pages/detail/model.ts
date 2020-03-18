@@ -1,3 +1,5 @@
+import { autoInjectable } from 'tsyringe'
+import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
 import {
   startWith,
   switchMap,
@@ -8,8 +10,6 @@ import {
   filter,
   takeUntil,
 } from 'rxjs/operators'
-import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
-import { autoInjectable } from 'tsyringe'
 
 import { RxAxios } from '../../utils'
 import { DetailData } from './types'
@@ -28,23 +28,19 @@ export type DetailState = {
 
 @autoInjectable()
 export class DetailModel extends OrchModel<DetailState> {
-  defaultState: DetailState = { detailId: null, status: DetailStatus.idle, data: null }
-
-  cancelFetchData = signal()
+  defaultState: DetailState = {
+    detailId: null,
+    status: DetailStatus.idle,
+    data: null,
+  }
 
   constructor(private readonly rxAxios: RxAxios) {
     super()
   }
 
-  private updateStatus = reducer<DetailState, DetailStatus>((state, status) => {
-    state.status = status
-  })
+  cancelFetchData = signal()
 
-  private updateData = reducer<DetailState, DetailData>((state, data) => {
-    state.data = data
-  })
-
-  fetchData = effect<void, DetailState>((payload$, state$, meta) =>
+  fetchData = effect<DetailState, void>(({ payload$, state$, meta }) =>
     payload$.pipe(
       withLatestFrom(state$),
       map(([, { detailId }]) => detailId),
@@ -62,4 +58,12 @@ export class DetailModel extends OrchModel<DetailState> {
       ),
     ),
   )
+
+  private updateStatus = reducer<DetailState, DetailStatus>((state, status) => {
+    state.status = status
+  })
+
+  private updateData = reducer<DetailState, DetailData>((state, data) => {
+    state.data = data
+  })
 }
