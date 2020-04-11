@@ -1,19 +1,26 @@
 import * as path from 'path'
 import * as ts from 'typescript'
 
+import { Options } from './options'
 import { hash } from './hash'
 
 export function isOrchModelClassDeclaration(node: ts.Node): node is ts.ClassDeclaration {
   return ts.isClassDeclaration(node) && isClassExtendsFromOrchModel(node)
 }
 
-export function addNamespaceForOrchModel(
-  node: ts.ClassDeclaration,
-  sourceRoot: string | undefined,
-  position: number,
-): ts.ClassDeclaration {
+export function addNamespaceForOrchModel({
+  node,
+  sourceRoot,
+  position,
+  options,
+}: {
+  node: ts.ClassDeclaration
+  sourceRoot: string | undefined
+  position: number
+  options: Options
+}): ts.ClassDeclaration {
   const namespace = getOrchModelNameSpace(node, sourceRoot, position)
-  return setOrchModelNamespace(node, `om-${namespace}`)
+  return setOrchModelNamespace(node, `${options.prefix}-${namespace}`)
 }
 
 function isIdentifierNode(node: ts.Node): node is ts.Identifier {
