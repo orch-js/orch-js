@@ -3,14 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "next build",
     "clean": "rm -rf ./.next",
     "dev": "next dev",
-    "build": "next build",
     "start": "next start"
   },
   "dependencies": {
     "@orch/model": "^0.0.0",
     "@orch/react": "^0.0.0",
+    "axios": "^0.19.2",
     "next": "^9.4.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

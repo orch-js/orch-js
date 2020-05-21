@@ -10,9 +10,9 @@
     "clean": "rm -rf ./dist",
     "lint:tsc": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^13.9.1",
     "ts-essentials": "^6.0.1"
-  },
-  "dependencies": {}
+  }
 }
