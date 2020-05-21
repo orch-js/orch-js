@@ -1,8 +1,7 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
-import { autoInjectable } from 'tsyringe'
 
-import { RxAxios } from '../../utils'
+import { rxAxios } from '../../utils'
 import { ListValue } from './types'
 
 export enum HomeStatus {
@@ -16,15 +15,10 @@ export type HomeState = {
   list: ListValue[]
 }
 
-@autoInjectable()
 export class HomeModel extends OrchModel<HomeState> {
   defaultState: HomeState = {
     status: HomeStatus.idle,
     list: [],
-  }
-
-  constructor(private readonly rxAxios: RxAxios) {
-    super()
   }
 
   cancelFetchData = signal()
@@ -33,7 +27,7 @@ export class HomeModel extends OrchModel<HomeState> {
     payload$.pipe(
       switchMap(() =>
         ssrAware(
-          this.rxAxios.get<ListValue[]>('/resource/list.json').pipe(
+          rxAxios.get<ListValue[]>('/resource/list.json').pipe(
             takeUntil(this.cancelFetchData.signal$(meta)),
             map((data) => action(this.updateListData, data)),
             endWith(action(this.updateStatus, HomeStatus.idle)),
