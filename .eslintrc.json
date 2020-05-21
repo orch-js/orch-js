@@ -31,6 +31,12 @@
     "@typescript-eslint/no-var-requires": "off",
     "no-console": ["error", { "allow": ["warn", "error"] }]
   },
+  "overrides": [
+    {
+      "files": ["packages/demo/**/*{.js,.jsx,.ts,.tsx}"],
+      "rules": { "react/react-in-jsx-scope": "off" }
+    }
+  ],
   "reportUnusedDisableDirectives": true,
   "settings": {
     "react": {

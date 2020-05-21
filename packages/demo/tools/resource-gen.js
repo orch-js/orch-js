@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const randomWords = require('random-words')
 
-const resourcePath = path.resolve(__dirname, '../resource')
+const resourcePath = path.resolve(__dirname, '../public/resource')
 
 const writeFilePromise = (filePath, data) =>
   new Promise((resolve) => fs.writeFile(filePath, data, resolve))

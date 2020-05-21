@@ -1,8 +1,7 @@
-import * as React from 'react'
-import { useFetchEffect, useContextModel, withContextModelProvider } from '@orch/react'
-import { useParams } from 'react-router'
+import { useEffect } from 'react'
+import { useContextModel, withContextModelProvider } from '@orch/react'
+import { useRouter } from 'next/router'
 
-import { PathParams } from '../../routers'
 import { DetailModel } from './model'
 
 function DetailComponent() {
@@ -10,7 +9,7 @@ function DetailComponent() {
     selector: (state) => ({ needFetchData: state.detail.status !== 'success', ...state }),
   })
 
-  useFetchEffect(() => {
+  useEffect(() => {
     if (needFetchData) {
       actions.fetchData()
     }
@@ -35,7 +34,10 @@ function DetailComponent() {
 }
 
 export const Detail = withContextModelProvider(DetailComponent, DetailModel, () => {
-  const { detailId } = useParams<Record<keyof PathParams['detail'], string>>()
+  const router = useRouter()
+  const caseId = Array.isArray(router.query.detailId)
+    ? router.query.detailId[0]
+    : router.query.detailId
 
-  return { caseId: detailId }
+  return { caseId }
 })

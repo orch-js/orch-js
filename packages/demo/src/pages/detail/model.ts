@@ -1,7 +1,8 @@
 import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
 import { startWith, switchMap, catchError, map, takeUntil } from 'rxjs/operators'
 
-import { rxAxios } from '../../utils'
+import { rxAxios } from '@orch/demo/utils'
+
 import { DetailData } from './types'
 
 export type DetailState = {

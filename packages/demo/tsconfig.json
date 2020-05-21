@@ -1,12 +1,20 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  },
   "references": [
     { "path": "../ts-plugin/tsconfig.build.json" },
     { "path": "../model/tsconfig.build.json" },
     { "path": "../react/tsconfig.build.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
+  },
+  "exclude": ["node_modules"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

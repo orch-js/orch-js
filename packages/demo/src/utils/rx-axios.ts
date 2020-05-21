@@ -34,7 +34,7 @@ function request<T>(url: string, options: AxiosRequestConfig): Observable<T> {
 
 function requestFactory(method: RequestMethods) {
   return <T>(path: string, options: AxiosRequestConfig = {}): Observable<T> => {
-    return request<T>(path, { ...options, method, baseURL: 'http://127.0.0.1:9001/' })
+    return request<T>(path, { ...options, method })
   }
 }
 
