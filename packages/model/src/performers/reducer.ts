@@ -1,21 +1,22 @@
 import produce, { Draft } from 'immer'
-import { NEVER } from 'rxjs'
-import { map, tap, withLatestFrom, switchMapTo } from 'rxjs/operators'
+import { map, tap } from 'rxjs/operators'
 
-import { Performer } from '@orch/store'
+import { Performer, performer } from './performer'
 
-export type ReducerFunc<S, P> = (state: Draft<S>, payload: P) => S | void
+export type ReducerFactoryParam<P, S> = { state: Draft<S>; payload: P }
 
-export function reducer<S, P = void>(reducerFunc: ReducerFunc<S, P>) {
-  return new Performer<P, S>(({ payload$, orchState }) =>
+export type ReducerFactory<P, S> = (param: ReducerFactoryParam<P, S>) => S | void
+
+export function reducer<P = void, S = unknown>(factory: ReducerFactory<P, S>): Performer<P, S> {
+  return performer(({ payload$, orchState }) =>
     payload$.pipe(
-      withLatestFrom(orchState.state$),
-      map(([payload, currentState]) => {
+      map((payload) => {
         // `produce` support return `Promise` and `nothing`, but `reducer` don't.
-        return produce(currentState, (state) => reducerFunc(state, payload)) as S
+        return produce(orchState.getState(), (state) => factory({ state, payload })) as S
       }),
-      tap((newState) => orchState.setState(newState)),
-      switchMapTo(NEVER),
+      tap((newState) => {
+        orchState.setState(newState)
+      }),
     ),
   )
 }

@@ -1,40 +1,24 @@
 import { Observable } from 'rxjs'
-import { filter, groupBy, mergeMap } from 'rxjs/operators'
-import { Performer, performerAction, PerformerAction, PerformerFactoryMeta } from '@orch/store'
+import { tap } from 'rxjs/operators'
 
-import { nonNullable, addCaseIdIfIsCurrentModelAction } from './effect.utils'
-import { ssrAware, isSsrAction, handleSsrAction, SsrActionType } from './effect.ssr'
+import { Performer, performer } from './performer'
 
-export type EffectFunc<S, P> = (params: {
-  payload$: Observable<P>
-  state$: Observable<S>
-  meta: Required<PerformerFactoryMeta>
-}) => Observable<PerformerAction | null | SsrActionType>
+export type EffectAction = null | (() => void)
 
-export { ssrAware, performerAction as action }
+export type EffectFactoryParam<P, S> = { payload$: Observable<P>; state$: Observable<S> }
 
-export const EMPTY_ACTION = null
+export type EffectFactory<P, S> = (param: EffectFactoryParam<P, S>) => Observable<EffectAction>
 
-export function effect<S, P = void>(effect: EffectFunc<S, P>) {
-  return new Performer<P, S>(({ payload$, orchState, meta }) => {
-    const { store, namespace, caseId } = meta
+export function action<P extends any[]>(func: (...params: P) => void, ...params: P): EffectAction {
+  return () => func(...params)
+}
 
-    return effect({ payload$, state$: orchState.state$, meta }).pipe(
-      filter(nonNullable),
-      groupBy(isSsrAction),
-      mergeMap(
-        (actions$): Observable<PerformerAction> => {
-          const isSsrAction = actions$.key
-
-          if (isSsrAction) {
-            return (actions$ as Observable<SsrActionType>).pipe(handleSsrAction(store))
-          } else {
-            return (actions$ as Observable<PerformerAction>).pipe(
-              addCaseIdIfIsCurrentModelAction({ namespace, caseId }),
-            )
-          }
-        },
-      ),
-    )
-  })
+export function effect<P = void, S = unknown>(factory: EffectFactory<P, S>): Performer<P, S> {
+  return performer(({ payload$, orchState }) =>
+    factory({ payload$, state$: orchState.state$ }).pipe(
+      tap((effectAction) => {
+        effectAction?.()
+      }),
+    ),
+  )
 }

@@ -3,19 +3,16 @@ import { StrictOmit } from 'ts-essentials'
 
 import { OrchModel } from '@orch/model'
 
-import { useRegisterModel, UseRegisterModelConfig } from '../hooks'
 import { ContextModelProvider, ContextModelProviderProps } from './context-model-provider'
 
 export function useContextModelProvider<M extends OrchModel<any>>(
   ModelClass: new (...params: any) => M,
-  config: UseRegisterModelConfig<M>,
+  modelInstance: M,
 ) {
-  const orch = useRegisterModel(ModelClass, config)
-
   return React.useCallback(
-    (props: StrictOmit<ContextModelProviderProps, 'orch' | 'ModelClass'>) => (
-      <ContextModelProvider {...props} orch={orch} ModelClass={ModelClass} />
+    (props: StrictOmit<ContextModelProviderProps, 'modelInstance' | 'ModelClass'>) => (
+      <ContextModelProvider {...props} modelInstance={modelInstance} ModelClass={ModelClass} />
     ),
-    [orch, ModelClass],
+    [modelInstance, ModelClass],
   )
 }

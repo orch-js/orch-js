@@ -1,5 +1,5 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
-import { OrchModel, effect, reducer, action, signal, ssrAware } from '@orch/model'
+import { OrchModel, effect, reducer, action, signal } from '@orch/model'
 
 import { rxAxios } from '@orch/demo/utils'
 
@@ -17,33 +17,33 @@ export type HomeState = {
 }
 
 export class HomeModel extends OrchModel<HomeState> {
-  defaultState: HomeState = {
-    status: HomeStatus.idle,
-    list: [],
+  constructor() {
+    super({
+      status: HomeStatus.idle,
+      list: [],
+    })
   }
 
   cancelFetchData = signal()
 
-  fetchData = effect<HomeState, void>(({ payload$, meta }) =>
+  fetchData = effect<void, HomeState>(({ payload$ }) =>
     payload$.pipe(
       switchMap(() =>
-        ssrAware(
-          rxAxios.get<ListValue[]>('/resource/list.json').pipe(
-            takeUntil(this.cancelFetchData.signal$(meta)),
-            map((data) => action(this.updateListData, data)),
-            endWith(action(this.updateStatus, HomeStatus.idle)),
-            startWith(action(this.updateStatus, HomeStatus.loading)),
-          ),
+        rxAxios.get<ListValue[]>('/resource/list.json').pipe(
+          takeUntil(this.cancelFetchData.signal$),
+          map((data) => action(this.updateListData, data)),
+          endWith(action(this.updateStatus, HomeStatus.idle)),
+          startWith(action(this.updateStatus, HomeStatus.loading)),
         ),
       ),
     ),
   )
 
-  private updateStatus = reducer<HomeState, HomeStatus>((state, status) => {
-    state.status = status
+  private updateStatus = reducer<HomeStatus, HomeState>(({ state, payload }) => {
+    state.status = payload
   })
 
-  private updateListData = reducer<HomeState, ListValue[]>((state, list) => {
-    state.list = list
+  private updateListData = reducer<ListValue[], HomeState>(({ state, payload }) => {
+    state.list = payload
   })
 }

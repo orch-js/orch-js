@@ -1,21 +1,22 @@
-import { useEffect } from 'react'
+import React from 'react'
 import Link from 'next/link'
-import { useModel } from '@orch/react'
+import { useOrchState } from '@orch/react'
 
 import { HomeModel, HomeStatus } from './model'
 
 export function Home() {
-  const [state, actions] = useModel(HomeModel, {
-    selector: (state) => ({ hasData: state.list.length > 0, ...state }),
-  })
+  const [destroyModel, model] = React.useMemo(() => HomeModel.create(), [])
+  const state = useOrchState(model.state, (state) => ({ hasData: state.list.length > 0, ...state }))
 
-  useEffect(() => {
+  React.useEffect(() => destroyModel, [destroyModel])
+
+  React.useEffect(() => {
     if (!state.hasData) {
-      actions.fetchData()
+      model.fetchData()
     }
 
-    return () => actions.cancelFetchData()
-  }, [actions])
+    return () => model.cancelFetchData()
+  }, [model])
 
   return (
     <div>
@@ -23,7 +24,7 @@ export function Home() {
 
       {state.status === HomeStatus.loading && <p>Loading...</p>}
 
-      {state.status === HomeStatus.failed && <button onClick={actions.fetchData}>Retry!</button>}
+      {state.status === HomeStatus.failed && <button onClick={model.fetchData}>Retry!</button>}
 
       {state.status === HomeStatus.idle && (
         <ul>

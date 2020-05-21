@@ -1,37 +1,25 @@
-import { NEVER, Observable, Subject } from 'rxjs'
-import { switchMapTo, filter, map, tap } from 'rxjs/operators'
+import { Observable, Subject } from 'rxjs'
+import { tap } from 'rxjs/operators'
 
-import { Performer, PerformerFactoryMeta } from '@orch/store'
+import { performer, Performer } from './performer'
 
-type SignalWrapper<P, R> = (payload$: Observable<P>) => Observable<R>
+export type SignalFactory<P, R> = (payload$: Observable<P>) => Observable<R>
 
-type SignalOriginPayload<P> = { meta: PerformerFactoryMeta; payload: P }
+export type SignalPerformer<P, R> = Performer<P, unknown> & { signal$: Observable<R> }
 
-export class SignalPerformer<P, R = P> extends Performer<P, unknown> {
-  private readonly signalSource = new Subject<SignalOriginPayload<P>>()
+export function signal<P>(): SignalPerformer<P, P>
 
-  constructor(private readonly signalWrapper: SignalWrapper<P, R>) {
-    super(({ payload$, meta }) =>
-      payload$.pipe(
-        map((payload) => ({ meta, payload })),
-        tap(this.signalSource),
-        switchMapTo(NEVER),
-      ),
-    )
-  }
+export function signal<P, R>(
+  factory: SignalFactory<P, R>,
+  signalSource?: Subject<P>,
+): SignalPerformer<P, R>
 
-  signal$(meta: PerformerFactoryMeta): Observable<R> {
-    return this.signalWrapper(
-      this.signalSource.pipe(
-        filter((signal) => Performer.isIdenticalMeta(signal.meta, meta)),
-        map(({ payload }) => payload),
-      ),
-    )
-  }
-}
-
-const defaultWrapper: SignalWrapper<any, any> = (payload$) => payload$
-
-export function signal<P = void, R = P>(signalWrapper: SignalWrapper<P, R> = defaultWrapper) {
-  return new SignalPerformer<P, R>(signalWrapper)
+export function signal(
+  factory: SignalFactory<any, any> = (payload$) => payload$,
+  signalSource: Subject<any> = new Subject(),
+): SignalPerformer<any, any> {
+  return Object.assign(
+    performer(({ payload$ }) => factory(payload$).pipe(tap(signalSource))),
+    { signal$: signalSource.asObservable() },
+  )
 }

@@ -1,27 +1,29 @@
-import { useEffect } from 'react'
-import { useContextModel, withContextModelProvider } from '@orch/react'
+import React, { useEffect } from 'react'
+import { useContextModel, withContextModelProvider, useOrchState } from '@orch/react'
 import { useRouter } from 'next/router'
 
 import { DetailModel } from './model'
 
 function DetailComponent() {
-  const [{ needFetchData, detail }, actions] = useContextModel(DetailModel, {
-    selector: (state) => ({ needFetchData: state.detail.status !== 'success', ...state }),
-  })
+  const model = useContextModel(DetailModel)
+  const { needFetchData, detail } = useOrchState(model.state, (state) => ({
+    needFetchData: state.detail.status !== 'success',
+    ...state,
+  }))
 
   useEffect(() => {
     if (needFetchData) {
-      actions.fetchData()
+      model.fetchData()
     }
 
-    return () => actions.cancelFetchData()
-  }, [needFetchData, actions])
+    return () => model.cancelFetchData()
+  }, [needFetchData, model])
 
   return (
     <div>
       {detail.status === 'loading' && <h1>Loading...</h1>}
 
-      {detail.status === 'failed' && <button onClick={actions.fetchData}>Retry!</button>}
+      {detail.status === 'failed' && <button onClick={model.fetchData}>Retry!</button>}
 
       {detail.status === 'success' && (
         <div>
@@ -35,9 +37,13 @@ function DetailComponent() {
 
 export const Detail = withContextModelProvider(DetailComponent, DetailModel, () => {
   const router = useRouter()
-  const caseId = Array.isArray(router.query.detailId)
+  const detailId = Array.isArray(router.query.detailId)
     ? router.query.detailId[0]
     : router.query.detailId
 
-  return { caseId }
+  const [destroyModel, model] = React.useMemo(() => DetailModel.create(detailId!), [detailId])
+
+  React.useEffect(() => destroyModel, [destroyModel])
+
+  return model
 })

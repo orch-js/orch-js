@@ -1,32 +1,18 @@
 import * as React from 'react'
-import { MarkRequired } from 'ts-essentials'
 
-import { OrchModel, ModelState, ModelActions } from '@orch/model'
+import { OrchModel } from '@orch/model'
 
-import { useOrchState } from '../hooks'
-import { useContextModelValue } from './use-context-model-value'
+import { ModelContext } from './model-context'
 
-type UseContextModelConfig<M extends OrchModel<any>, S> = {
-  selector?: (state: ModelState<M>) => S
-  selectorDeps?: React.DependencyList
-}
-
-export function useContextModel<M extends OrchModel<any>, S>(
+export function useContextModel<M extends OrchModel<any>>(
   ModelClass: new (...params: any) => M,
-  config: MarkRequired<UseContextModelConfig<M, S>, 'selector'>,
-): [S, ModelActions<M>]
+): M {
+  const context = React.useContext(ModelContext)
+  const model = React.useMemo(() => context.get(ModelClass) as M, [context])
 
-export function useContextModel<M extends OrchModel<any>, S>(
-  ModelClass: new (...params: any) => M,
-  config?: UseContextModelConfig<M, S>,
-): [ModelState<M>, ModelActions<M>]
-
-export function useContextModel(
-  ModelClass: new (...params: any) => OrchModel<any>,
-  { selector, selectorDeps }: UseContextModelConfig<OrchModel<any>, any> = {},
-) {
-  const orch = useContextModelValue(ModelClass)
-  const state = useOrchState(orch, selector, selectorDeps)
-
-  return [state, orch.actions]
+  if (model) {
+    return model
+  } else {
+    throw new Error(`There is no instance for ${ModelClass}`)
+  }
 }
