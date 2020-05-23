@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
-import { useContextModel, withContextModelProvider, useOrchState } from '@orch/react'
+import { useContextModel, withContextModelProvider, useModelState } from '@orch/react'
 import { useRouter } from 'next/router'
 
 import { DetailModel } from './model'
 
 function DetailComponent() {
   const model = useContextModel(DetailModel)
-  const { needFetchData, detail } = useOrchState(model.state, (state) => ({
+  const { needFetchData, detail } = useModelState(model, (state) => ({
     needFetchData: state.detail.status !== 'success',
     ...state,
   }))

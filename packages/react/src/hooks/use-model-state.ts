@@ -2,34 +2,34 @@ import * as React from 'react'
 import * as shallowequal from 'shallowequal'
 import { skip, map, distinctUntilChanged } from 'rxjs/operators'
 
-import { OrchState } from '@orch/model'
+import { OrchModel } from '@orch/model'
 
 const defaultSelector = <S>(state: S): S => state
 
-export function useOrchState<S>(orchState: OrchState<S>): S
-export function useOrchState<S, R>(
-  orchState: OrchState<S>,
+export function useModelState<S>(model: OrchModel<S>): S
+export function useModelState<S, R>(
+  model: OrchModel<S>,
   inlineSelector: (state: S) => R,
   inlineSelectorDeps?: React.DependencyList,
 ): R
-export function useOrchState<S, R>(
-  orchState: OrchState<S>,
+export function useModelState<S, R>(
+  model: OrchModel<S>,
   inlineSelector?: (state: S) => R,
   inlineSelectorDeps?: React.DependencyList,
 ): R
-export function useOrchState(
-  orchState: OrchState<any>,
+export function useModelState(
+  model: OrchModel<any>,
   inlineSelector: (state: any) => any = defaultSelector,
   inlineSelectorDeps: React.DependencyList = [],
 ): any {
   const selector = React.useCallback(inlineSelector, inlineSelectorDeps)
-  const [state, updateState] = React.useState(() => selector(orchState.getState()))
+  const [state, updateState] = React.useState(() => selector(model.state.getState()))
   const isFirstRender = useIsFirstRender()
 
   const subscription = React.useMemo(() => {
     // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
     // To implement getDerivedStateFromProps, we need to subscribe state$ immediately.
-    return orchState.state$
+    return model.state.state$
       .pipe(
         map(selector),
         distinctUntilChanged(shallowequal),
@@ -39,7 +39,7 @@ export function useOrchState(
         skip(isFirstRender ? 1 : 0),
       )
       .subscribe(updateState)
-  }, [orchState, selector, updateState])
+  }, [model, selector, updateState])
 
   React.useEffect(() => () => subscription.unsubscribe(), [subscription])
 
