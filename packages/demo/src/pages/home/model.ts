@@ -17,13 +17,6 @@ export type HomeState = {
 }
 
 export class HomeModel extends OrchModel<HomeState> {
-  constructor() {
-    super({
-      status: HomeStatus.idle,
-      list: [],
-    })
-  }
-
   cancelFetchData = signal()
 
   fetchData = effect<void, HomeState>(({ payload$ }) =>
