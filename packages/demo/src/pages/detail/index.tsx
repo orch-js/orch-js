@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react'
-import { useContextModel, withContextModelProvider, useModelState } from '@orch/react'
 import { useRouter } from 'next/router'
+
+import {
+  useContextModel,
+  withContextModelProvider,
+  useModelState,
+  useLocalModel,
+} from '@orch/react'
 
 import { DetailModel } from './model'
 
@@ -41,9 +47,5 @@ export const Detail = withContextModelProvider(DetailComponent, DetailModel, () 
     ? router.query.detailId[0]
     : router.query.detailId
 
-  const [destroyModel, model] = React.useMemo(() => DetailModel.create(detailId!), [detailId])
-
-  React.useEffect(() => destroyModel, [destroyModel])
-
-  return model
+  return useLocalModel(DetailModel, detailId!)
 })

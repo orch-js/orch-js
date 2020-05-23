@@ -1,14 +1,12 @@
 import React from 'react'
 import Link from 'next/link'
-import { useModelState } from '@orch/react'
+import { useModelState, useLocalModel } from '@orch/react'
 
 import { HomeModel, HomeStatus } from './model'
 
 export function Home() {
-  const [destroyModel, model] = React.useMemo(() => HomeModel.create(), [])
+  const model = useLocalModel(HomeModel)
   const state = useModelState(model, (state) => ({ hasData: state.list.length > 0, ...state }))
-
-  React.useEffect(() => destroyModel, [destroyModel])
 
   React.useEffect(() => {
     if (!state.hasData) {
