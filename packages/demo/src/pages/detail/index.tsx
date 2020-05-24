@@ -47,5 +47,5 @@ export const Detail = withContextModelProvider(DetailComponent, DetailModel, () 
     ? router.query.detailId[0]
     : router.query.detailId
 
-  return useLocalModel(DetailModel, detailId!)
+  return useLocalModel(DetailModel, [detailId!])
 })

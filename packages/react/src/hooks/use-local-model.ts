@@ -1,13 +1,21 @@
 import { useMemo, useEffect } from 'react'
-import { initModel, OrchModelConstructor, InitiatedOrchModel, OrchModelParams } from '@orch/model'
+import {
+  setupModel,
+  disposeModel,
+  OrchModelConstructor,
+  InitiatedOrchModel,
+  OrchModelParams,
+} from '@orch/model'
 
 export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   Model: T,
-  ...params: OrchModelParams<T>
+  params: OrchModelParams<T>,
 ): InitiatedOrchModel<T> {
-  const [destroyModel, model] = useMemo(() => initModel(Model, ...params), [Model, ...params])
+  const model = useMemo(() => {
+    return setupModel(new Model(...params))
+  }, [Model, ...params])
 
-  useEffect(() => destroyModel, [destroyModel])
+  useEffect(() => () => disposeModel(model), [model])
 
   return model
 }

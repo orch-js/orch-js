@@ -4,10 +4,7 @@ import { catchError } from 'rxjs/operators'
 import { PayloadFunc } from '@orch/utility-types'
 
 import { OrchState } from '../orch-state'
-
-const SetupSymbol: unique symbol = Symbol.for('orch:setup-performer')
-
-const DisposeSymbol: unique symbol = Symbol.for('orch:dispose-performer')
+import { SetupSymbol, DisposeSymbol } from '../const'
 
 export type Performer<P, S> = PayloadFunc<P, void> & {
   [SetupSymbol]: (displayName: string, orchState: OrchState<S>) => void

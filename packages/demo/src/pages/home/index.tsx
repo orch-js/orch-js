@@ -11,7 +11,7 @@ export { HomeStatus }
 export type HomeProps = { defaultStatus: HomeState }
 
 export function Home({ defaultStatus }: HomeProps) {
-  const model = useLocalModel(HomeModel, defaultStatus)
+  const model = useLocalModel(HomeModel, [defaultStatus])
   const state = useModelState(model, (state) => ({ hasData: state.list.length > 0, ...state }))
 
   React.useEffect(() => {
