@@ -48,6 +48,7 @@ export class OrchModel<S> {
 
     this._models?.forEach(disposeModel)
     this._performers?.forEach(({ performer }) => disposePerformer(performer))
+    this.state.dispose()
 
     this._models = null
     this._performers = null

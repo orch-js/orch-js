@@ -3,15 +3,30 @@ import { BehaviorSubject, Observable } from 'rxjs'
 export class OrchState<S> {
   readonly state$: Observable<S>
 
-  readonly getState: () => S
+  private readonly stateSource: BehaviorSubject<S>
 
-  readonly setState: (newState: S) => void
+  get isDisposed() {
+    return this.stateSource.isStopped
+  }
 
   constructor(defaultState: S) {
-    const stateSource = new BehaviorSubject<S>(defaultState)
+    this.stateSource = new BehaviorSubject<S>(defaultState)
+    this.state$ = this.stateSource.asObservable()
+  }
 
-    this.state$ = stateSource.asObservable()
-    this.getState = () => stateSource.value
-    this.setState = (newState) => stateSource.next(newState)
+  getState() {
+    return this.stateSource.value
+  }
+
+  setState(newState: S) {
+    if (this.isDisposed) {
+      return
+    }
+
+    this.stateSource.next(newState)
+  }
+
+  dispose() {
+    this.stateSource.complete()
   }
 }
