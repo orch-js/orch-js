@@ -1,21 +1,23 @@
 import produce, { Draft } from 'immer'
 import { map, tap } from 'rxjs/operators'
 
+import { OrchState } from '../orch-state'
 import { Performer, performer } from './performer'
 
-export type ReducerFactoryParam<P, S> = { state: Draft<S>; payload: P }
+export type ReducerFactory<P, S> = (state: Draft<S>, payload: P) => S | void
 
-export type ReducerFactory<P, S> = (param: ReducerFactoryParam<P, S>) => S | void
-
-export function reducer<P = void, S = unknown>(factory: ReducerFactory<P, S>): Performer<P, S> {
-  return performer(({ payload$, orchState }) =>
+export function reducer<P = void, S = unknown>(
+  model: { state: OrchState<S> },
+  factory: ReducerFactory<P, S>,
+): Performer<P> {
+  return performer((payload$) =>
     payload$.pipe(
       map((payload) => {
         // `produce` support return `Promise` and `nothing`, but `reducer` don't.
-        return produce(orchState.getState(), (state) => factory({ state, payload })) as S
+        return produce(model.state.getState(), (state) => factory(state, payload)) as S
       }),
       tap((newState) => {
-        orchState.setState(newState)
+        model.state.setState(newState)
       }),
     ),
   )

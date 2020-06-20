@@ -27,7 +27,7 @@ export class DetailModel extends OrchModel<DetailState> {
 
   cancelFetchData = signal()
 
-  fetchData = effect<void, DetailState>(({ payload$ }) => {
+  fetchData = effect<void>((payload$) => {
     return payload$.pipe(
       switchMap(() =>
         rxAxios.get<DetailData>(`/resource/${this.detailId}.json`).pipe(
@@ -40,7 +40,7 @@ export class DetailModel extends OrchModel<DetailState> {
     )
   })
 
-  private updateDetail = reducer<DetailState['detail'], DetailState>(({ state, payload }) => {
-    state.detail = payload
+  private updateDetail = reducer(this, (state, detail: DetailState['detail']) => {
+    state.detail = detail
   })
 }

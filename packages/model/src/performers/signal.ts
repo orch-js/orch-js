@@ -5,7 +5,7 @@ import { performer, Performer } from './performer'
 
 export type SignalFactory<P, R> = (payload$: Observable<P>) => Observable<R>
 
-export type SignalPerformer<P, R> = Performer<P, unknown> & { signal$: Observable<R> }
+export type SignalPerformer<P, R> = Performer<P> & { signal$: Observable<R> }
 
 export function signal<P>(): SignalPerformer<P, P>
 
@@ -19,7 +19,7 @@ export function signal(
   signalSource: Subject<any> = new Subject(),
 ): SignalPerformer<any, any> {
   return Object.assign(
-    performer(({ payload$ }) => factory(payload$).pipe(tap(signalSource))),
+    performer((payload$) => factory(payload$).pipe(tap(signalSource))),
     { signal$: signalSource.asObservable() },
   )
 }

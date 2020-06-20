@@ -19,7 +19,7 @@ export type HomeState = {
 export class HomeModel extends OrchModel<HomeState> {
   cancelFetchData = signal()
 
-  fetchData = effect<void, HomeState>(({ payload$ }) =>
+  fetchData = effect<void>((payload$) =>
     payload$.pipe(
       switchMap(() =>
         rxAxios.get<ListValue[]>('/resource/list.json').pipe(
@@ -32,11 +32,11 @@ export class HomeModel extends OrchModel<HomeState> {
     ),
   )
 
-  private updateStatus = reducer<HomeStatus, HomeState>(({ state, payload }) => {
-    state.status = payload
+  private updateStatus = reducer(this, (state, status: HomeStatus) => {
+    state.status = status
   })
 
-  private updateListData = reducer<ListValue[], HomeState>(({ state, payload }) => {
-    state.list = payload
+  private updateListData = reducer(this, (state, list: ListValue[]) => {
+    state.list = list
   })
 }
