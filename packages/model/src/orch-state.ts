@@ -1,4 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs'
+import produce from 'immer'
+
+const immutableState = <T>(state: T): T => produce(state, () => {})
 
 export class OrchState<S> {
   readonly state$: Observable<S>
@@ -10,7 +13,7 @@ export class OrchState<S> {
   }
 
   constructor(defaultState: S) {
-    this.stateSource = new BehaviorSubject<S>(defaultState)
+    this.stateSource = new BehaviorSubject<S>(immutableState(defaultState))
     this.state$ = this.stateSource.asObservable()
   }
 
@@ -23,7 +26,7 @@ export class OrchState<S> {
       return
     }
 
-    this.stateSource.next(newState)
+    this.stateSource.next(immutableState(newState))
   }
 
   dispose() {
