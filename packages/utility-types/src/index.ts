@@ -18,3 +18,7 @@ export type PayloadFunc<Payload, ReturnType> = IsEmptyPayload<Payload> extends t
   : (payload: Payload) => ReturnType
 
 export type OmitNeverProperties<T> = OmitProperties<T, never>
+
+export type ConstructorType<M, P extends any[] = any[]> = {
+  new (...params: P): M
+}
