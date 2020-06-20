@@ -7,7 +7,8 @@
   },
   "references": [
     { "path": "../store/tsconfig.build.json" },
-    { "path": "../model/tsconfig.build.json" }
+    { "path": "../model/tsconfig.build.json" },
+    { "path": "../utility-types/tsconfig.build.json" }
   ],
   "include": ["src/**/*"]
 }

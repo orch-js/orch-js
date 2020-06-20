@@ -1,26 +1,29 @@
 import * as React from 'react'
 import produce from 'immer'
 
-import { OrchModel } from '@orch/model'
-
-import { ModelContext, ModelContextValue, ModelConstructor } from './model-context'
+import {
+  OrchModelContext,
+  OrchModelContextValue,
+  ModelContextEntriesValue,
+} from './orch-model-context'
 
 export type ContextModelProviderProps = {
-  ModelClass: ModelConstructor<OrchModel<any>>
-  modelInstance: OrchModel<any>
+  value: ModelContextEntriesValue
   children: React.ReactNode
 }
 
-type Props = ContextModelProviderProps
+export function ContextModelProvider({ value, children }: ContextModelProviderProps) {
+  const context = React.useContext(OrchModelContext)
 
-export function ContextModelProvider({ ModelClass, modelInstance, children }: Props) {
-  const context = React.useContext(ModelContext)
+  const providerValue = React.useMemo(
+    () =>
+      produce(context, (ctx: OrchModelContextValue) => {
+        value.forEach(([ModelClass, modelInstance]) => {
+          ctx.set(ModelClass, modelInstance)
+        })
+      }),
+    [context, value],
+  )
 
-  const value = React.useMemo(() => {
-    return produce(context, (ctx: ModelContextValue) => {
-      ctx.set(ModelClass, modelInstance)
-    })
-  }, [context, ModelClass, modelInstance])
-
-  return <ModelContext.Provider value={value}>{children}</ModelContext.Provider>
+  return <OrchModelContext.Provider value={providerValue}>{children}</OrchModelContext.Provider>
 }

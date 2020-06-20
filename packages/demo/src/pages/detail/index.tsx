@@ -41,11 +41,12 @@ function DetailComponent() {
   )
 }
 
-export const Detail = withContextModelProvider(DetailComponent, DetailModel, () => {
+export const Detail = withContextModelProvider(DetailComponent, () => {
   const router = useRouter()
   const detailId = Array.isArray(router.query.detailId)
     ? router.query.detailId[0]
     : router.query.detailId
+  const model = useLocalModel(DetailModel, [detailId!])
 
-  return useLocalModel(DetailModel, [detailId!])
+  return [[DetailModel, model]]
 })

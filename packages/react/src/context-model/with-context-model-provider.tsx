@@ -1,27 +1,19 @@
 import * as React from 'react'
 
-import { OrchModel } from '@orch/model'
+import { ModelContextEntriesValue } from './orch-model-context'
+import { ContextModelProvider } from './context-model-provider'
 
-import { useContextModelProvider } from './use-context-model-provider'
-import { ModelConstructor } from './model-context'
-
-export function withContextModelProvider<P, M extends OrchModel<any>>(
+export function withContextModelProvider<P>(
   Component: React.ComponentType<P>,
-  ModelClass: ModelConstructor<M>,
-  useGetModel: (props: P) => M,
+  useGetModelContextValue: (props: P) => ModelContextEntriesValue,
 ): React.ComponentType<P> {
-  function WrappedComponent(props: P) {
-    const model = useGetModel(props)
-    const ContextModelProvider = useContextModelProvider(ModelClass, model)
+  return (props) => {
+    const value = useGetModelContextValue(props)
 
     return (
-      <ContextModelProvider>
+      <ContextModelProvider value={value}>
         <Component {...props} />
       </ContextModelProvider>
     )
   }
-
-  WrappedComponent.displayName = Component.displayName
-
-  return WrappedComponent
 }
