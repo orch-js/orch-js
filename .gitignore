@@ -25,3 +25,4 @@ composer.lock
 node_modules
 dist
 *.log
+/coverage
