@@ -26,6 +26,14 @@ describe(`performers:performer`, () => {
     expect(spy.mock.calls).toEqual([[44]])
   })
 
+  it(`should throw error if performer is disposed`, () => {
+    const _performer = performer<number>((payload$) => payload$)
+
+    disposePerformer(_performer)
+
+    expect(() => _performer(44)).toThrow()
+  })
+
   it(`should not emit payload if performer is disposed`, () => {
     const spy = jest.fn()
 
@@ -33,8 +41,7 @@ describe(`performers:performer`, () => {
 
     disposePerformer(_performer)
 
-    _performer(44)
-
+    expect(() => _performer(44)).toThrow()
     expect(spy.mock.calls).toEqual([])
   })
 

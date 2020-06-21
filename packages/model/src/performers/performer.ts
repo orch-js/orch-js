@@ -16,7 +16,11 @@ export function performer<P>(factory: PerformerFactory<P>): Performer<P> {
 
   return Object.assign(
     function trigger(payload: P) {
-      payloadSource.next(payload)
+      if (payloadSource.isStopped) {
+        throw new Error('current performer is disposed')
+      } else {
+        payloadSource.next(payload)
+      }
     } as PayloadFunc<P, void>,
 
     {

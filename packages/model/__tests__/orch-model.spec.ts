@@ -74,8 +74,7 @@ describe(`OrchModel`, () => {
 
       disposeModel(model, null)
 
-      model.setCount(20)
-
+      expect(() => model.setCount(20)).toThrow()
       expect(model.state.getState()).toEqual({ count: 0 })
     })
 
@@ -84,8 +83,7 @@ describe(`OrchModel`, () => {
 
       disposeModel(nameModel, null)
 
-      nameModel.updateName('school')
-
+      expect(() => nameModel.updateName('school')).toThrow()
       expect(nameModel.state.getState()).toEqual({ name: 'home' })
       expect(nameModel.count.state.getState()).toEqual({ count: 4 })
     })
