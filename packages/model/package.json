@@ -1,6 +1,6 @@
 {
   "name": "@orch/model",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "license": "MIT",
   "author": "Runjuu",
@@ -19,7 +19,7 @@
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
-    "@orch/utility-types": "^0.0.1",
+    "@orch/utility-types": "^0.0.2",
     "conditional-type-checks": "^1.0.5"
   }
 }

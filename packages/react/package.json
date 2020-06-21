@@ -1,6 +1,6 @@
 {
   "name": "@orch/react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "license": "MIT",
   "author": "Runjuu",
@@ -14,8 +14,8 @@
     "lint:tsc": "tsc -p tsconfig.json --noEmit --composite false"
   },
   "dependencies": {
-    "@orch/model": "^0.0.1",
-    "@orch/utility-types": "^0.0.1",
+    "@orch/model": "^0.0.2",
+    "@orch/utility-types": "^0.0.2",
     "immer": "^5.3.4",
     "shallowequal": "^1.1.0"
   },
