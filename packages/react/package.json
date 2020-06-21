@@ -8,7 +8,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "lint:tsc": "tsc -p tsconfig.json --noEmit"
+    "lint:tsc": "tsc -p tsconfig.json --noEmit --composite false"
   },
   "dependencies": {
     "@orch/model": "^0.0.0",
