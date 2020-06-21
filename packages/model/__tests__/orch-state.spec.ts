@@ -52,8 +52,7 @@ describe(`OrchState`, () => {
     it(`should not able to update state after dispose`, () => {
       state.dispose()
 
-      state.setState({ count: 44 })
-
+      expect(() => state.setState({ count: 44 })).toThrow()
       expect(state.getState()).toEqual({ count: 0 })
     })
 
@@ -63,8 +62,8 @@ describe(`OrchState`, () => {
       state.state$.subscribe(spy)
 
       state.dispose()
-      state.setState({ count: 44 })
 
+      expect(() => state.setState({ count: 44 })).toThrow()
       expect(spy.mock.calls).toEqual([[{ count: 0 }]])
     })
   })

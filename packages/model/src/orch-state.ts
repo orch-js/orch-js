@@ -23,7 +23,7 @@ export class OrchState<S> {
 
   setState(newState: S) {
     if (this.isDisposed) {
-      return
+      throw new Error('current state is disposed')
     }
 
     this.stateSource.next(immutableState(newState))
