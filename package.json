@@ -15,6 +15,7 @@
     "lint:eslint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
     "lint:tsc": "lerna run lint:tsc --parallel",
     "prettier": "prettier 'packages/**/*.@(ts|tsx|html|json)' --write",
+    "publish": "lerna publish from-package",
     "test": "jest"
   },
   "husky": {
