@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
 
-import { OrchModel } from '@orch/model'
+import { disposeModel, OrchModel } from '@orch/model'
 
 import { useLocalModel } from '../src'
 
@@ -64,5 +64,14 @@ describe(`useLocalModel`, () => {
     rerender({ state: { count: 44 } })
 
     expect(prevModel.state.isDisposed).toBe(true)
+  })
+
+  it(`should prevent others to dispose model`, () => {
+    const { result } = renderHook(() => useLocalModel(CountModel, []))
+    const model = result.current
+
+    disposeModel(model, null)
+
+    expect(model.state.isDisposed).toBeFalsy()
   })
 })

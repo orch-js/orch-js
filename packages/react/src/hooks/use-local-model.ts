@@ -1,6 +1,7 @@
 import { useMemo, useEffect } from 'react'
 import {
   disposeModel,
+  preventOthersToDisposeModel,
   OrchModelConstructor,
   InitiatedOrchModel,
   OrchModelParams,
@@ -11,8 +12,9 @@ export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   params: OrchModelParams<T>,
 ): InitiatedOrchModel<T> {
   const model = useMemo(() => new Model(...params), [Model, ...params])
+  const lockId = useMemo(() => preventOthersToDisposeModel(model), [model])
 
-  useEffect(() => () => disposeModel(model), [model])
+  useEffect(() => () => disposeModel(model, lockId), [model, lockId])
 
   return model
 }
