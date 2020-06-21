@@ -1,4 +1,4 @@
-import { disposeModel, OrchModel, OrchState, reducer } from '../src'
+import { disposeModel, OrchModel, OrchState, preventOthersToDisposeModel, reducer } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {
   setCount = reducer(this, (state, payload: number) => {
@@ -56,7 +56,7 @@ describe(`OrchModel`, () => {
 
       const model = new ModelToDispose(1)
 
-      disposeModel(model)
+      disposeModel(model, null)
 
       expect(spy.mock.calls).toEqual([['beforeDispose']])
     })
@@ -64,7 +64,7 @@ describe(`OrchModel`, () => {
     it(`should dispose state`, () => {
       const model = new OrchModel({ count: 0 })
 
-      disposeModel(model)
+      disposeModel(model, null)
 
       expect(model.state.isDisposed).toBe(true)
     })
@@ -72,7 +72,7 @@ describe(`OrchModel`, () => {
     it(`should dispose all performers`, () => {
       const model = new CountModel({ count: 0 })
 
-      disposeModel(model)
+      disposeModel(model, null)
 
       model.setCount(20)
 
@@ -82,12 +82,93 @@ describe(`OrchModel`, () => {
     it(`should dispose nested OrchModel`, () => {
       const nameModel = new NameModel('home')
 
-      disposeModel(nameModel)
+      disposeModel(nameModel, null)
 
       nameModel.updateName('school')
 
       expect(nameModel.state.getState()).toEqual({ name: 'home' })
       expect(nameModel.count.state.getState()).toEqual({ count: 4 })
+    })
+  })
+
+  describe(`preventOthersToDisposeModel`, () => {
+    it(`should return lockId if no provide`, () => {
+      const model = new OrchModel({ count: 0 })
+
+      const lockId = preventOthersToDisposeModel(model)
+
+      expect(lockId).toBeTruthy()
+    })
+
+    it(`should return same lockId if provided`, () => {
+      const model = new OrchModel({ count: 0 })
+
+      const lockId = preventOthersToDisposeModel(model, '123')
+
+      expect(lockId).toBe('123')
+    })
+
+    it(`should ignore dispose action if lockId is not identical`, () => {
+      const model = new OrchModel({ count: 0 })
+
+      preventOthersToDisposeModel(model)
+      disposeModel(model, null)
+
+      expect(model.state.isDisposed).toBe(false)
+    })
+
+    it(`should dispose model if lockId is identical`, () => {
+      const model = new OrchModel({ count: 0 })
+      const lockId = preventOthersToDisposeModel(model)
+
+      disposeModel(model, lockId)
+
+      expect(model.state.isDisposed).toBe(true)
+    })
+
+    it(`should also prevent nested model from dispose`, () => {
+      class CountModel extends OrchModel<{ count: number }> {
+        nestedModel = new OrchModel<number>(1)
+      }
+
+      const model = new CountModel({ count: 2 })
+
+      preventOthersToDisposeModel(model)
+
+      disposeModel(model.nestedModel, null)
+      expect(model.nestedModel.state.isDisposed).toBeFalsy()
+    })
+
+    it(`should ignore dispose action if nested model is prevented`, () => {
+      class CountModel extends OrchModel<{ count: number }> {
+        constructor(public readonly model: OrchModel<any>) {
+          super({ count: 0 })
+        }
+      }
+
+      const modelA = new OrchModel(1)
+      const modelB = new CountModel(modelA)
+
+      preventOthersToDisposeModel(modelA)
+      disposeModel(modelB, null)
+
+      expect(modelA.state.isDisposed).toBeFalsy()
+      expect(modelB.state.isDisposed).toBeTruthy()
+    })
+
+    it(`should ignore other 'preventOthersToDisposeModel' calling`, () => {
+      const model = new OrchModel({ count: 0 })
+
+      const a = preventOthersToDisposeModel(model)
+      const b = preventOthersToDisposeModel(model)
+
+      expect(b).toBe(null)
+
+      disposeModel(model, b)
+      expect(model.state.isDisposed).toBeFalsy()
+
+      disposeModel(model, a)
+      expect(model.state.isDisposed).toBeTruthy()
     })
   })
 })

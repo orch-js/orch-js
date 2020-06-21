@@ -1,5 +1,7 @@
+import { nanoid } from 'nanoid'
+
 import { OrchState } from './orch-state'
-import { DisposeSymbol } from './const'
+import { DisposeSymbol, DisposeLockSymbol } from './const'
 import { isPerformer, disposePerformer, Performer } from './performers/performer'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
@@ -9,6 +11,8 @@ export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
 export type OrchModelParams<T> = T extends OrchModelConstructor<infer P, any> ? P : never
 
 export type InitiatedOrchModel<T> = T extends OrchModelConstructor<any[], infer M> ? M : never
+
+export type OrchModelLockId = string | null
 
 type PerformerInfo = { performer: Performer<any>; name: string }
 
@@ -21,20 +25,43 @@ export class OrchModel<S> {
 
   protected beforeDispose() {}
 
-  [DisposeSymbol]() {
+  [DisposeSymbol](lockId: OrchModelLockId) {
+    if (lockId !== this[DisposeLockSymbol]) {
+      return
+    }
+
     this.beforeDispose()
     this.state.dispose()
 
     const { models, performers } = filterProperties(this)
 
-    models.forEach(disposeModel)
+    models.forEach((model) => disposeModel(model, this[DisposeLockSymbol]))
     performers.forEach(({ performer }) => disposePerformer(performer))
   }
+
+  [DisposeLockSymbol]: OrchModelLockId = null
 }
 
-export function disposeModel<T extends OrchModel<any>>(model: T): T {
-  model[DisposeSymbol]()
+export function disposeModel<T extends OrchModel<any>>(model: T, lockId: OrchModelLockId): T {
+  model[DisposeSymbol](lockId)
   return model
+}
+
+export function preventOthersToDisposeModel(
+  model: OrchModel<any>,
+  lockId?: OrchModelLockId,
+): OrchModelLockId {
+  if (model[DisposeLockSymbol]) {
+    return null
+  }
+
+  const _lockId = lockId ?? nanoid()
+  const { models } = filterProperties(model)
+
+  Object.defineProperty(model, DisposeLockSymbol, { value: _lockId })
+  models.forEach((model) => preventOthersToDisposeModel(model, _lockId))
+
+  return _lockId
 }
 
 function filterProperties(model: OrchModel<any>) {
