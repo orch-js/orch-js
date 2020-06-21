@@ -6,6 +6,9 @@
   "author": "Runjuu",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf ./dist",
     "lint:tsc": "tsc -p tsconfig.json --noEmit --composite false"
