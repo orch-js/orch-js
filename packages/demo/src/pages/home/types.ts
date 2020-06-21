@@ -1,4 +1,4 @@
 export type ListValue = {
-  id: string
+  id: number
   title: string
 }
