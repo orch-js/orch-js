@@ -25,5 +25,7 @@ export function ContextModelProvider({ value, children }: ContextModelProviderPr
     [context, value],
   )
 
-  return <ContextModelContext.Provider value={providerValue}>{children}</ContextModelContext.Provider>
+  return (
+    <ContextModelContext.Provider value={providerValue}>{children}</ContextModelContext.Provider>
+  )
 }
