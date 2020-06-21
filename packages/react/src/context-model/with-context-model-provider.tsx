@@ -1,11 +1,11 @@
 import * as React from 'react'
 
-import { ModelContextEntriesValue } from './orch-model-context'
+import { ContextModelContextEntriesValue } from './context-model-context'
 import { ContextModelProvider } from './context-model-provider'
 
 export function withContextModelProvider<P>(
   Component: React.ComponentType<P>,
-  useGetModelContextValue: (props: P) => ModelContextEntriesValue,
+  useGetModelContextValue: (props: P) => ContextModelContextEntriesValue,
 ): React.ComponentType<P> {
   return (props) => {
     const value = useGetModelContextValue(props)

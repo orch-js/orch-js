@@ -3,10 +3,10 @@ import * as React from 'react'
 import { OrchModel } from '@orch/model'
 import { ConstructorType } from '@orch/utility-types'
 
-import { OrchModelContext } from './orch-model-context'
+import { ContextModelContext } from './context-model-context'
 
 export function useContextModel<M extends OrchModel<any>>(ModelClass: ConstructorType<M>): M {
-  const context = React.useContext(OrchModelContext)
+  const context = React.useContext(ContextModelContext)
   const model = React.useMemo(() => context.get(ModelClass) as M, [context])
 
   if (model) {
