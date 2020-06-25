@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 
 import { ConstructorType } from '@orch/utility-types/src'
 import { OrchModel } from '@orch/model/orch-model'

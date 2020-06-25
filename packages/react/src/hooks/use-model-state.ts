@@ -1,5 +1,5 @@
-import * as React from 'react'
-import * as shallowequal from 'shallowequal'
+import React from 'react'
+import shallowequal from 'shallowequal'
 import { skip, map, distinctUntilChanged } from 'rxjs/operators'
 
 import { OrchModel } from '@orch/model'

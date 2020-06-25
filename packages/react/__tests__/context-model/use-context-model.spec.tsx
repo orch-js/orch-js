@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { create } from 'react-test-renderer'
-import * as React from 'react'
+import React from 'react'
 
 import { OrchModel } from '@orch/model'
 

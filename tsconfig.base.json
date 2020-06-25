@@ -7,6 +7,8 @@
       "@orch/react/*": ["packages/react/src/*"],
       "@orch/demo/*": ["packages/demo/src/*"]
     },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "composite": true,
     "declaration": true,
     "declarationMap": true,
@@ -21,8 +23,7 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "moduleResolution": "node",
-    "lib": ["dom", "es2015"],
     "jsx": "react",
-    "target": "es5"
+    "target": "ES2019"
   }
 }

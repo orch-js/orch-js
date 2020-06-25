@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 
 import { ContextModelContextEntriesValue } from './context-model-context'
 import { ContextModelProvider } from './context-model-provider'
