@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "references": [
-    { "path": "../model/tsconfig.build.json" },
-    { "path": "../react/tsconfig.build.json" }
+    { "path": "../model/tsconfig.cjs.json" },
+    { "path": "../react/tsconfig.cjs.json" }
   ],
   "compilerOptions": {
     "allowJs": true,
@@ -12,7 +12,8 @@
     "module": "esnext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.json"]
