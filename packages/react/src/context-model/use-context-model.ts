@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { OrchModel } from '@orch/model'
-import { ConstructorType } from '@orch/model/utility-types'
+import { OrchModel, ConstructorType } from '@orch/model'
 
 import { ContextModelContext } from './context-model-context'
 

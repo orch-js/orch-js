@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { ConstructorType } from '@orch/model/utility-types'
-import { OrchModel } from '@orch/model/orch-model'
+import { OrchModel, ConstructorType } from '@orch/model'
 
 export type ContextModelContextValue = Map<ConstructorType<OrchModel<any>>, OrchModel<any>>
 
