@@ -1,6 +1,7 @@
 import { map, debounceTime } from 'rxjs/operators'
 
 import { effect, action } from '../../src'
+import { ignoreConsole } from './utils'
 
 describe(`performers:effect`, () => {
   it(`should handle action properly`, () => {
@@ -36,5 +37,30 @@ describe(`performers:effect`, () => {
     _effect(3)
 
     expect(spy.mock.calls).toEqual([[1], [3]])
+  })
+
+  it(`should keep working after error`, () => {
+    const spy = jest.fn()
+
+    const restoreConsole = ignoreConsole()
+
+    const _effect = effect<number>((payload$) =>
+      payload$.pipe(
+        map((num) => {
+          if (num % 2 === 0) {
+            throw new Error()
+          } else {
+            return action(spy, num)
+          }
+        }),
+      ),
+    )
+
+    _effect(0)
+    _effect(1)
+
+    expect(spy.mock.calls).toEqual([[1]])
+
+    restoreConsole()
   })
 })

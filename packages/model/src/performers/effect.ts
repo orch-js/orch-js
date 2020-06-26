@@ -12,11 +12,13 @@ export function action<P extends any[]>(func: (...params: P) => void, ...params:
 }
 
 export function effect<P = void>(factory: EffectFactory<P>): Performer<P> {
-  return performer((payload$) =>
-    factory(payload$).pipe(
-      tap((effectAction) => {
-        effectAction?.()
-      }),
-    ),
+  return performer(
+    (payload$) =>
+      factory(payload$).pipe(
+        tap((effectAction) => {
+          effectAction?.()
+        }),
+      ),
+    { factoryToLog: factory },
   )
 }

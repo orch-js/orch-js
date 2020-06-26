@@ -1,4 +1,5 @@
 import { Observable, Subject } from 'rxjs'
+import { catchError } from 'rxjs/operators'
 
 import { PayloadFunc } from '../utility-types'
 import { DisposeSymbol } from '../const'
@@ -9,9 +10,15 @@ export type Performer<P> = PayloadFunc<P, void> & {
 
 export type PerformerFactory<P> = (payload$: Observable<P>) => Observable<any>
 
-export function performer<P>(factory: PerformerFactory<P>): Performer<P> {
+export type PerformerConfig = {
+  factoryToLog?: Function
+}
+
+export function performer<P>(factory: PerformerFactory<P>, config?: PerformerConfig): Performer<P> {
   const payloadSource = new Subject<P>()
-  const subscription = factory(payloadSource).subscribe()
+  const subscription = factory(payloadSource)
+    .pipe(logAngIgnoreError(config?.factoryToLog ?? factory))
+    .subscribe()
 
   return Object.assign(
     function trigger(payload: P) {
@@ -29,6 +36,18 @@ export function performer<P>(factory: PerformerFactory<P>): Performer<P> {
       },
     },
   )
+}
+
+function logAngIgnoreError(factory: Function) {
+  return catchError((err, caught) => {
+    /* eslint-disable no-console */
+    console.group('[Orch]: Performer error')
+    console.log(factory)
+    console.error(err)
+    console.groupEnd()
+    /* eslint-enable no-console */
+    return caught
+  })
 }
 
 export function isPerformer(obj: any): obj is Performer<any> {

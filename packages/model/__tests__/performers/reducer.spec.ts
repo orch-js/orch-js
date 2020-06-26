@@ -1,4 +1,5 @@
 import { OrchState, reducer } from '../../src'
+import { ignoreConsole } from './utils'
 
 describe(`performers:reducer`, () => {
   let countState: OrchState<{ count: number }>
@@ -23,5 +24,22 @@ describe(`performers:reducer`, () => {
     setCount(44)
 
     expect(countState.getState()).toEqual({ count: 44 })
+  })
+
+  it(`should keep working after error`, () => {
+    const restoreConsole = ignoreConsole()
+    const setCount = reducer({ state: countState }, (_, count: number) => {
+      if (count < 0) {
+        throw new Error()
+      }
+
+      return { count }
+    })
+
+    setCount(-1)
+    setCount(44)
+
+    expect(countState.getState()).toEqual({ count: 44 })
+    restoreConsole()
   })
 })

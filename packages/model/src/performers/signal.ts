@@ -13,7 +13,13 @@ export function signal(factory?: SignalFactory<any, any>): SignalPerformer<any, 
   const signalSource = new Subject()
 
   return Object.assign(
-    performer((payload$) => (factory ? factory(payload$) : payload$).pipe(tap(signalSource))),
+    performer(
+      (payload$) =>
+        (factory ? factory(payload$) : payload$).pipe(tap((value) => signalSource.next(value))),
+      {
+        factoryToLog: factory,
+      },
+    ),
     { signal$: signalSource.asObservable() },
   )
 }
