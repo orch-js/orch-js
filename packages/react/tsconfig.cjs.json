@@ -7,8 +7,7 @@
     "tsBuildInfoFile": "./dist/cjs/.tsbuildinfo"
   },
   "references": [
-    { "path": "../model/tsconfig.cjs.json"},
-    { "path": "../utility-types/tsconfig.cjs.json"}
+    { "path": "../model/tsconfig.cjs.json"}
   ],
   "include": ["src/**/*"]
 }

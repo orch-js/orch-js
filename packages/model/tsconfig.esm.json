@@ -6,6 +6,5 @@
     "module": "ES6",
     "tsBuildInfoFile": "./dist/esm/.tsbuildinfo"
   },
-  "references": [{ "path": "../utility-types/tsconfig.esm.json"}],
   "include": ["src/**/*"]
 }

@@ -7,8 +7,7 @@
     "tsBuildInfoFile": "./dist/esm/.tsbuildinfo"
   },
   "references": [
-    { "path": "../model/tsconfig.esm.json"},
-    { "path": "../utility-types/tsconfig.esm.json"}
+    { "path": "../model/tsconfig.esm.json"}
   ],
   "include": ["src/**/*"]
 }

@@ -21,7 +21,6 @@
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
-    "@orch/utility-types": "^0.0.3",
     "conditional-type-checks": "^1.0.5"
   }
 }

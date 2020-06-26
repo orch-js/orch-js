@@ -1,7 +1,6 @@
 import { Observable, Subject } from 'rxjs'
 
-import { PayloadFunc } from '@orch/utility-types'
-
+import { PayloadFunc } from '../utility-types'
 import { DisposeSymbol } from '../const'
 
 export type Performer<P> = PayloadFunc<P, void> & {
