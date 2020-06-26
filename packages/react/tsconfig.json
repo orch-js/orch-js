@@ -1,6 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
-  "references": [
-    { "path": "../model/tsconfig.json"}
-  ]
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist/cjs",
+    "module": "CommonJS",
+    "tsBuildInfoFile": "./dist/cjs/.tsbuildinfo"
+  },
+  "references": [{ "path": "../model/tsconfig.json" }],
+  "include": ["src/**/*"]
 }

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "clean": "rm -rf ./.next",
+    "clean": "rm -rf ./.next ./dist",
     "dev": "next dev",
     "start": "next start"
   },
