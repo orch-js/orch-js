@@ -1,6 +1,6 @@
 {
   "name": "@orch/demo",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -9,8 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "@orch/model": "^0.0.4",
-    "@orch/react": "^0.0.4",
+    "@orch/model": "^0.0.5",
+    "@orch/react": "^0.0.5",
     "axios": "^0.19.2",
     "next": "^9.4.1",
     "react": "^16.12.0",
