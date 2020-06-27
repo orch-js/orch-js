@@ -6,6 +6,7 @@
     "build": "next build",
     "clean": "rm -rf ./.next ./dist",
     "dev": "next dev",
+    "lint:tsc": "tsc -p tsconfig.json --noEmit --composite false",
     "start": "next start"
   },
   "dependencies": {

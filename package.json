@@ -8,10 +8,12 @@
   "scripts": {
     "build": "run-s clean build:lib build:lerna",
     "build:lerna": "lerna run build --parallel",
-    "build:lib": "tsc -b packages/*/tsconfig.json packages/*/tsconfig.esm.json",
+    "build:lib": "tsc -b packages/*/tsconfig.cjs.json packages/*/tsconfig.esm.json",
     "clean": "lerna run clean --parallel",
     "format:package": "yarn format-package '**/package.json' -w -c format-package.json",
-    "lint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
+    "lint": "run-s lint:eslint lint:tsc",
+    "lint:eslint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
+    "lint:tsc": "lerna run lint:tsc --parallel",
     "prettier": "prettier 'packages/**/*.@(ts|tsx|html|json)' --write",
     "publish": "lerna publish from-package",
     "test": "jest"
