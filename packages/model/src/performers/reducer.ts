@@ -2,6 +2,7 @@ import produce, { Draft } from 'immer'
 import { map, tap } from 'rxjs/operators'
 
 import { OrchState } from '../orch-state'
+import { SetStateSymbol } from '../const'
 import { Performer, performer } from './performer'
 
 export type ReducerFactory<P, S> = (state: Draft<S>, payload: P) => S | void
@@ -18,7 +19,7 @@ export function reducer<P = void, S = unknown>(
           return produce(model.state.getState(), (state) => factory(state, payload)) as S
         }),
         tap((newState) => {
-          model.state.setState(newState)
+          model.state[SetStateSymbol](newState)
         }),
       ),
     { factoryToLog: factory },

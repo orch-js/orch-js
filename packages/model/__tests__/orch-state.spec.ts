@@ -1,4 +1,5 @@
 import { OrchState } from '../src'
+import { SetStateSymbol } from '../src/const'
 
 describe(`OrchState`, () => {
   let state: OrchState<{ count: number }>
@@ -23,7 +24,7 @@ describe(`OrchState`, () => {
 
   describe(`setState`, () => {
     it(`should replace current state`, () => {
-      state.setState({ count: 50 })
+      state[SetStateSymbol]({ count: 50 })
       expect(state.getState()).toEqual({ count: 50 })
     })
   })
@@ -42,7 +43,7 @@ describe(`OrchState`, () => {
 
       state.state$.subscribe(spy)
 
-      state.setState({ count: 44 })
+      state[SetStateSymbol]({ count: 44 })
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 44 }]])
     })
@@ -52,7 +53,7 @@ describe(`OrchState`, () => {
     it(`should not able to update state after dispose`, () => {
       state.dispose()
 
-      expect(() => state.setState({ count: 44 })).toThrow()
+      expect(() => state[SetStateSymbol]({ count: 44 })).toThrow()
       expect(state.getState()).toEqual({ count: 0 })
     })
 
@@ -63,7 +64,7 @@ describe(`OrchState`, () => {
 
       state.dispose()
 
-      expect(() => state.setState({ count: 44 })).toThrow()
+      expect(() => state[SetStateSymbol]({ count: 44 })).toThrow()
       expect(spy.mock.calls).toEqual([[{ count: 0 }]])
     })
   })

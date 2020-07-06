@@ -1,6 +1,8 @@
 import { BehaviorSubject, Observable } from 'rxjs'
 import produce from 'immer'
 
+import { SetStateSymbol } from './const'
+
 const immutableState = <T>(state: T): T => produce(state, () => {})
 
 export class OrchState<S> {
@@ -21,7 +23,7 @@ export class OrchState<S> {
     return this.stateSource.value
   }
 
-  setState(newState: S) {
+  [SetStateSymbol](newState: S) {
     if (this.isDisposed) {
       throw new Error('current state is disposed')
     }
