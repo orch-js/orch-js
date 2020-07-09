@@ -31,6 +31,15 @@ describe(`OrchModel`, () => {
     expect(model.state).toEqual(new OrchState({ count: 10 }))
   })
 
+  it(`should be able to derive state`, () => {
+    const model = new OrchModel<{ count: number }, { doubleCount: number }>(
+      { count: 10 },
+      (state) => ({ ...state, doubleCount: state.count * 2 }),
+    )
+
+    expect(model.state.getState()).toEqual({ count: 10, doubleCount: 20 })
+  })
+
   it(`should be able to nest OrchModel`, () => {
     const nameModel = new NameModel('home')
 
