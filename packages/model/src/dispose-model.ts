@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid'
 import { disposePerformer, isPerformer, Performer } from './performers/performer'
 import { OrchModel } from './orch-model'
+import { OrchState } from './orch-state'
 
 export type OrchModelLockId = string | null
 
@@ -11,11 +12,11 @@ export function disposeModel<T extends OrchModel<any>>(model: T, lockId: OrchMod
 
   if (modelLockId === lockId) {
     model['beforeDispose']()
-    model.state.dispose()
 
-    const { models, performers } = filterProperties(model)
+    const { models, performers, states } = filterProperties(model)
 
     models.forEach((model) => disposeModel(model, modelLockId))
+    states.forEach((state) => state.dispose())
     performers.forEach((performer) => disposePerformer(performer))
   }
 }
@@ -40,6 +41,7 @@ export function preventOthersToDisposeModel(
 function filterProperties(model: OrchModel<any>) {
   const performers: Performer<any>[] = []
   const models: OrchModel<any>[] = []
+  const states: OrchState<any>[] = []
 
   Object.keys(model).forEach((key) => {
     const value = (model as any)[key]
@@ -48,8 +50,10 @@ function filterProperties(model: OrchModel<any>) {
       performers.push(value)
     } else if (value instanceof OrchModel) {
       models.push(value)
+    } else if (value instanceof OrchState) {
+      states.push(value)
     }
   })
 
-  return { performers, models }
+  return { performers, models, states }
 }

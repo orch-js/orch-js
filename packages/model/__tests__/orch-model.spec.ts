@@ -70,12 +70,17 @@ describe(`OrchModel`, () => {
       expect(spy.mock.calls).toEqual([['beforeDispose']])
     })
 
-    it(`should dispose state`, () => {
-      const model = new OrchModel({ count: 0 })
+    it(`should dispose all states`, () => {
+      class TestModel extends OrchModel<{ count: number }> {
+        anotherState = new OrchState({ name: 'a' })
+      }
+
+      const model = new TestModel({ count: 0 })
 
       disposeModel(model, null)
 
       expect(model.state.isDisposed).toBe(true)
+      expect(model.anotherState.isDisposed).toBe(true)
     })
 
     it(`should dispose all performers`, () => {
