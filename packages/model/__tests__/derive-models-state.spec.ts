@@ -29,7 +29,7 @@ describe(`derive-models-state`, () => {
     const spy = jest.fn()
 
     nameWithCountState.state$.subscribe(spy)
-    nameModel.state[SetStateSymbol]({ name: 'new-name' })
+    nameModel.orchState[SetStateSymbol]({ name: 'new-name' })
 
     expect(spy.mock.calls).toEqual([[{ nameWithCount: 'test1' }], [{ nameWithCount: 'new-name1' }]])
   })
@@ -42,7 +42,7 @@ describe(`derive-models-state`, () => {
 
     nameWithCountState.dispose()
 
-    nameModel.state[SetStateSymbol]({ name: 'a' })
+    nameModel.orchState[SetStateSymbol]({ name: 'a' })
 
     expect(nameWithCountState.getState()).toEqual({ nameWithCount: 'test1' })
   })

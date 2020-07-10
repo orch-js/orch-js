@@ -20,5 +20,5 @@ export function useModelState(
   inlineSelector?: (state: any) => any,
   inlineSelectorDeps: React.DependencyList = [],
 ): any {
-  return useOrchState(model.state, inlineSelector, inlineSelectorDeps)
+  return useOrchState(model.orchState, inlineSelector, inlineSelectorDeps)
 }
