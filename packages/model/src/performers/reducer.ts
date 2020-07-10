@@ -18,12 +18,12 @@ export function reducer<P = void, S = unknown, D = unknown>(
       payload$.pipe(
         map((payload) => {
           // `produce` support return `Promise` and `nothing`, but `reducer` don't.
-          return produce(model.orchState.getState(), (state) =>
+          return produce(model.state.getState(), (state) =>
             factory(state as ReducerState<S, D>, payload),
           ) as S
         }),
         tap((newState) => {
-          model.orchState[SetStateSymbol](newState)
+          model.state[SetStateSymbol](newState)
         }),
       ),
     { factoryToLog: factory },

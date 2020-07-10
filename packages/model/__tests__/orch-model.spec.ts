@@ -28,7 +28,7 @@ describe(`OrchModel`, () => {
   it(`should be able to custom default state`, () => {
     const model = new OrchModel({ count: 10 })
 
-    expect(model.orchState).toEqual(new OrchState({ count: 10 }))
+    expect(model.state).toEqual(new OrchState({ count: 10 }))
   })
 
   it(`should be able to derive state`, () => {
@@ -37,19 +37,19 @@ describe(`OrchModel`, () => {
       (state) => ({ ...state, doubleCount: state.count * 2 }),
     )
 
-    expect(model.orchState.getState()).toEqual({ count: 10, doubleCount: 20 })
+    expect(model.state.getState()).toEqual({ count: 10, doubleCount: 20 })
   })
 
   it(`should be able to nest OrchModel`, () => {
     const nameModel = new NameModel('home')
 
-    expect(nameModel.orchState.getState()).toEqual({ name: 'home' })
-    expect(nameModel.count.orchState.getState()).toEqual({ count: 4 })
+    expect(nameModel.state.getState()).toEqual({ name: 'home' })
+    expect(nameModel.count.state.getState()).toEqual({ count: 4 })
 
     nameModel.updateName('school')
 
-    expect(nameModel.orchState.getState()).toEqual({ name: 'school' })
-    expect(nameModel.count.orchState.getState()).toEqual({ count: 6 })
+    expect(nameModel.state.getState()).toEqual({ name: 'school' })
+    expect(nameModel.count.state.getState()).toEqual({ count: 6 })
   })
 
   describe(`dispose model`, () => {
@@ -79,7 +79,7 @@ describe(`OrchModel`, () => {
 
       disposeModel(model, null)
 
-      expect(model.orchState.isDisposed).toBe(true)
+      expect(model.state.isDisposed).toBe(true)
       expect(model.anotherState.isDisposed).toBe(true)
     })
 
@@ -89,7 +89,7 @@ describe(`OrchModel`, () => {
       disposeModel(model, null)
 
       expect(() => model.setCount(20)).toThrow()
-      expect(model.orchState.getState()).toEqual({ count: 0 })
+      expect(model.state.getState()).toEqual({ count: 0 })
     })
 
     it(`should dispose nested OrchModel`, () => {
@@ -98,8 +98,8 @@ describe(`OrchModel`, () => {
       disposeModel(nameModel, null)
 
       expect(() => nameModel.updateName('school')).toThrow()
-      expect(nameModel.orchState.getState()).toEqual({ name: 'home' })
-      expect(nameModel.count.orchState.getState()).toEqual({ count: 4 })
+      expect(nameModel.state.getState()).toEqual({ name: 'home' })
+      expect(nameModel.count.state.getState()).toEqual({ count: 4 })
     })
   })
 
@@ -126,7 +126,7 @@ describe(`OrchModel`, () => {
       preventOthersToDisposeModel(model)
       disposeModel(model, null)
 
-      expect(model.orchState.isDisposed).toBe(false)
+      expect(model.state.isDisposed).toBe(false)
     })
 
     it(`should dispose model if lockId is identical`, () => {
@@ -135,7 +135,7 @@ describe(`OrchModel`, () => {
 
       disposeModel(model, lockId)
 
-      expect(model.orchState.isDisposed).toBe(true)
+      expect(model.state.isDisposed).toBe(true)
     })
 
     it(`should also prevent nested model from dispose`, () => {
@@ -148,7 +148,7 @@ describe(`OrchModel`, () => {
       preventOthersToDisposeModel(model)
 
       disposeModel(model.nestedModel, null)
-      expect(model.nestedModel.orchState.isDisposed).toBeFalsy()
+      expect(model.nestedModel.state.isDisposed).toBeFalsy()
     })
 
     it(`should ignore dispose action if nested model is prevented`, () => {
@@ -164,8 +164,8 @@ describe(`OrchModel`, () => {
       preventOthersToDisposeModel(modelA)
       disposeModel(modelB, null)
 
-      expect(modelA.orchState.isDisposed).toBeFalsy()
-      expect(modelB.orchState.isDisposed).toBeTruthy()
+      expect(modelA.state.isDisposed).toBeFalsy()
+      expect(modelB.state.isDisposed).toBeTruthy()
     })
 
     it(`should ignore other 'preventOthersToDisposeModel' calling`, () => {
@@ -177,10 +177,10 @@ describe(`OrchModel`, () => {
       expect(b).toBe(null)
 
       disposeModel(model, b)
-      expect(model.orchState.isDisposed).toBeFalsy()
+      expect(model.state.isDisposed).toBeFalsy()
 
       disposeModel(model, a)
-      expect(model.orchState.isDisposed).toBeTruthy()
+      expect(model.state.isDisposed).toBeTruthy()
     })
   })
 })

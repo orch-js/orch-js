@@ -9,10 +9,10 @@ export type OrchModelParams<T> = T extends OrchModelConstructor<infer P, any> ? 
 export type InitiatedOrchModel<T> = T extends OrchModelConstructor<any[], infer M> ? M : never
 
 export class OrchModel<S, D = unknown> {
-  readonly orchState: OrchState<S, D>
+  readonly state: OrchState<S, D>
 
   constructor(defaultState: S, deriveState?: DeriveState<S, D>) {
-    this.orchState = new OrchState(defaultState, deriveState)
+    this.state = new OrchState(defaultState, deriveState)
   }
 
   protected beforeDispose() {}

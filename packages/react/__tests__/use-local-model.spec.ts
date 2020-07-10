@@ -39,18 +39,18 @@ describe(`useLocalModel`, () => {
     rerender({ state: { count: 44 } })
 
     expect(prevModel !== result.current).toBe(true)
-    expect(result.current.orchState.getState()).toEqual({ count: 44 })
+    expect(result.current.state.getState()).toEqual({ count: 44 })
   })
 
   it(`should dispose model if unmount`, () => {
     const { result, unmount } = renderHook(() => useLocalModel(CountModel, []))
     const model = result.current
 
-    expect(model.orchState.isDisposed).toBe(false)
+    expect(model.state.isDisposed).toBe(false)
 
     unmount()
 
-    expect(model.orchState.isDisposed).toBe(true)
+    expect(model.state.isDisposed).toBe(true)
   })
 
   it(`should dispose previous model if return new model`, () => {
@@ -63,7 +63,7 @@ describe(`useLocalModel`, () => {
 
     rerender({ state: { count: 44 } })
 
-    expect(prevModel.orchState.isDisposed).toBe(true)
+    expect(prevModel.state.isDisposed).toBe(true)
   })
 
   it(`should prevent others to dispose model`, () => {
@@ -72,6 +72,6 @@ describe(`useLocalModel`, () => {
 
     disposeModel(model, null)
 
-    expect(model.orchState.isDisposed).toBeFalsy()
+    expect(model.state.isDisposed).toBeFalsy()
   })
 })
