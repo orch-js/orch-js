@@ -1,6 +1,6 @@
 {
   "name": "@orch/react",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "license": "MIT",
   "author": "Runjuu",
@@ -15,7 +15,7 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "@orch/model": "^0.0.6",
+    "@orch/model": "^0.0.7",
     "immer": "^5.3.4",
     "shallowequal": "^1.1.0"
   },
