@@ -11,6 +11,10 @@ export type InitiatedOrchModel<T> = T extends OrchModelConstructor<any[], infer 
 export class OrchModel<S, D = unknown> {
   readonly state: OrchState<S, D>
 
+  get state$() {
+    return this.state.state$
+  }
+
   constructor(defaultState: S, deriveState?: DeriveState<S, D>) {
     this.state = new OrchState(defaultState, deriveState)
   }
