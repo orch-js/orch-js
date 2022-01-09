@@ -1,11 +1,6 @@
 import React from 'react'
-import produce from 'immer'
 
-import {
-  ContextModelContext,
-  ContextModelContextValue,
-  ContextModelContextEntriesValue,
-} from './context-model-context'
+import { ContextModelContext, ContextModelContextEntriesValue } from './context-model-context'
 
 export type ContextModelProviderProps = {
   value: ContextModelContextEntriesValue
@@ -16,12 +11,7 @@ export function ContextModelProvider({ value, children }: ContextModelProviderPr
   const context = React.useContext(ContextModelContext)
 
   const providerValue = React.useMemo(
-    () =>
-      produce(context, (ctx: ContextModelContextValue) => {
-        value.forEach(([ModelClass, modelInstance]) => {
-          ctx.set(ModelClass, modelInstance)
-        })
-      }),
+    () => new Map([...context.entries(), ...value]),
     [context, value],
   )
 
