@@ -14,14 +14,10 @@
     "lint": "run-s lint:eslint lint:tsc",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
     "lint:tsc": "lerna run lint:tsc --parallel",
+    "prepare": "husky install",
     "prettier": "prettier 'packages/**/*.@(ts|tsx|html|json)' --write",
     "publish": "lerna publish from-package",
     "test": "jest"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "**/package.json": [
@@ -35,25 +31,25 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^25.2.3",
-    "@types/react": "^16.9.35",
-    "@typescript-eslint/eslint-plugin": "^2.34.0",
-    "@typescript-eslint/parser": "^2.34.0",
-    "eslint": "^7.0.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-prettier": "^3.1.3",
-    "eslint-plugin-react": "^7.20.0",
-    "format-package": "^5.2.0",
-    "husky": "^4.2.5",
-    "jest": "^26.0.1",
-    "lerna": "^3.21.0",
-    "lint-staged": "^10.2.4",
+    "@types/jest": "^27.4.0",
+    "@types/react": "^17.0.38",
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "format-package": "^6.1.0",
+    "husky": "^7.0.4",
+    "jest": "^27.4.7",
+    "lerna": "^4.0.0",
+    "lint-staged": "^12.1.7",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.5",
-    "ts-jest": "^26.0.0",
-    "ts-node": "^8.10.1",
-    "tslib": "^2.0.0",
-    "ttypescript": "^1.5.10",
-    "typescript": "^3.9.3"
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.2",
+    "ts-node": "^10.4.0",
+    "tslib": "^2.3.1",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.5.4"
   }
 }
