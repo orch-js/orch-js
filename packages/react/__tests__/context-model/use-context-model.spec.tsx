@@ -18,7 +18,7 @@ describe(`useContextModel`, () => {
   it(`should throw error if no model`, () => {
     const { result } = renderHook(() => useContextModel(CountModel))
 
-    expect(result.error.message).toBe(`There is no instance for ${CountModel}`)
+    expect(result.error?.message).toBe(`There is no instance for ${CountModel}`)
   })
 
   it(`should return model instance from context`, () => {
