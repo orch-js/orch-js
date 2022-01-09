@@ -10,39 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install
+        run: yarn install
 
       - name: Build packages
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: run build
+        run: yarn run build
 
       - name: Lint packages
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: run lint
+        run: yarn run lint
 
       - name: Test packages
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: run test
+        run: yarn run test
 
       - name: Publish packages
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: run publish --yes --no-verify-access --loglevel silly
-          auth-token: ${{ secrets.NPM_AUTH_TOKEN }}
-          registry-url: registry.npmjs.org
+        run: yarn run publish --yes --no-verify-access --loglevel silly
         env:
           CI: true
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
