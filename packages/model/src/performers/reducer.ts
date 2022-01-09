@@ -7,7 +7,10 @@ import { Performer, performer } from './performer'
 
 export type ReducerState<S, D = unknown> = Draft<S> & Readonly<D>
 
-export type ReducerFactory<P, S, D = unknown> = (state: ReducerState<S, D>, payload: P) => S | void
+export type ReducerFactory<P, S, D = unknown> = (
+  state: ReducerState<S, D>,
+  payload: P,
+) => Draft<S> | void
 
 export function reducer<P = void, S = unknown, D = unknown>(
   model: OrchModel<S, D>,
@@ -16,11 +19,10 @@ export function reducer<P = void, S = unknown, D = unknown>(
   return performer(
     (payload$) =>
       payload$.pipe(
-        map((payload) => {
-          // `produce` support return `Promise` and `nothing`, but `reducer` don't.
-          return produce(model.state.getState(), (state) =>
-            factory(state as ReducerState<S, D>, payload),
-          ) as S
+        map((payload): S => {
+          return produce<S, Draft<S>>(model.state.getState(), (state) => {
+            return factory(state as ReducerState<S, D>, payload)
+          })
         }),
         tap((newState) => {
           model.state[SetStateSymbol](newState)

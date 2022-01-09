@@ -11,7 +11,7 @@ export type Performer<P> = PayloadFunc<P, void> & {
 export type PerformerFactory<P> = (payload$: Observable<P>) => Observable<any>
 
 export type PerformerConfig = {
-  factoryToLog?: Function
+  factoryToLog?: unknown
 }
 
 export function performer<P>(factory: PerformerFactory<P>, config?: PerformerConfig): Performer<P> {
@@ -38,7 +38,7 @@ export function performer<P>(factory: PerformerFactory<P>, config?: PerformerCon
   )
 }
 
-function logAngIgnoreError(factory: Function) {
+function logAngIgnoreError(factory: unknown) {
   return catchError((err, caught) => {
     /* eslint-disable no-console */
     console.group('[Orch]: Performer error')
