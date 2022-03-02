@@ -15,14 +15,14 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "immer": "^9.0.7",
-    "nanoid": "^3.1.30"
+    "immer": "^9.0.12",
+    "nanoid": "^3.3.1"
   },
   "peerDependencies": {
     "rxjs": ">=6"
   },
   "devDependencies": {
     "conditional-type-checks": "^1.0.5",
-    "rxjs": "^7.5.1"
+    "rxjs": "^7.5.4"
   }
 }

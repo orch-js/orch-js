@@ -12,15 +12,15 @@
   "dependencies": {
     "@orch/model": "^0.0.8",
     "@orch/react": "^0.0.8",
-    "axios": "^0.24.0",
+    "axios": "^0.26.0",
     "lodash": "^4.17.21",
-    "next": "^12.0.7",
+    "next": "^12.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "rxjs": "^7.5.1"
+    "rxjs": "^7.5.4"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.0.7",
+    "@next/bundle-analyzer": "^12.1.0",
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^9.0.0"
   }

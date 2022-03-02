@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@orch/model": "^0.0.8",
-    "immer": "^9.0.7",
+    "immer": "^9.0.12",
     "shallowequal": "^1.1.0"
   },
   "peerDependencies": {
@@ -29,6 +29,6 @@
     "@types/shallowequal": "^1.1.1",
     "react": "^17.0.2",
     "react-test-renderer": "^17.0.2",
-    "rxjs": "^7.5.1"
+    "rxjs": "^7.5.4"
   }
 }
