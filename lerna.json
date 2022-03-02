@@ -6,7 +6,7 @@
       "allowBranch": [
         "master"
       ],
-      "message": "chore(release): publish %s"
+      "message": "release: %s"
     }
   },
   "useWorkspaces": true,
