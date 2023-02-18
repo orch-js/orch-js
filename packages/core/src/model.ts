@@ -1,7 +1,6 @@
 type Model<State, Actions, Views> = {
-  state: State
   actions: Actions
-  views: Views
+  getState: () => State & Views
   destroy: () => void
 }
 
@@ -11,24 +10,30 @@ type ActionFactory<NewActions, State, Actions, Views> = (
 
 type ViewsFactory<NewViews, State, Views> = (self: Model<State, unknown, Views>) => NewViews
 
-interface ModelBuilder<State, Actions = unknown, Views = unknown> {
+type CreateFn<HasDefaultState extends boolean, State, Actions, Views> = HasDefaultState extends true
+  ? (defaultState?: Partial<State>) => Model<State, Actions, Views>
+  : (defaultState: State) => Model<State, Actions, Views>
+
+interface ModelBuilder<HasDefaultState extends boolean, State, Actions = unknown, Views = unknown> {
   actions<NewActions>(
     factory: ActionFactory<NewActions, State, Actions, Views>,
-  ): ModelBuilder<State, Actions & NewActions, Views>
+  ): ModelBuilder<HasDefaultState, State, Actions & NewActions, Views>
 
   views<NewViews>(
     factory: ViewsFactory<NewViews, State, Views>,
-  ): ModelBuilder<State, Actions, Views & NewViews>
+  ): ModelBuilder<HasDefaultState, State, Actions, Views & NewViews>
 
-  create(state: State): Model<State, Actions, Views>
+  create: CreateFn<HasDefaultState, State, Actions, Views>
 }
 
-export function defineModel<S>(): ModelBuilder<S> {}
+export function defineModel<S>(defaultState: S): ModelBuilder<true, S>
+export function defineModel<S>(): ModelBuilder<false, S>
+export function defineModel<S>(_defaultState?: S): ModelBuilder<boolean, S> {}
 
-const CountModel = defineModel<{ count: number }>()
+const CountModel = defineModel<{ count: number }>({ count: 3 })
   .actions((self) => ({
     add() {
-      self.state.count
+      self.getState().count
     },
 
     add2() {
@@ -42,10 +47,10 @@ const CountModel = defineModel<{ count: number }>()
   }))
   .views((self) => ({
     get countStr() {
-      return `${self.state.count}`
+      return `${self.getState().count}`
     },
   }))
 
-CountModel.create({ count: 1 }).actions.add()
+CountModel.create().actions.add()
 
-CountModel.create({ count: 2 }).views.countStr
+CountModel.create({ count: 2 }).getState().countStr
