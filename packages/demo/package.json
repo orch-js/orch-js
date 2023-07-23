@@ -10,8 +10,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "@orch/model": "^0.0.10",
-    "@orch/react": "^0.0.10",
+    "@orch/model": "workspace:*",
+    "@orch/react": "workspace:*",
     "axios": "^1.4.0",
     "lodash": "^4.17.21",
     "next": "^13.4.12",
