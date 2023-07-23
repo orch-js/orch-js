@@ -5,105 +5,125 @@ import { action, effect } from '../../src'
 import { disposePerformer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
 
-describe(`performers:effect`, () => {
-  it(`should handle action properly`, () => {
-    vi.useFakeTimers()
+describe(`performers`, () => {
+  describe(`action`, () => {
+    it('should execute the provided function with the provided parameters when called', () => {
+      const mockFunc = vi.fn()
+      const effectAction = action(mockFunc, 'param1', 'param2')
+      effectAction()
+      expect(mockFunc).toHaveBeenCalledWith('param1', 'param2')
+    })
 
-    const spy = vi.fn()
-
-    const debounceSpy = effect<number>((payload$) =>
-      payload$.pipe(
-        map((payload) => action(spy, payload)),
-        debounceTime(500),
-      ),
-    )
-
-    debounceSpy(1)
-    debounceSpy(2)
-    debounceSpy(3)
-
-    vi.runAllTimers()
-
-    expect(spy.mock.calls).toEqual([[3]])
+    it('should return a function that executes the provided function with the provided parameters when the curry method is used', () => {
+      const mockFunc = vi.fn()
+      const curriedAction = action.curry(mockFunc)
+      const effectAction = curriedAction('param1', 'param2')
+      effectAction()
+      expect(mockFunc).toHaveBeenCalledWith('param1', 'param2')
+    })
   })
 
-  it(`should ignore null actions`, () => {
-    const spy = vi.fn()
+  describe(`effect`, () => {
+    it(`should handle action properly`, () => {
+      vi.useFakeTimers()
 
-    const _effect = effect<number>((payload$) =>
-      payload$.pipe(map((num) => (num % 2 ? action(spy, num) : null))),
-    )
+      const spy = vi.fn()
 
-    _effect(1)
-    _effect(2)
-    _effect(3)
+      const debounceSpy = effect<string>((payload$) =>
+        payload$.pipe(map(action.curry(spy)), debounceTime(1000)),
+      )
 
-    expect(spy.mock.calls).toEqual([[1], [3]])
-  })
+      debounceSpy('a')
+      debounceSpy('b')
+      debounceSpy('c')
 
-  it(`should keep working after error`, () => {
-    const spy = vi.fn()
+      vi.runAllTimers()
 
-    const restoreConsole = ignoreConsole()
+      expect(spy.mock.calls).toEqual([['c', 2]])
+    })
 
-    const _effect = effect<number>((payload$) =>
-      payload$.pipe(
-        map((num) => {
-          if (num % 2 === 0) {
-            throw new Error()
-          } else {
-            return action(spy, num)
-          }
-        }),
-      ),
-    )
+    it(`should ignore null actions`, () => {
+      const spy = vi.fn()
 
-    _effect(0)
-    _effect(1)
+      const _effect = effect<number>((payload$) =>
+        payload$.pipe(map((num) => (num % 2 ? action(spy, num) : null))),
+      )
 
-    expect(spy.mock.calls).toEqual([[1]])
+      _effect(1)
+      _effect(2)
+      _effect(3)
 
-    restoreConsole()
-  })
+      expect(spy.mock.calls).toEqual([[1], [3]])
+    })
 
-  it(`should complete payload$ after it is disposed`, () => {
-    const spy = vi.fn()
+    it(`should keep working after error`, () => {
+      const spy = vi.fn()
 
-    const _performer = effect<number>((payload$) =>
-      payload$.pipe(
-        endWith('end'),
-        map((value) => action(spy, value)),
-      ),
-    )
+      const restoreConsole = ignoreConsole()
 
-    disposePerformer(_performer)
+      const _effect = effect<number>((payload$) =>
+        payload$.pipe(
+          map((num) => {
+            if (num % 2 === 0) {
+              throw new Error()
+            } else {
+              return action(spy, num)
+            }
+          }),
+        ),
+      )
 
-    expect(spy.mock.calls).toEqual([['end']])
-  })
+      _effect(0)
+      _effect(1)
 
-  it(`should catch and re-subscribe when error`, () => {
-    const restoreConsole = ignoreConsole()
-    const spy = vi.fn()
+      expect(spy.mock.calls).toEqual([[1]])
 
-    const _effect = effect<number>((payload$) =>
-      payload$.pipe(
-        startWith(0),
-        map((num) => {
-          if (num % 2 === 0) {
-            return num
-          } else {
-            throw new Error()
-          }
-        }),
-        map((value) => action(spy, value)),
-      ),
-    )
+      restoreConsole()
+    })
 
-    _effect(1)
-    _effect(2)
+    it(`should complete payload$ after it is disposed`, () => {
+      const spy = vi.fn()
 
-    expect(spy.mock.calls).toEqual([[0], [0], [2]])
+      const _performer = effect<number>((payload$) =>
+        payload$.pipe(
+          endWith('end'),
+          map((value) => action(spy, value)),
+        ),
+      )
 
-    restoreConsole()
+      disposePerformer(_performer)
+
+      expect(spy.mock.calls).toEqual([['end']])
+    })
+
+    it(`should catch and re-subscribe when error`, () => {
+      const restoreConsole = ignoreConsole()
+      const spy = vi.fn()
+
+      const _effect = effect<string>((payload$) =>
+        payload$.pipe(
+          startWith('a'),
+          map((str) => {
+            if (str === 'b') {
+              throw new Error()
+            } else {
+              return str
+            }
+          }),
+          map(action.curry(spy)),
+        ),
+      )
+
+      _effect('b')
+      _effect('c')
+
+      expect(spy.mock.calls).toEqual([
+        ['a', 0],
+        ['a', 0],
+        ['c', 1],
+      ])
+
+      restoreConsole()
+    })
   })
 })

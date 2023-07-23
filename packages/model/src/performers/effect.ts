@@ -8,9 +8,25 @@ export type EffectFactory<P> = (payload$: Observable<P>) => Observable<EffectAct
 
 export type EffectConfig = { factoryToLog?: unknown }
 
-export function action<P extends any[]>(func: (...params: P) => void, ...params: P): EffectAction {
-  return () => func(...params)
+export type Action = {
+  <P extends any[]>(func: (...params: P) => void, ...params: P): Exclude<EffectAction, null>
+  curry<P extends any[]>(
+    func: (...params: P) => void,
+  ): (...params: P) => Exclude<EffectAction, null>
 }
+
+export const action: Action = Object.assign(
+  function action<P extends any[]>(func: (...params: P) => void, ...params: P) {
+    return () => func(...params)
+  },
+  {
+    curry<P extends any[]>(func: (...params: P) => void) {
+      return (...params: P) => {
+        return () => func(...params)
+      }
+    },
+  },
+)
 
 export function effect<P = void>(factory: EffectFactory<P>, config?: EffectConfig) {
   return performer<P, void>(() => {
