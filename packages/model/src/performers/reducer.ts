@@ -1,27 +1,14 @@
-import { Draft, produce } from 'immer'
+import type { Draft } from 'immer'
 
-import { SetStateSymbol } from '../const'
 import { OrchModel } from '../orch-model'
 import { performer } from './performer'
 
-export type ReducerState<S, D = unknown> = Draft<S> & Readonly<D>
+export type ReducerFactory<P, S> = (state: Draft<S>, payload: P) => Draft<S> | void
 
-export type ReducerFactory<P, S, D = unknown> = (
-  state: ReducerState<S, D>,
-  payload: P,
-) => Draft<S> | void
-
-export function reducer<P = void, S = unknown, D = unknown>(
-  model: OrchModel<S, D>,
-  factory: ReducerFactory<P, S, D>,
-) {
+export function reducer<P = void, S = unknown>(model: OrchModel<S>, factory: ReducerFactory<P, S>) {
   return performer<P, void>(() => ({
     next(payload) {
-      const newState = produce<S, Draft<S>>(model.state.getState(), (state) =>
-        factory(state as ReducerState<S, D>, payload),
-      )
-
-      model.state[SetStateSymbol](newState)
+      model.state.setState((state) => factory(state, payload))
     },
   }))
 }

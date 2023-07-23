@@ -11,24 +11,16 @@ export type PerformerFactory<P, R = void> = () => {
 }
 
 export function performer<P, R = void>(factory: PerformerFactory<P, R>): Performer<P, R> {
-  let disposed = false
   const { next, dispose } = factory()
 
   return Object.assign(
     function trigger(payload: P) {
-      if (disposed) {
-        throw new Error('current performer is disposed')
-      } else {
-        return next(payload)
-      }
+      next(payload)
     } as PayloadFunc<P, R>,
 
     {
       [DisposeSymbol]() {
-        if (!disposed) {
-          disposed = true
-          dispose?.()
-        }
+        dispose?.()
       },
     },
   )

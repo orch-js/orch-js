@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { disposeModel, OrchModel, OrchState, preventOthersToDisposeModel, reducer } from '../src'
+import { OrchState } from '@orch/state'
+
+import { disposeModel, OrchModel, preventOthersToDisposeModel, reducer } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {
   setCount = reducer(this, (state, payload: number) => {
@@ -30,28 +32,19 @@ describe(`OrchModel`, () => {
   it(`should be able to custom default state`, () => {
     const model = new OrchModel({ count: 10 })
 
-    expect(model.state).toEqual(new OrchState({ count: 10 }))
-  })
-
-  it(`should be able to derive state`, () => {
-    const model = new OrchModel<{ count: number }, { doubleCount: number }>(
-      { count: 10 },
-      (state) => ({ ...state, doubleCount: state.count * 2 }),
-    )
-
-    expect(model.state.getState()).toEqual({ count: 10, doubleCount: 20 })
+    expect(model.state.current).toEqual({ count: 10 })
   })
 
   it(`should be able to nest OrchModel`, () => {
     const nameModel = new NameModel('home')
 
-    expect(nameModel.state.getState()).toEqual({ name: 'home' })
-    expect(nameModel.count.state.getState()).toEqual({ count: 4 })
+    expect(nameModel.state.current).toEqual({ name: 'home' })
+    expect(nameModel.count.state.current).toEqual({ count: 4 })
 
     nameModel.updateName('school')
 
-    expect(nameModel.state.getState()).toEqual({ name: 'school' })
-    expect(nameModel.count.state.getState()).toEqual({ count: 6 })
+    expect(nameModel.state.current).toEqual({ name: 'school' })
+    expect(nameModel.count.state.current).toEqual({ count: 6 })
   })
 
   describe(`dispose model`, () => {
@@ -91,7 +84,7 @@ describe(`OrchModel`, () => {
       disposeModel(model, null)
 
       expect(() => model.setCount(20)).toThrow()
-      expect(model.state.getState()).toEqual({ count: 0 })
+      expect(model.state.current).toEqual({ count: 0 })
     })
 
     it(`should dispose nested OrchModel`, () => {
@@ -100,8 +93,8 @@ describe(`OrchModel`, () => {
       disposeModel(nameModel, null)
 
       expect(() => nameModel.updateName('school')).toThrow()
-      expect(nameModel.state.getState()).toEqual({ name: 'home' })
-      expect(nameModel.count.state.getState()).toEqual({ count: 4 })
+      expect(nameModel.state.current).toEqual({ name: 'home' })
+      expect(nameModel.count.state.current).toEqual({ count: 4 })
     })
   })
 

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "references": [
+    { "path": "packages/state/tsconfig.json" },
     { "path": "packages/model/tsconfig.json" },
     { "path": "packages/react/tsconfig.json" }
   ],

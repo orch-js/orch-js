@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { disposePerformer, performer } from '../../src/performers/performer'
 
 describe(`performers:performer`, () => {
-  it(`should emit payload if trigger performer`, () => {
+  it(`should trigger 'next' while triggering performer`, () => {
     const spy = vi.fn()
 
     const _performer = performer<number>(() => ({ next: spy }))
@@ -13,24 +13,16 @@ describe(`performers:performer`, () => {
     expect(spy.mock.calls).toEqual([[44]])
   })
 
-  it(`should throw error if performer is disposed`, () => {
+  it(`should trigger 'dispose' while disposing performer`, () => {
+    const spy = vi.fn()
+
     const _performer = performer<number>(() => ({
       next() {},
+      dispose: spy,
     }))
 
     disposePerformer(_performer)
 
-    expect(() => _performer(44)).toThrow()
-  })
-
-  it(`should not emit payload if performer is disposed`, () => {
-    const spy = vi.fn()
-
-    const _performer = performer<number>(() => ({ next: spy }))
-
-    disposePerformer(_performer)
-
-    expect(() => _performer(44)).toThrow()
-    expect(spy.mock.calls).toEqual([])
+    expect(spy).toBeCalledTimes(1)
   })
 })

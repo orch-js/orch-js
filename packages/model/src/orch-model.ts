@@ -1,4 +1,4 @@
-import { DeriveState, OrchState } from './orch-state'
+import { OrchState } from '@orch/state'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
   new (...params: P): M
@@ -8,15 +8,11 @@ export type OrchModelParams<T> = T extends OrchModelConstructor<infer P, any> ? 
 
 export type InitiatedOrchModel<T> = T extends OrchModelConstructor<any[], infer M> ? M : never
 
-export class OrchModel<S, D = unknown> {
-  readonly state: OrchState<S, D>
+export class OrchModel<S> {
+  readonly state: OrchState<S>
 
-  get state$() {
-    return this.state.state$
-  }
-
-  constructor(defaultState: S, deriveState?: DeriveState<S, D>) {
-    this.state = new OrchState(defaultState, deriveState)
+  constructor(defaultState: S) {
+    this.state = new OrchState(defaultState)
   }
 
   protected beforeDispose() {}
