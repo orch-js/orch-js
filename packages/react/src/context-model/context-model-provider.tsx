@@ -11,7 +11,7 @@ export function ContextModelProvider({ value, children }: ContextModelProviderPr
   const context = React.useContext(ContextModelContext)
 
   const providerValue = React.useMemo(
-    () => new Map([...context.entries(), ...value]),
+    () => new Map(Array.from(context.entries()).concat(value)),
     [context, value],
   )
 

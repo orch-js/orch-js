@@ -2,8 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@orch/*": ["packages/*/src"],
-      "@orch/demo/*": ["packages/demo/src/*"]
+      "@orch/*": ["packages/*/src"]
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

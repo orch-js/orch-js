@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react'
 import { GetStaticProps } from 'next'
 
-import { Home, HomeStatus } from '@orch/demo/page-components/home'
+import { Home, HomeStatus } from '@/modules/home'
 
 export default Home
 

@@ -1,11 +1,7 @@
 {
   "plugins": ["@typescript-eslint", "prettier"],
   "parser": "@typescript-eslint/parser",
-  "extends": [
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
-  ],
+  "extends": ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -35,7 +31,7 @@
   },
   "overrides": [
     {
-      "files": ["packages/demo/**/*{.js,.jsx,.ts,.tsx}"],
+      "files": ["examples/nextjs/**/*{.js,.jsx,.ts,.tsx}"],
       "rules": { "react/react-in-jsx-scope": "off" }
     }
   ],
