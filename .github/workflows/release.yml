@@ -35,7 +35,6 @@ jobs:
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${NPM_AUTH_TOKEN}"
           npm whoami
-          lerna --version
 
       - name: Build packages
         run: pnpm run build
@@ -43,7 +42,7 @@ jobs:
       - name: Test packages
         run: pnpm run test --coverage
 
-      - name: Publish packages
-        run: lerna publish from-package --yes --no-verify-access --loglevel silly
+      - name: Publish to NPM
+        run: pnpm -r publish --access public --no-git-checks
         env:
-          CI: true
+          NPM_CONFIG_PROVENANCE: true

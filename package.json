@@ -3,30 +3,19 @@
   "private": true,
   "author": "Runjuu",
   "scripts": {
-    "build": "run-s clean build:lib build:lerna",
-    "build:lerna": "lerna run build --parallel",
+    "build": "run-s clean build:lib build:examples",
+    "build:examples": "pnpm run -r build",
     "build:lib": "tsc -b packages/*/tsconfig.cjs.json packages/*/tsconfig.esm.json",
-    "clean": "lerna run clean --parallel",
+    "clean": "pnpm run -r clean",
     "coverage": "vitest run --coverage",
     "format:package": "yarn format-package '**/package.json' -w -c format-package.json",
     "lint": "run-s lint:eslint lint:tsc",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
-    "lint:tsc": "lerna run lint:tsc --parallel",
+    "lint:tsc": "pnpm run -r lint:tsc",
     "prepare": "husky install",
     "prettier": "prettier 'packages/**/*.@(ts|tsx|html|json)' --write",
-    "release:prod": "lerna version",
+    "release": "bumpp package.json packages/*/package.json --commit --push --tag",
     "test": "vitest"
-  },
-  "lint-staged": {
-    "**/package.json": [
-      "yarn run format:package",
-      "git add"
-    ],
-    "*.{ts,tsx}": [
-      "prettier --write",
-      "yarn run lint:eslint",
-      "git add"
-    ]
   },
   "packageManager": "pnpm@8.6.9",
   "devDependencies": {
@@ -35,13 +24,13 @@
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "@vitest/coverage-v8": "^0.33.0",
+    "bumpp": "^9.1.1",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.33.0",
     "format-package": "^7.0.0",
-    "husky": "^8.0.3",
-    "lerna": "^7.1.4",
+    "husky": "^8.0.0",
     "lint-staged": "^13.2.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.0",

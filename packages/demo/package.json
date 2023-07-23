@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "clean": "rm -rf ./.next ./dist",
+    "clean": "rm -rf .next",
     "dev": "next dev",
     "lint:tsc": "tsc -p tsconfig.json --noEmit --composite false",
     "start": "next start"
