@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest'
 import { map } from 'rxjs/operators'
 
 import { signal } from '../../src'
@@ -6,7 +7,7 @@ import { ignoreConsole } from './utils'
 describe(`performers:signal`, () => {
   it(`should emit payload if trigger signal performer`, () => {
     const _signal = signal<number>()
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     _signal.signal$.subscribe(spy)
 
@@ -20,7 +21,7 @@ describe(`performers:signal`, () => {
       payload$.pipe(map((num) => ({ num }))),
     )
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     _signal.signal$.subscribe(spy)
 
@@ -42,7 +43,7 @@ describe(`performers:signal`, () => {
       ),
     )
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     _signal.signal$.subscribe(spy)
 

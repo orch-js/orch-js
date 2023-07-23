@@ -1,3 +1,5 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+
 import { OrchModel, deriveModelsState, OrchState } from '../src'
 import { SetStateSymbol } from '../src/const'
 
@@ -26,7 +28,7 @@ describe(`derive-models-state`, () => {
       countModel,
     )(({ name }, { count }) => ({ nameWithCount: `${name}${count}` }))
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     nameWithCountState.state$.subscribe(spy)
     nameModel.state[SetStateSymbol]({ name: 'new-name' })

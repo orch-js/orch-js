@@ -3,35 +3,44 @@ name: release
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  build:
+  main:
     runs-on: ubuntu-latest
+    env:
+      CI: true
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-          registry-url: 'https://registry.npmjs.org'
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
 
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install --frozen-lockfile
+
+      - name: 'NPM Identity'
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        run: |
+          npm config set '//registry.npmjs.org/:_authToken' "${NPM_AUTH_TOKEN}"
+          npm whoami
+          lerna --version
 
       - name: Build packages
-        run: yarn run build
-
-      - name: Lint packages
-        run: yarn run lint
-
-      - name: Test packages
-        run: yarn run test
+        run: pnpm run build
 
       - name: Publish packages
-        run: yarn run publish --yes --no-verify-access --loglevel silly
+        run: lerna publish from-package --yes --no-verify-access --loglevel silly
         env:
           CI: true
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

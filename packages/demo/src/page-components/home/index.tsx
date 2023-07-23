@@ -34,9 +34,7 @@ export function Home({ defaultStatus }: HomeProps) {
         <ul>
           {state.list.map((data) => (
             <li key={data.id}>
-              <Link href={`detail/${data.id}`}>
-                <a>👉 {data.title}</a>
-              </Link>
+              <Link href={`detail/${data.id}`}>👉 {data.title}</Link>
             </li>
           ))}
         </ul>

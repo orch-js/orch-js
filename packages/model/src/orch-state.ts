@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs'
-import produce from 'immer'
+import { produce } from 'immer'
 
 import { SetStateSymbol } from './const'
 
@@ -14,7 +14,10 @@ export class OrchState<S, D = unknown> {
     return this.stateSource.isStopped
   }
 
-  constructor(defaultState: S, private readonly deriveState?: DeriveState<S, D>) {
+  constructor(
+    defaultState: S,
+    private readonly deriveState?: DeriveState<S, D>,
+  ) {
     this.stateSource = new BehaviorSubject(getDerivedState(defaultState, this.deriveState))
     this.state$ = this.stateSource.asObservable()
   }

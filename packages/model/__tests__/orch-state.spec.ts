@@ -1,3 +1,5 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+
 import { OrchState } from '../src'
 import { SetStateSymbol } from '../src/const'
 
@@ -31,7 +33,7 @@ describe(`OrchState`, () => {
 
   describe(`state$`, () => {
     it(`should emit current state`, () => {
-      const spy = jest.fn()
+      const spy = vi.fn()
 
       state.state$.subscribe(spy)
 
@@ -39,7 +41,7 @@ describe(`OrchState`, () => {
     })
 
     it(`should emit new state after calling setState`, () => {
-      const spy = jest.fn()
+      const spy = vi.fn()
 
       state.state$.subscribe(spy)
 
@@ -115,7 +117,7 @@ describe(`OrchState`, () => {
     })
 
     it(`should not emit new state after dispose`, () => {
-      const spy = jest.fn()
+      const spy = vi.fn()
 
       state.state$.subscribe(spy)
 

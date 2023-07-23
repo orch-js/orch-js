@@ -3,7 +3,7 @@ import React from 'react'
 import { ContextModelContextEntriesValue } from './context-model-context'
 import { ContextModelProvider } from './context-model-provider'
 
-export function withContextModelProvider<P>(
+export function withContextModelProvider<P extends NonNullable<unknown>>(
   Component: React.ComponentType<P>,
   useGetModelContextValue: (props: P) => ContextModelContextEntriesValue,
 ): React.ComponentType<P> {

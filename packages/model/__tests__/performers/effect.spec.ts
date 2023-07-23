@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest'
 import { map, debounceTime } from 'rxjs/operators'
 
 import { effect, action } from '../../src'
@@ -5,9 +6,9 @@ import { ignoreConsole } from './utils'
 
 describe(`performers:effect`, () => {
   it(`should handle action properly`, () => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const debounceSpy = effect<number>((payload$) =>
       payload$.pipe(
@@ -20,13 +21,13 @@ describe(`performers:effect`, () => {
     debounceSpy(2)
     debounceSpy(3)
 
-    jest.runAllTimers()
+    vi.runAllTimers()
 
     expect(spy.mock.calls).toEqual([[3]])
   })
 
   it(`should ignore null actions`, () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const _effect = effect<number>((payload$) =>
       payload$.pipe(map((num) => (num % 2 ? action(spy, num) : null))),
@@ -40,7 +41,7 @@ describe(`performers:effect`, () => {
   })
 
   it(`should keep working after error`, () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const restoreConsole = ignoreConsole()
 

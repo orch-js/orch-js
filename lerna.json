@@ -1,16 +1,5 @@
 {
-  "version": "0.0.10",
-  "npmClient": "yarn",
-  "command": {
-    "version": {
-      "allowBranch": [
-        "master"
-      ],
-      "message": "release: %s"
-    }
-  },
-  "useWorkspaces": true,
-  "packages": [
-    "packages/*"
-  ]
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "npmClient": "pnpm",
+  "version": "0.0.10"
 }

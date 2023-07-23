@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest'
 import { Observable } from 'rxjs'
 import { endWith, map, startWith, tap } from 'rxjs/operators'
 
@@ -6,7 +7,7 @@ import { ignoreConsole } from './utils'
 
 describe(`performers:performer`, () => {
   it(`should subscribe returned observable`, () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     performer(() => {
       return new Observable(() => {
@@ -18,7 +19,7 @@ describe(`performers:performer`, () => {
   })
 
   it(`should emit payload if trigger performer`, () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const _performer = performer<number>((payload$) => payload$.pipe(tap(spy)))
 
@@ -36,7 +37,7 @@ describe(`performers:performer`, () => {
   })
 
   it(`should not emit payload if performer is disposed`, () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const _performer = performer<number>((payload$) => payload$.pipe(tap(spy)))
 
@@ -47,7 +48,7 @@ describe(`performers:performer`, () => {
   })
 
   it(`should complete payload$ after dispose performer`, () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const _performer = performer<number>((payload$) => payload$.pipe(endWith('end'), tap(spy)))
 
@@ -58,7 +59,7 @@ describe(`performers:performer`, () => {
 
   it(`should catch and re-subscribe when error`, () => {
     const restoreConsole = ignoreConsole()
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const _effect = performer<number>((payload$) =>
       payload$.pipe(

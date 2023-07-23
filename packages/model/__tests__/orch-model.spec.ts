@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest'
 import { disposeModel, OrchModel, OrchState, preventOthersToDisposeModel, reducer } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {
@@ -54,7 +55,7 @@ describe(`OrchModel`, () => {
 
   describe(`dispose model`, () => {
     it(`should trigger 'beforeDispose'`, () => {
-      const spy = jest.fn()
+      const spy = vi.fn()
 
       class ModelToDispose extends OrchModel<number> {
         protected beforeDispose() {

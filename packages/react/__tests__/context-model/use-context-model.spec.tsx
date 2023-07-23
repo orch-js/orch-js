@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { renderHook } from '@testing-library/react-hooks'
 import { create } from 'react-test-renderer'
 import React from 'react'
@@ -24,7 +25,7 @@ describe(`useContextModel`, () => {
   it(`should return model instance from context`, () => {
     const model = new CountModel()
     const { result } = renderHook(() => useContextModel(CountModel), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren) => (
         <ContextModelProvider value={[[CountModel, model]]}>{children}</ContextModelProvider>
       ),
     })
