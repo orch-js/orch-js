@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
 import { renderHook } from '@testing-library/react-hooks'
-import { create } from 'react-test-renderer'
 import React from 'react'
+import { create } from 'react-test-renderer'
+import { describe, expect, it } from 'vitest'
 
 import { OrchModel } from '@orch/model'
 
-import { useContextModel, ContextModelProvider } from '../../src'
+import { ContextModelProvider, useContextModel } from '../../src'
 
 type CountModelState = { count: number }
 

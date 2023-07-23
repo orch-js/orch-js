@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { OrchModel, deriveModelsState, OrchState } from '../src'
+import { deriveModelsState, OrchModel, OrchState } from '../src'
 import { SetStateSymbol } from '../src/const'
 
 describe(`derive-models-state`, () => {

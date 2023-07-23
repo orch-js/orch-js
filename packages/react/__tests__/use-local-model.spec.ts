@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest'
-
 import { renderHook } from '@testing-library/react-hooks'
+import { describe, expect, it } from 'vitest'
 
 import { disposeModel, OrchModel } from '@orch/model'
 

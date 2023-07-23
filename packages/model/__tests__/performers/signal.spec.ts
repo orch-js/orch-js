@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
 import { map } from 'rxjs/operators'
+import { describe, expect, it, vi } from 'vitest'
 
 import { signal } from '../../src'
 import { ignoreConsole } from './utils'

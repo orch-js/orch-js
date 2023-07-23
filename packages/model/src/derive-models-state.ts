@@ -1,8 +1,8 @@
 import { combineLatest, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
-import { OrchState } from './orch-state'
 import { SetStateSymbol } from './const'
+import { OrchState } from './orch-state'
 
 export type DerivableModelType<S> = { state: { getState: () => S; state$: Observable<S> } }
 

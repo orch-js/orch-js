@@ -1,8 +1,8 @@
-import { produce, Draft } from 'immer'
+import { Draft, produce } from 'immer'
 import { map, tap } from 'rxjs/operators'
 
-import { OrchModel } from '../orch-model'
 import { SetStateSymbol } from '../const'
+import { OrchModel } from '../orch-model'
 import { Performer, performer } from './performer'
 
 export type ReducerState<S, D = unknown> = Draft<S> & Readonly<D>

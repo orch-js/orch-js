@@ -1,5 +1,5 @@
-import { ComponentProps } from 'react'
 import { GetStaticProps } from 'next'
+import { ComponentProps } from 'react'
 
 import { Home, HomeStatus } from '@/modules/home'
 

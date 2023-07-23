@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest'
-import { map, debounceTime } from 'rxjs/operators'
+import { debounceTime, map } from 'rxjs/operators'
+import { describe, expect, it, vi } from 'vitest'
 
-import { effect, action } from '../../src'
+import { action, effect } from '../../src'
 import { ignoreConsole } from './utils'
 
 describe(`performers:effect`, () => {

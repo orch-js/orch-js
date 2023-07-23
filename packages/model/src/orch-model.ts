@@ -1,4 +1,4 @@
-import { OrchState, DeriveState } from './orch-state'
+import { DeriveState, OrchState } from './orch-state'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
   new (...params: P): M

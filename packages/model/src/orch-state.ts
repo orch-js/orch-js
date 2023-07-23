@@ -1,5 +1,5 @@
-import { BehaviorSubject, Observable } from 'rxjs'
 import { produce } from 'immer'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 import { SetStateSymbol } from './const'
 

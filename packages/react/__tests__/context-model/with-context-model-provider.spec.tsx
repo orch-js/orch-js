@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
 import React from 'react'
 import { create } from 'react-test-renderer'
+import { describe, expect, it } from 'vitest'
 
 import { OrchModel } from '@orch/model'
 

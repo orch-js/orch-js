@@ -1,10 +1,11 @@
 import * as React from 'react'
+
 import {
   disposeModel,
-  preventOthersToDisposeModel,
-  OrchModelConstructor,
   InitiatedOrchModel,
+  OrchModelConstructor,
   OrchModelParams,
+  preventOthersToDisposeModel,
 } from '@orch/model'
 
 export function useLocalModel<T extends OrchModelConstructor<any, any>>(

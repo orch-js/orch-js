@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
 import { disposeModel, OrchModel, OrchState, preventOthersToDisposeModel, reducer } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {

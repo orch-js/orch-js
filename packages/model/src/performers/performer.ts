@@ -1,8 +1,8 @@
 import { Observable, Subject } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 
-import { PayloadFunc } from '../utility-types'
 import { DisposeSymbol } from '../const'
+import { PayloadFunc } from '../utility-types'
 
 export type Performer<P> = PayloadFunc<P, void> & {
   [DisposeSymbol]: () => void

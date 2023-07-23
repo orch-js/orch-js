@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
 import { Observable } from 'rxjs'
 import { endWith, map, startWith, tap } from 'rxjs/operators'
+import { describe, expect, it, vi } from 'vitest'
 
-import { performer, disposePerformer } from '../../src/performers/performer'
+import { disposePerformer, performer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
 
 describe(`performers:performer`, () => {

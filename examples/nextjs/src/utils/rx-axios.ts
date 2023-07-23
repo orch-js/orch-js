@@ -1,5 +1,5 @@
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { Observable, Observer } from 'rxjs'
-import axios, { AxiosRequestConfig, AxiosError } from 'axios'
 
 type RequestMethods = 'GET' | 'POST' | 'DELETE' | 'PUT'
 

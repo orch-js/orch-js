@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
 
 import {
   useContextModel,
-  withContextModelProvider,
-  useModelState,
   useLocalModel,
+  useModelState,
+  withContextModelProvider,
 } from '@orch/react'
 
 import { DetailModel } from './model'

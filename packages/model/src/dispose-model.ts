@@ -1,7 +1,8 @@
 import { nanoid } from 'nanoid'
-import { disposePerformer, isPerformer, Performer } from './performers/performer'
+
 import { OrchModel } from './orch-model'
 import { OrchState } from './orch-state'
+import { disposePerformer, isPerformer, Performer } from './performers/performer'
 
 export type OrchModelLockId = string | null
 

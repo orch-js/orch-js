@@ -1,6 +1,6 @@
 import React from 'react'
+import { distinctUntilChanged, map, skip } from 'rxjs/operators'
 import shallowequal from 'shallowequal'
-import { skip, map, distinctUntilChanged } from 'rxjs/operators'
 
 import { OrchState } from '@orch/model'
 
