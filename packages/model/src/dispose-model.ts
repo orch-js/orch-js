@@ -39,10 +39,10 @@ export function preventOthersToDisposeModel(
   return lockId
 }
 
-function filterProperties(model: OrchModel<any>) {
-  const performers: Performer<any>[] = []
-  const models: OrchModel<any>[] = []
-  const states: OrchState<any>[] = []
+function filterProperties(model: OrchModel<unknown>) {
+  const performers: Performer<unknown, unknown>[] = []
+  const models: OrchModel<unknown>[] = []
+  const states: OrchState<unknown>[] = []
 
   Object.keys(model).forEach((key) => {
     const value = (model as any)[key]

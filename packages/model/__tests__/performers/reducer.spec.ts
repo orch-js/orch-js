@@ -38,7 +38,10 @@ describe(`performers:reducer`, () => {
       return { count }
     })
 
-    setCount(-1)
+    try {
+      setCount(-1)
+    } catch {}
+
     setCount(44)
 
     expect(countModel.state.getState()).toEqual({ count: 44 })

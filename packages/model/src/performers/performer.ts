@@ -1,59 +1,43 @@
-import { Observable, Subject } from 'rxjs'
-import { catchError } from 'rxjs/operators'
-
 import { DisposeSymbol } from '../const'
 import { PayloadFunc } from '../utility-types'
 
-export type Performer<P> = PayloadFunc<P, void> & {
+export type Performer<P, R> = PayloadFunc<P, R> & {
   [DisposeSymbol]: () => void
 }
 
-export type PerformerFactory<P> = (payload$: Observable<P>) => Observable<any>
-
-export type PerformerConfig = {
-  factoryToLog?: unknown
+export type PerformerFactory<P, R = void> = () => {
+  next: (payload: P) => R
+  dispose?: () => void
 }
 
-export function performer<P>(factory: PerformerFactory<P>, config?: PerformerConfig): Performer<P> {
-  const payloadSource = new Subject<P>()
-  const subscription = factory(payloadSource)
-    .pipe(logAngIgnoreError(config?.factoryToLog ?? factory))
-    .subscribe()
+export function performer<P, R = void>(factory: PerformerFactory<P, R>): Performer<P, R> {
+  let disposed = false
+  const { next, dispose } = factory()
 
   return Object.assign(
     function trigger(payload: P) {
-      if (payloadSource.isStopped) {
+      if (disposed) {
         throw new Error('current performer is disposed')
       } else {
-        payloadSource.next(payload)
+        return next(payload)
       }
-    } as PayloadFunc<P, void>,
+    } as PayloadFunc<P, R>,
 
     {
       [DisposeSymbol]() {
-        payloadSource.complete()
-        subscription.unsubscribe()
+        if (!disposed) {
+          disposed = true
+          dispose?.()
+        }
       },
     },
   )
 }
 
-function logAngIgnoreError(factory: unknown) {
-  return catchError((err, caught) => {
-    /* eslint-disable no-console */
-    console.group('[Orch]: Performer error')
-    console.log(factory)
-    console.error(err)
-    console.groupEnd()
-    /* eslint-enable no-console */
-    return caught
-  })
-}
-
-export function isPerformer(obj: any): obj is Performer<any> {
+export function isPerformer(obj: any): obj is Performer<unknown, unknown> {
   return obj && typeof obj === 'function' && typeof obj[DisposeSymbol] === 'function'
 }
 
-export function disposePerformer(performer: Performer<any>) {
+export function disposePerformer(performer: Performer<any, any>) {
   performer[DisposeSymbol]()
 }

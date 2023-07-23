@@ -1,27 +1,12 @@
-import { Observable } from 'rxjs'
-import { endWith, map, startWith, tap } from 'rxjs/operators'
 import { describe, expect, it, vi } from 'vitest'
 
 import { disposePerformer, performer } from '../../src/performers/performer'
-import { ignoreConsole } from './utils'
 
 describe(`performers:performer`, () => {
-  it(`should subscribe returned observable`, () => {
-    const spy = vi.fn()
-
-    performer(() => {
-      return new Observable(() => {
-        spy()
-      })
-    })
-
-    expect(spy.mock.calls).toEqual([[]])
-  })
-
   it(`should emit payload if trigger performer`, () => {
     const spy = vi.fn()
 
-    const _performer = performer<number>((payload$) => payload$.pipe(tap(spy)))
+    const _performer = performer<number>(() => ({ next: spy }))
 
     _performer(44)
 
@@ -29,7 +14,9 @@ describe(`performers:performer`, () => {
   })
 
   it(`should throw error if performer is disposed`, () => {
-    const _performer = performer<number>((payload$) => payload$)
+    const _performer = performer<number>(() => ({
+      next() {},
+    }))
 
     disposePerformer(_performer)
 
@@ -39,47 +26,11 @@ describe(`performers:performer`, () => {
   it(`should not emit payload if performer is disposed`, () => {
     const spy = vi.fn()
 
-    const _performer = performer<number>((payload$) => payload$.pipe(tap(spy)))
+    const _performer = performer<number>(() => ({ next: spy }))
 
     disposePerformer(_performer)
 
     expect(() => _performer(44)).toThrow()
     expect(spy.mock.calls).toEqual([])
-  })
-
-  it(`should complete payload$ after dispose performer`, () => {
-    const spy = vi.fn()
-
-    const _performer = performer<number>((payload$) => payload$.pipe(endWith('end'), tap(spy)))
-
-    disposePerformer(_performer)
-
-    expect(spy.mock.calls).toEqual([['end']])
-  })
-
-  it(`should catch and re-subscribe when error`, () => {
-    const restoreConsole = ignoreConsole()
-    const spy = vi.fn()
-
-    const _effect = performer<number>((payload$) =>
-      payload$.pipe(
-        startWith(0),
-        map((num) => {
-          if (num % 2 === 0) {
-            return num
-          } else {
-            throw new Error()
-          }
-        }),
-        tap(spy),
-      ),
-    )
-
-    _effect(1)
-    _effect(2)
-
-    expect(spy.mock.calls).toEqual([[0], [0], [2]])
-
-    restoreConsole()
   })
 })
