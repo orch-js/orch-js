@@ -1,4 +1,4 @@
-import { OrchState } from '@orch/state'
+import { OrchState } from './state'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
   new (...params: P): M

@@ -15,7 +15,6 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "@orch/state": "workspace:*",
     "immer": "^10.0.2",
     "nanoid": "^3.3.6"
   },

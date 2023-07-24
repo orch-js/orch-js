@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OrchState } from '@orch/state'
+import { OrchState } from '@orch/core'
 
 const defaultSelector = <S>(state: S): S => state
 

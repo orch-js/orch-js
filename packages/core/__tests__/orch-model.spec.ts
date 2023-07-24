@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { OrchState } from '@orch/state'
-
-import { disposeModel, OrchModel, preventOthersToDisposeModel, reducer } from '../src'
+import { disposeModel, OrchModel, OrchState, preventOthersToDisposeModel, reducer } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {
   setCount = reducer(this, (state, payload: number) => {
