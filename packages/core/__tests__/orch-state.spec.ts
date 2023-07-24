@@ -25,8 +25,15 @@ describe(`OrchState`, () => {
 
   describe(`setState`, () => {
     it(`should replace current state`, () => {
-      state.setState(() => ({ count: 50 }))
+      state.setState({ count: 50 })
       expect(state.current).toEqual({ count: 50 })
+    })
+
+    it(`should accept a function to mutate current state`, () => {
+      state.setState((s) => {
+        s.count = 24
+      })
+      expect(state.current).toEqual({ count: 24 })
     })
   })
 
