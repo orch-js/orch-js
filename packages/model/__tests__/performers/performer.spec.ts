@@ -13,6 +13,18 @@ describe(`performers:performer`, () => {
     expect(spy.mock.calls).toEqual([[44]])
   })
 
+  it(`should return 'next' fn's result while triggering performer`, () => {
+    const obj = {}
+
+    const _performer = performer<void, object>(() => ({
+      next() {
+        return obj
+      },
+    }))
+
+    expect(_performer()).toBe(obj)
+  })
+
   it(`should trigger 'dispose' while disposing performer`, () => {
     const spy = vi.fn()
 

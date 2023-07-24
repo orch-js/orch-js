@@ -15,7 +15,7 @@ export function performer<P, R = void>(factory: PerformerFactory<P, R>): Perform
 
   return Object.assign(
     function trigger(payload: P) {
-      next(payload)
+      return next(payload)
     } as PayloadFunc<P, R>,
 
     {
