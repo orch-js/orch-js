@@ -15,7 +15,7 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "@orch/model": "workspace:*",
+    "@orch/core": "workspace:*",
     "immer": "^10.0.2",
     "shallowequal": "^1.1.0"
   },

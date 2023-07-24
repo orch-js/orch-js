@@ -6,6 +6,6 @@
     "module": "CommonJS",
     "tsBuildInfoFile": "./dist/cjs/.tsbuildinfo"
   },
-  "references": [{ "path": "../model/tsconfig.cjs.json" }],
+  "references": [{ "path": "../core/tsconfig.cjs.json" }],
   "include": ["src/**/*"]
 }

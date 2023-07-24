@@ -3,7 +3,7 @@ import React from 'react'
 import { create } from 'react-test-renderer'
 import { describe, expect, it } from 'vitest'
 
-import { OrchModel } from '@orch/model'
+import { OrchModel } from '@orch/core'
 
 import { ContextModelProvider, useContextModel } from '../../src'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OrchModel } from '@orch/model'
+import { OrchModel } from '@orch/core'
 
 import { useOrchState } from './use-orch-state'
 

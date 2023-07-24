@@ -9,7 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@orch/model": "workspace:*",
+    "@orch/core": "workspace:*",
     "@orch/react": "workspace:*",
     "@types/node": "20.4.4",
     "@types/react": "18.2.15",

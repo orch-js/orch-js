@@ -74,9 +74,9 @@ importers:
 
   examples/nextjs:
     dependencies:
-      '@orch/model':
+      '@orch/core':
         specifier: workspace:*
-        version: link:../../packages/model
+        version: link:../../packages/core
       '@orch/react':
         specifier: workspace:*
         version: link:../../packages/react
@@ -114,7 +114,7 @@ importers:
         specifier: 5.1.6
         version: 5.1.6
 
-  packages/model:
+  packages/core:
     dependencies:
       '@orch/state':
         specifier: workspace:*
@@ -135,9 +135,9 @@ importers:
 
   packages/react:
     dependencies:
-      '@orch/model':
+      '@orch/core':
         specifier: workspace:*
-        version: link:../model
+        version: link:../core
       immer:
         specifier: ^10.0.2
         version: 10.0.2

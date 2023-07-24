@@ -6,7 +6,7 @@ import {
   OrchModelConstructor,
   OrchModelParams,
   preventOthersToDisposeModel,
-} from '@orch/model'
+} from '@orch/core'
 
 export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   Model: T,

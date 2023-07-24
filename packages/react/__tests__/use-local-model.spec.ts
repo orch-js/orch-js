@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { describe, expect, it } from 'vitest'
 
-import { disposeModel, OrchModel } from '@orch/model'
+import { disposeModel, OrchModel } from '@orch/core'
 
 import { useLocalModel } from '../src'
 

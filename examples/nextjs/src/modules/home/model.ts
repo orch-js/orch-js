@@ -1,6 +1,6 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 
-import { action, effect, OrchModel, reducer, signal } from '@orch/model'
+import { action, effect, OrchModel, reducer, signal } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 

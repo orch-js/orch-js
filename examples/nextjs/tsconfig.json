@@ -17,7 +17,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@orch/*": ["../../packages/*/src"],
-      "@orch/model/*": ["../../packages/model/src/*"],
+      "@orch/core/*": ["../../packages/core/src/*"],
       "@orch/react/*": ["../../packages/react/src/*"]
     }
   },
