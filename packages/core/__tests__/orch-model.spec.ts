@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { disposeModel, OrchModel, OrchState, preventOthersToDisposeModel, reducer } from '../src'
+import { disposeModel, OrchModel, preventOthersToDisposeModel, reducer } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {
   setCount = reducer(this, (state, payload: number) => {
@@ -30,50 +30,50 @@ describe(`OrchModel`, () => {
   it(`should be able to custom default state`, () => {
     const model = new OrchModel({ count: 10 })
 
-    expect(model.state.current).toEqual({ count: 10 })
+    expect(model.current).toEqual({ count: 10 })
   })
 
   it(`should be able to nest OrchModel`, () => {
     const nameModel = new NameModel('home')
 
-    expect(nameModel.state.current).toEqual({ name: 'home' })
-    expect(nameModel.count.state.current).toEqual({ count: 4 })
+    expect(nameModel.current).toEqual({ name: 'home' })
+    expect(nameModel.count.current).toEqual({ count: 4 })
 
     nameModel.updateName('school')
 
-    expect(nameModel.state.current).toEqual({ name: 'school' })
-    expect(nameModel.count.state.current).toEqual({ count: 6 })
+    expect(nameModel.current).toEqual({ name: 'school' })
+    expect(nameModel.count.current).toEqual({ count: 6 })
   })
 
   describe(`dispose model`, () => {
     it(`should trigger 'beforeDispose'`, () => {
       const spy = vi.fn()
 
-      class ModelToDispose extends OrchModel<number> {
+      class ModelToDispose extends OrchModel<{ count: number }> {
         protected beforeDispose() {
           super.beforeDispose()
           spy('beforeDispose')
         }
       }
 
-      const model = new ModelToDispose(1)
+      const model = new ModelToDispose({ count: 1 })
 
       disposeModel(model, null)
 
       expect(spy.mock.calls).toEqual([['beforeDispose']])
     })
 
-    it(`should dispose all states`, () => {
+    it(`should dispose all models`, () => {
       class TestModel extends OrchModel<{ count: number }> {
-        anotherState = new OrchState({ name: 'a' })
+        anotherModel = new OrchModel({ name: 'a' })
       }
 
       const model = new TestModel({ count: 0 })
 
       disposeModel(model, null)
 
-      expect(model.state.isDisposed).toBe(true)
-      expect(model.anotherState.isDisposed).toBe(true)
+      expect(model.isDisposed).toBe(true)
+      expect(model.anotherModel.isDisposed).toBe(true)
     })
 
     it(`should dispose all performers`, () => {
@@ -82,7 +82,7 @@ describe(`OrchModel`, () => {
       disposeModel(model, null)
 
       expect(() => model.setCount(20)).toThrow()
-      expect(model.state.current).toEqual({ count: 0 })
+      expect(model.current).toEqual({ count: 0 })
     })
 
     it(`should dispose nested OrchModel`, () => {
@@ -91,8 +91,8 @@ describe(`OrchModel`, () => {
       disposeModel(nameModel, null)
 
       expect(() => nameModel.updateName('school')).toThrow()
-      expect(nameModel.state.current).toEqual({ name: 'home' })
-      expect(nameModel.count.state.current).toEqual({ count: 4 })
+      expect(nameModel.current).toEqual({ name: 'home' })
+      expect(nameModel.count.current).toEqual({ count: 4 })
     })
   })
 
@@ -119,7 +119,7 @@ describe(`OrchModel`, () => {
       preventOthersToDisposeModel(model)
       disposeModel(model, null)
 
-      expect(model.state.isDisposed).toBe(false)
+      expect(model.isDisposed).toBe(false)
     })
 
     it(`should dispose model if lockId is identical`, () => {
@@ -128,7 +128,7 @@ describe(`OrchModel`, () => {
 
       disposeModel(model, lockId)
 
-      expect(model.state.isDisposed).toBe(true)
+      expect(model.isDisposed).toBe(true)
     })
 
     it(`should also prevent nested model from dispose`, () => {
@@ -141,7 +141,7 @@ describe(`OrchModel`, () => {
       preventOthersToDisposeModel(model)
 
       disposeModel(model.nestedModel, null)
-      expect(model.nestedModel.state.isDisposed).toBeFalsy()
+      expect(model.nestedModel.isDisposed).toBeFalsy()
     })
 
     it(`should ignore dispose action if nested model is prevented`, () => {
@@ -157,8 +157,8 @@ describe(`OrchModel`, () => {
       preventOthersToDisposeModel(modelA)
       disposeModel(modelB, null)
 
-      expect(modelA.state.isDisposed).toBeFalsy()
-      expect(modelB.state.isDisposed).toBeTruthy()
+      expect(modelA.isDisposed).toBeFalsy()
+      expect(modelB.isDisposed).toBeTruthy()
     })
 
     it(`should ignore other 'preventOthersToDisposeModel' calling`, () => {
@@ -170,10 +170,130 @@ describe(`OrchModel`, () => {
       expect(b).toBe(null)
 
       disposeModel(model, b)
-      expect(model.state.isDisposed).toBeFalsy()
+      expect(model.isDisposed).toBeFalsy()
 
       disposeModel(model, a)
-      expect(model.state.isDisposed).toBeTruthy()
+      expect(model.isDisposed).toBeTruthy()
+    })
+  })
+
+  describe(`current`, () => {
+    it(`should return current state`, () => {
+      const model = new CountModel({ count: 0 })
+      expect(model.current).toEqual({ count: 0 })
+    })
+
+    it(`should not able to mutate current state`, () => {
+      const model = new CountModel({ count: 0 })
+      const currentState = model.current
+
+      expect(() => ((currentState as { count: number }).count = 44)).toThrow()
+      expect(currentState).toEqual({ count: 0 })
+      expect(model.current).toEqual({ count: 0 })
+    })
+  })
+
+  describe(`setState`, () => {
+    it(`should replace current state`, () => {
+      const model = new CountModel({ count: 0 })
+      model.setState({ count: 50 })
+      expect(model.current).toEqual({ count: 50 })
+    })
+
+    it(`should accept a function to mutate current state`, () => {
+      const model = new CountModel({ count: 0 })
+
+      model.setState((s) => {
+        s.count = 24
+      })
+      expect(model.current).toEqual({ count: 24 })
+    })
+  })
+
+  describe(`dispose`, () => {
+    it(`should not able to update state after dispose`, () => {
+      const model = new CountModel({ count: 0 })
+
+      model.dispose()
+
+      expect(() => model.setState({ count: 44 })).toThrow()
+      expect(model.current).toEqual({ count: 0 })
+    })
+
+    it(`should not emit new state after dispose`, () => {
+      const model = new CountModel({ count: 0 })
+      const spy = vi.fn()
+
+      model.onChange(spy)
+
+      model.dispose()
+
+      expect(() => model.setState(() => ({ count: 44 }))).toThrow()
+      expect(model.current).toEqual({ count: 0 })
+      expect(spy.mock.calls).toEqual([])
+    })
+  })
+
+  describe(`on`, () => {
+    describe(`change`, () => {
+      it(`should trigger on:change if state changed`, () => {
+        const model = new CountModel({ count: 0 })
+        const spy = vi.fn()
+
+        model.onChange(spy)
+
+        model.setState(() => ({ count: 44 }))
+        expect(spy.mock.calls).toEqual([[{ count: 44 }, { count: 0 }]])
+      })
+
+      it(`should return a unsubscribe function`, () => {
+        const model = new CountModel({ count: 0 })
+        const spy = vi.fn()
+
+        const unsubscribe = model.onChange(spy)
+
+        unsubscribe()
+
+        model.setState(() => ({ count: 44 }))
+        expect(spy).toBeCalledTimes(0)
+      })
+    })
+
+    describe(`dispose`, () => {
+      it(`should trigger on:dispose callback after dispose`, () => {
+        const model = new CountModel({ count: 0 })
+        const spy = vi.fn()
+
+        model.onDispose(spy)
+
+        model.dispose()
+
+        expect(spy).toBeCalledTimes(1)
+      })
+
+      it(`should return a unsubscribe function`, () => {
+        const model = new CountModel({ count: 0 })
+        const spy = vi.fn()
+        const unsubscribe = model.onDispose(spy)
+
+        unsubscribe()
+        model.dispose()
+
+        expect(spy).toBeCalledTimes(0)
+      })
+    })
+  })
+
+  describe(`isDisposed`, () => {
+    it(`should return false if not calling dispose`, () => {
+      const model = new CountModel({ count: 0 })
+      expect(model.isDisposed).toBe(false)
+    })
+
+    it(`should return true after calling dispose`, () => {
+      const model = new CountModel({ count: 0 })
+      model.dispose()
+      expect(model.isDisposed).toBe(true)
     })
   })
 })

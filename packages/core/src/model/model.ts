@@ -1,6 +1,6 @@
 import { produce, type Draft } from 'immer'
 
-type OrchStateEventMap<S> = {
+type OrchModelEventMap<S> = {
   change: (state: Readonly<S>, oldState: Readonly<S>) => void
   dispose: () => void
 }
@@ -8,10 +8,10 @@ type OrchStateEventMap<S> = {
 type Mutation<S> = (state: Draft<S>) => undefined | void | Draft<S>
 
 type Callbacks<S> = {
-  [K in keyof OrchStateEventMap<S>]: Set<OrchStateEventMap<S>[K]>
+  [K in keyof OrchModelEventMap<S>]: Set<OrchModelEventMap<S>[K]>
 }
 
-export class OrchState<S> {
+export class OrchModel<S> {
   #state: S
 
   #isDisposed = false
@@ -55,15 +55,17 @@ export class OrchState<S> {
     }
   }
 
-  onChange = (fn: OrchStateEventMap<S>['change']) => {
+  onChange = (fn: OrchModelEventMap<S>['change']) => {
     this.#callbacks.change.add(fn)
     return () => this.#callbacks.change.delete(fn)
   }
 
-  onDispose = (fn: OrchStateEventMap<S>['dispose']) => {
+  onDispose = (fn: OrchModelEventMap<S>['dispose']) => {
     this.#callbacks.dispose.add(fn)
     return () => this.#callbacks.dispose.delete(fn)
   }
+
+  protected beforeDispose() {}
 }
 
 function immutableState<T>(state: T): T {

@@ -2,7 +2,7 @@ import React from 'react'
 
 import { OrchModel } from '@orch/core'
 
-import { useOrchState } from './use-orch-state'
+const defaultSelector = <S>(state: S): S => state
 
 export function useModelState<S>(model: OrchModel<S>): S
 export function useModelState<S, R>(
@@ -20,5 +20,11 @@ export function useModelState(
   inlineSelector?: (state: any) => any,
   inlineSelectorDeps: React.DependencyList = [],
 ): any {
-  return useOrchState(model.state, inlineSelector, inlineSelectorDeps)
+  const getSnapshot = React.useCallback(() => model.current, [model])
+  const state = React.useSyncExternalStore(model.onChange, getSnapshot, getSnapshot)
+
+  return React.useMemo(
+    () => (inlineSelector ?? defaultSelector)(state),
+    [state, ...inlineSelectorDeps],
+  )
 }

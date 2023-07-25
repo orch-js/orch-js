@@ -17,7 +17,7 @@ describe(`performers:reducer`, () => {
 
     setCount(44)
 
-    expect(countModel.state.current).toEqual({ count: 44 })
+    expect(countModel.current).toEqual({ count: 44 })
   })
 
   it(`should be able to update state by return the new one`, () => {
@@ -25,7 +25,7 @@ describe(`performers:reducer`, () => {
 
     setCount(44)
 
-    expect(countModel.state.current).toEqual({ count: 44 })
+    expect(countModel.current).toEqual({ count: 44 })
   })
 
   it(`should keep working after error`, () => {
@@ -44,7 +44,7 @@ describe(`performers:reducer`, () => {
 
     setCount(44)
 
-    expect(countModel.state.current).toEqual({ count: 44 })
+    expect(countModel.current).toEqual({ count: 44 })
     restoreConsole()
   })
 })
