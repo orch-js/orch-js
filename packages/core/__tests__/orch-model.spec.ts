@@ -30,19 +30,19 @@ describe(`OrchModel`, () => {
   it(`should be able to custom default state`, () => {
     const model = new OrchModel({ count: 10 })
 
-    expect(model.current).toEqual({ count: 10 })
+    expect(model.state).toEqual({ count: 10 })
   })
 
   it(`should be able to nest OrchModel`, () => {
     const nameModel = new NameModel('home')
 
-    expect(nameModel.current).toEqual({ name: 'home' })
-    expect(nameModel.count.current).toEqual({ count: 4 })
+    expect(nameModel.state).toEqual({ name: 'home' })
+    expect(nameModel.count.state).toEqual({ count: 4 })
 
     nameModel.updateName('school')
 
-    expect(nameModel.current).toEqual({ name: 'school' })
-    expect(nameModel.count.current).toEqual({ count: 6 })
+    expect(nameModel.state).toEqual({ name: 'school' })
+    expect(nameModel.count.state).toEqual({ count: 6 })
   })
 
   describe(`dispose model`, () => {
@@ -82,7 +82,7 @@ describe(`OrchModel`, () => {
       disposeModel(model, null)
 
       expect(() => model.setCount(20)).toThrow()
-      expect(model.current).toEqual({ count: 0 })
+      expect(model.state).toEqual({ count: 0 })
     })
 
     it(`should dispose nested OrchModel`, () => {
@@ -91,8 +91,8 @@ describe(`OrchModel`, () => {
       disposeModel(nameModel, null)
 
       expect(() => nameModel.updateName('school')).toThrow()
-      expect(nameModel.current).toEqual({ name: 'home' })
-      expect(nameModel.count.current).toEqual({ count: 4 })
+      expect(nameModel.state).toEqual({ name: 'home' })
+      expect(nameModel.count.state).toEqual({ count: 4 })
     })
   })
 
@@ -180,16 +180,16 @@ describe(`OrchModel`, () => {
   describe(`current`, () => {
     it(`should return current state`, () => {
       const model = new CountModel({ count: 0 })
-      expect(model.current).toEqual({ count: 0 })
+      expect(model.state).toEqual({ count: 0 })
     })
 
     it(`should not able to mutate current state`, () => {
       const model = new CountModel({ count: 0 })
-      const currentState = model.current
+      const currentState = model.state
 
       expect(() => ((currentState as { count: number }).count = 44)).toThrow()
       expect(currentState).toEqual({ count: 0 })
-      expect(model.current).toEqual({ count: 0 })
+      expect(model.state).toEqual({ count: 0 })
     })
   })
 
@@ -197,7 +197,7 @@ describe(`OrchModel`, () => {
     it(`should replace current state`, () => {
       const model = new CountModel({ count: 0 })
       model.setState({ count: 50 })
-      expect(model.current).toEqual({ count: 50 })
+      expect(model.state).toEqual({ count: 50 })
     })
 
     it(`should accept a function to mutate current state`, () => {
@@ -206,7 +206,7 @@ describe(`OrchModel`, () => {
       model.setState((s) => {
         s.count = 24
       })
-      expect(model.current).toEqual({ count: 24 })
+      expect(model.state).toEqual({ count: 24 })
     })
   })
 
@@ -217,7 +217,7 @@ describe(`OrchModel`, () => {
       model.dispose()
 
       expect(() => model.setState({ count: 44 })).toThrow()
-      expect(model.current).toEqual({ count: 0 })
+      expect(model.state).toEqual({ count: 0 })
     })
 
     it(`should not emit new state after dispose`, () => {
@@ -229,7 +229,7 @@ describe(`OrchModel`, () => {
       model.dispose()
 
       expect(() => model.setState(() => ({ count: 44 }))).toThrow()
-      expect(model.current).toEqual({ count: 0 })
+      expect(model.state).toEqual({ count: 0 })
       expect(spy.mock.calls).toEqual([])
     })
   })

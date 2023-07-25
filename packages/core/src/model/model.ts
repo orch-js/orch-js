@@ -11,18 +11,18 @@ type Callbacks<S> = {
   [K in keyof OrchModelEventMap<S>]: Set<OrchModelEventMap<S>[K]>
 }
 
-export class OrchModel<S> {
-  #state: S
+export class OrchModel<State> {
+  #state: State
 
   #isDisposed = false
 
-  #callbacks: Callbacks<S> = { change: new Set(), dispose: new Set() }
+  #callbacks: Callbacks<State> = { change: new Set(), dispose: new Set() }
 
-  constructor(defaultState: S) {
+  constructor(defaultState: State) {
     this.#state = immutableState(defaultState)
   }
 
-  get current(): Readonly<S> {
+  get state(): Readonly<State> {
     return this.#state
   }
 
@@ -39,12 +39,12 @@ export class OrchModel<S> {
     this.#callbacks.change.clear()
   }
 
-  setState = (mutationOrState: S | Mutation<S>) => {
+  setState = (mutationOrState: State | Mutation<State>) => {
     if (this.isDisposed) {
       throw new Error('current state is disposed')
     }
 
-    const newState = isMutation<S>(mutationOrState)
+    const newState = isMutation<State>(mutationOrState)
       ? produce(this.#state, mutationOrState)
       : immutableState(mutationOrState)
 
@@ -55,12 +55,12 @@ export class OrchModel<S> {
     }
   }
 
-  onChange = (fn: OrchModelEventMap<S>['change']) => {
+  onChange = (fn: OrchModelEventMap<State>['change']) => {
     this.#callbacks.change.add(fn)
     return () => this.#callbacks.change.delete(fn)
   }
 
-  onDispose = (fn: OrchModelEventMap<S>['dispose']) => {
+  onDispose = (fn: OrchModelEventMap<State>['dispose']) => {
     this.#callbacks.dispose.add(fn)
     return () => this.#callbacks.dispose.delete(fn)
   }

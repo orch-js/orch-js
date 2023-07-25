@@ -40,7 +40,7 @@ describe(`useLocalModel`, () => {
     rerender({ state: { count: 44 } })
 
     expect(prevModel !== result.current).toBe(true)
-    expect(result.current.current).toEqual({ count: 44 })
+    expect(result.current.state).toEqual({ count: 44 })
   })
 
   it(`should dispose model if unmount`, () => {
