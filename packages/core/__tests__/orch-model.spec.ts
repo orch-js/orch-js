@@ -46,13 +46,13 @@ describe(`OrchModel`, () => {
   })
 
   describe(`dispose model`, () => {
-    it(`should trigger 'beforeDispose'`, () => {
+    it(`can override 'dispose' fn to simulate 'beforeDispose' functioning`, () => {
       const spy = vi.fn()
 
       class ModelToDispose extends OrchModel<{ count: number }> {
-        protected beforeDispose() {
-          super.beforeDispose()
+        dispose() {
           spy('beforeDispose')
+          super.dispose()
         }
       }
 

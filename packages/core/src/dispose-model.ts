@@ -11,8 +11,6 @@ export function disposeModel<T extends OrchModel<any>>(model: T, lockId: OrchMod
   const modelLockId = lockMap.get(model) ?? null
 
   if (modelLockId === lockId) {
-    model['beforeDispose']()
-
     const { models, performers } = filterProperties(model)
 
     models.forEach((model) => disposeModel(model, modelLockId))

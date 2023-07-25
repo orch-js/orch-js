@@ -30,7 +30,7 @@ export class OrchModel<State> {
     return this.#isDisposed
   }
 
-  dispose = () => {
+  dispose() {
     this.#isDisposed = true
 
     this.#callbacks.dispose.forEach((cb) => cb())
@@ -39,7 +39,7 @@ export class OrchModel<State> {
     this.#callbacks.change.clear()
   }
 
-  setState = (mutationOrState: State | Mutation<State>) => {
+  setState(mutationOrState: State | Mutation<State>) {
     if (this.isDisposed) {
       throw new Error('current state is disposed')
     }
@@ -64,8 +64,6 @@ export class OrchModel<State> {
     this.#callbacks.dispose.add(fn)
     return () => this.#callbacks.dispose.delete(fn)
   }
-
-  protected beforeDispose() {}
 }
 
 function immutableState<T>(state: T): T {
