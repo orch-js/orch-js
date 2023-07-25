@@ -1,30 +1,25 @@
 import React from 'react'
 
-import { OrchModel } from '@orch/core'
+import { OrchModel, OrchModelState } from '@orch/core'
 
-const defaultSelector = <S>(state: S): S => state
+const defaultSelector = <M extends OrchModel<any>>(model: M) => model.current
 
-export function useModelState<S>(model: OrchModel<S>): S
-export function useModelState<S, R>(
-  model: OrchModel<S>,
-  inlineSelector: (state: S) => R,
-  inlineSelectorDeps?: React.DependencyList,
-): R
-export function useModelState<S, R>(
-  model: OrchModel<S>,
-  inlineSelector?: (state: S) => R,
-  inlineSelectorDeps?: React.DependencyList,
+export function useModelState<M extends OrchModel<any>>(model: M): OrchModelState<M>
+export function useModelState<R, M extends OrchModel<any>>(
+  model: M,
+  inlineSelector: (model: M) => R,
+  inlineSelectorDeps: React.DependencyList,
 ): R
 export function useModelState(
   model: OrchModel<any>,
-  inlineSelector?: (state: any) => any,
+  inlineSelector?: (model: OrchModel<any>) => any,
   inlineSelectorDeps: React.DependencyList = [],
 ): any {
   const getSnapshot = React.useCallback(() => model.current, [model])
   const state = React.useSyncExternalStore(model.onChange, getSnapshot, getSnapshot)
 
   return React.useMemo(
-    () => (inlineSelector ?? defaultSelector)(state),
+    () => (inlineSelector ?? defaultSelector)(model),
     [state, ...inlineSelectorDeps],
   )
 }

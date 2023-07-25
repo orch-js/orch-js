@@ -41,7 +41,9 @@ describe(`useModelState`, () => {
   })
 
   it(`should be able to map state`, () => {
-    const { result } = renderHook(() => useModelState(model, ({ count }) => `count: ${count}`))
+    const { result } = renderHook(() =>
+      useModelState(model, ({ current }) => `count: ${current.count}`, []),
+    )
 
     expect(result.current).toBe('count: 0')
 
@@ -55,7 +57,7 @@ describe(`useModelState`, () => {
   it(`should be able to specific selector's deps`, () => {
     const { result, rerender } = renderHook(
       ({ prefix }: { prefix: string }) =>
-        useModelState(model, ({ count }) => `${prefix}: ${count}`, [prefix]),
+        useModelState(model, ({ current }) => `${prefix}: ${current.count}`, [prefix]),
       { initialProps: { prefix: 'a' } },
     )
 
