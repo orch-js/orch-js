@@ -29,7 +29,7 @@ export const action: Action = Object.assign(
 )
 
 export function effect<P = void>(factory: EffectFactory<P>, config?: EffectConfig) {
-  return performer<P, void>(() => {
+  function init() {
     const subject = new Subject<P>()
     const subscription = factory(subject.asObservable())
       .pipe(
@@ -40,13 +40,20 @@ export function effect<P = void>(factory: EffectFactory<P>, config?: EffectConfi
       )
       .subscribe()
 
+    return { subject, subscription }
+  }
+
+  return performer<P, void>(() => {
+    let current = init()
+
     return {
       next(payload) {
-        subject.next(payload)
+        current.subject.next(payload)
       },
       dispose() {
-        subject.complete()
-        subscription.unsubscribe()
+        current.subject.complete()
+        current.subscription.unsubscribe()
+        current = init()
       },
     }
   })

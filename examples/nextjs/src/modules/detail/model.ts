@@ -20,6 +20,10 @@ export type DetailState = {
 }
 
 export class DetailModel extends OrchModel<DetailState> {
+  get needFetchData() {
+    return this.state.detail.status !== 'success'
+  }
+
   constructor(public readonly detailId: string) {
     super({
       detail: { status: 'loading' },

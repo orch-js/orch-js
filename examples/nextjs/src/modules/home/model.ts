@@ -18,6 +18,10 @@ export type HomeState = {
 }
 
 export class HomeModel extends OrchModel<HomeState> {
+  get hasData() {
+    return this.state.list.length > 0
+  }
+
   cancelFetchData = signal()
 
   fetchData = effect<void>((payload$) =>

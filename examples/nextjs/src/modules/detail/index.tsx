@@ -12,10 +12,11 @@ import { DetailModel } from './model'
 
 function DetailComponent() {
   const model = useContextModel(DetailModel)
-  const { needFetchData, detail } = useModelState(model, (state) => ({
-    needFetchData: state.detail.status !== 'success',
-    ...state,
-  }))
+  const [needFetchData, detail] = useModelState(
+    model,
+    ({ needFetchData, state }) => [needFetchData, state.detail],
+    [],
+  )
 
   useEffect(() => {
     if (needFetchData) {
