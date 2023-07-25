@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { disposeModel, OrchModel, preventOthersToDisposeModel, reducer } from '../src'
+import { OrchModel, reducer } from '../src'
+import { reset, setState, subscribe } from '../src/internal-actions'
+import { performer } from '../src/performers/performer'
 
 class CountModel extends OrchModel<{ count: number }> {
   setCount = reducer(this, (state, payload: number) => {
@@ -45,139 +47,37 @@ describe(`OrchModel`, () => {
     expect(nameModel.count.state).toEqual({ count: 6 })
   })
 
-  describe(`dispose model`, () => {
-    it(`can override 'dispose' fn to simulate 'beforeDispose' functioning`, () => {
+  describe(`reset model`, () => {
+    it(`should trigger 'reset' event`, () => {
       const spy = vi.fn()
 
-      class ModelToDispose extends OrchModel<{ count: number }> {
-        dispose() {
-          spy('beforeDispose')
-          super.dispose()
-        }
+      const model = new OrchModel({ count: 1 })
+
+      subscribe('reset', model, spy)
+      reset(model)
+
+      expect(spy).toHaveBeenCalledOnce()
+    })
+
+    it(`should reset performers as well`, () => {
+      const disposeA = vi.fn()
+      const disposeB = vi.fn()
+
+      class Model extends OrchModel<{ count: 0 }> {
+        a = performer(() => ({ next() {}, dispose: disposeA }))
+        b = performer(() => ({ next() {}, dispose: disposeB }))
       }
 
-      const model = new ModelToDispose({ count: 1 })
+      const model = new Model({ count: 0 })
 
-      disposeModel(model, null)
+      reset(model)
 
-      expect(spy.mock.calls).toEqual([['beforeDispose']])
-    })
-
-    it(`should dispose all models`, () => {
-      class TestModel extends OrchModel<{ count: number }> {
-        anotherModel = new OrchModel({ name: 'a' })
-      }
-
-      const model = new TestModel({ count: 0 })
-
-      disposeModel(model, null)
-
-      expect(model.isDisposed).toBe(true)
-      expect(model.anotherModel.isDisposed).toBe(true)
-    })
-
-    it(`should dispose all performers`, () => {
-      const model = new CountModel({ count: 0 })
-
-      disposeModel(model, null)
-
-      expect(() => model.setCount(20)).toThrow()
-      expect(model.state).toEqual({ count: 0 })
-    })
-
-    it(`should dispose nested OrchModel`, () => {
-      const nameModel = new NameModel('home')
-
-      disposeModel(nameModel, null)
-
-      expect(() => nameModel.updateName('school')).toThrow()
-      expect(nameModel.state).toEqual({ name: 'home' })
-      expect(nameModel.count.state).toEqual({ count: 4 })
+      expect(disposeA).toHaveBeenCalledOnce()
+      expect(disposeB).toHaveBeenCalledOnce()
     })
   })
 
-  describe(`preventOthersToDisposeModel`, () => {
-    it(`should return lockId if no provide`, () => {
-      const model = new OrchModel({ count: 0 })
-
-      const lockId = preventOthersToDisposeModel(model)
-
-      expect(lockId).toBeTruthy()
-    })
-
-    it(`should return same lockId if provided`, () => {
-      const model = new OrchModel({ count: 0 })
-
-      const lockId = preventOthersToDisposeModel(model, '123')
-
-      expect(lockId).toBe('123')
-    })
-
-    it(`should ignore dispose action if lockId is not identical`, () => {
-      const model = new OrchModel({ count: 0 })
-
-      preventOthersToDisposeModel(model)
-      disposeModel(model, null)
-
-      expect(model.isDisposed).toBe(false)
-    })
-
-    it(`should dispose model if lockId is identical`, () => {
-      const model = new OrchModel({ count: 0 })
-      const lockId = preventOthersToDisposeModel(model)
-
-      disposeModel(model, lockId)
-
-      expect(model.isDisposed).toBe(true)
-    })
-
-    it(`should also prevent nested model from dispose`, () => {
-      class CountModel extends OrchModel<{ count: number }> {
-        nestedModel = new OrchModel<number>(1)
-      }
-
-      const model = new CountModel({ count: 2 })
-
-      preventOthersToDisposeModel(model)
-
-      disposeModel(model.nestedModel, null)
-      expect(model.nestedModel.isDisposed).toBeFalsy()
-    })
-
-    it(`should ignore dispose action if nested model is prevented`, () => {
-      class CountModel extends OrchModel<{ count: number }> {
-        constructor(public readonly model: OrchModel<any>) {
-          super({ count: 0 })
-        }
-      }
-
-      const modelA = new OrchModel(1)
-      const modelB = new CountModel(modelA)
-
-      preventOthersToDisposeModel(modelA)
-      disposeModel(modelB, null)
-
-      expect(modelA.isDisposed).toBeFalsy()
-      expect(modelB.isDisposed).toBeTruthy()
-    })
-
-    it(`should ignore other 'preventOthersToDisposeModel' calling`, () => {
-      const model = new OrchModel({ count: 0 })
-
-      const a = preventOthersToDisposeModel(model)
-      const b = preventOthersToDisposeModel(model)
-
-      expect(b).toBe(null)
-
-      disposeModel(model, b)
-      expect(model.isDisposed).toBeFalsy()
-
-      disposeModel(model, a)
-      expect(model.isDisposed).toBeTruthy()
-    })
-  })
-
-  describe(`current`, () => {
+  describe(`state`, () => {
     it(`should return current state`, () => {
       const model = new CountModel({ count: 0 })
       expect(model.state).toEqual({ count: 0 })
@@ -196,53 +96,29 @@ describe(`OrchModel`, () => {
   describe(`setState`, () => {
     it(`should replace current state`, () => {
       const model = new CountModel({ count: 0 })
-      model.setState({ count: 50 })
+      setState(model, { count: 50 })
       expect(model.state).toEqual({ count: 50 })
     })
 
     it(`should accept a function to mutate current state`, () => {
       const model = new CountModel({ count: 0 })
 
-      model.setState((s) => {
+      setState(model, (s) => {
         s.count = 24
       })
       expect(model.state).toEqual({ count: 24 })
     })
   })
 
-  describe(`dispose`, () => {
-    it(`should not able to update state after dispose`, () => {
-      const model = new CountModel({ count: 0 })
-
-      model.dispose()
-
-      expect(() => model.setState({ count: 44 })).toThrow()
-      expect(model.state).toEqual({ count: 0 })
-    })
-
-    it(`should not emit new state after dispose`, () => {
-      const model = new CountModel({ count: 0 })
-      const spy = vi.fn()
-
-      model.onChange(spy)
-
-      model.dispose()
-
-      expect(() => model.setState(() => ({ count: 44 }))).toThrow()
-      expect(model.state).toEqual({ count: 0 })
-      expect(spy.mock.calls).toEqual([])
-    })
-  })
-
-  describe(`on`, () => {
+  describe(`subscribe`, () => {
     describe(`change`, () => {
       it(`should trigger on:change if state changed`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        model.onChange(spy)
+        subscribe('change', model, spy)
 
-        model.setState(() => ({ count: 44 }))
+        setState(model, () => ({ count: 44 }))
         expect(spy.mock.calls).toEqual([[{ count: 44 }, { count: 0 }]])
       })
 
@@ -250,23 +126,22 @@ describe(`OrchModel`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        const unsubscribe = model.onChange(spy)
+        const unsubscribe = subscribe('change', model, spy)
 
         unsubscribe()
 
-        model.setState(() => ({ count: 44 }))
+        setState(model, () => ({ count: 44 }))
         expect(spy).toBeCalledTimes(0)
       })
     })
 
-    describe(`dispose`, () => {
-      it(`should trigger on:dispose callback after dispose`, () => {
+    describe(`reset`, () => {
+      it(`should trigger reset callback after dispose`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        model.onDispose(spy)
-
-        model.dispose()
+        subscribe('reset', model, spy)
+        reset(model)
 
         expect(spy).toBeCalledTimes(1)
       })
@@ -274,26 +149,13 @@ describe(`OrchModel`, () => {
       it(`should return a unsubscribe function`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
-        const unsubscribe = model.onDispose(spy)
+        const unsubscribe = subscribe('reset', model, spy)
 
         unsubscribe()
-        model.dispose()
+        reset(model)
 
         expect(spy).toBeCalledTimes(0)
       })
-    })
-  })
-
-  describe(`isDisposed`, () => {
-    it(`should return false if not calling dispose`, () => {
-      const model = new CountModel({ count: 0 })
-      expect(model.isDisposed).toBe(false)
-    })
-
-    it(`should return true after calling dispose`, () => {
-      const model = new CountModel({ count: 0 })
-      model.dispose()
-      expect(model.isDisposed).toBe(true)
     })
   })
 })

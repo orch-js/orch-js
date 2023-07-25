@@ -1,4 +1,4 @@
 export * from './model'
 export * from './utility-types'
 export * from './performers'
-export * from './dispose-model'
+export { subscribe, reset } from './internal-actions'

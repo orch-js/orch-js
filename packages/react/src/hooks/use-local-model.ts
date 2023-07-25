@@ -1,12 +1,6 @@
 import * as React from 'react'
 
-import {
-  disposeModel,
-  InitiatedOrchModel,
-  OrchModelConstructor,
-  OrchModelParams,
-  preventOthersToDisposeModel,
-} from '@orch/core'
+import { InitiatedOrchModel, OrchModelConstructor, OrchModelParams, reset } from '@orch/core'
 
 export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   Model: T,
@@ -17,9 +11,8 @@ export function useLocalModel<T extends OrchModelConstructor<any, any>>(
     () => new Model(...(params as any)),
     [Model, ...(params as any), ...extraDeps],
   )
-  const lockId = React.useMemo(() => preventOthersToDisposeModel(model), [model])
 
-  React.useEffect(() => () => disposeModel(model, lockId), [model, lockId])
+  React.useEffect(() => () => reset(model), [model])
 
   return model
 }

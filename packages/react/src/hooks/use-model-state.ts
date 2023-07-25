@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OrchModel, OrchModelState } from '@orch/core'
+import { OrchModel, OrchModelState, subscribe } from '@orch/core'
 
 const defaultSelector = <M extends OrchModel<any>>(model: M) => model.state
 
@@ -16,7 +16,11 @@ export function useModelState(
   inlineSelectorDeps: React.DependencyList = [],
 ): any {
   const getSnapshot = React.useCallback(() => model.state, [model])
-  const state = React.useSyncExternalStore(model.onChange, getSnapshot, getSnapshot)
+  const onChange = React.useCallback(
+    (notify: () => void) => subscribe('change', model, notify),
+    [model],
+  )
+  const state = React.useSyncExternalStore(onChange, getSnapshot, getSnapshot)
 
   return React.useMemo(
     () => (inlineSelector ?? defaultSelector)(model),

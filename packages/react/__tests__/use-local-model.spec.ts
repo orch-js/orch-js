@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { disposeModel, OrchModel } from '@orch/core'
+import { OrchModel, subscribe } from '@orch/core'
 
 import { useLocalModel } from '../src'
 
@@ -46,12 +46,13 @@ describe(`useLocalModel`, () => {
   it(`should dispose model if unmount`, () => {
     const { result, unmount } = renderHook(() => useLocalModel(CountModel, []))
     const model = result.current
+    const spy = vi.fn()
 
-    expect(model.isDisposed).toBe(false)
+    subscribe('reset', model, spy)
 
+    expect(spy).toBeCalledTimes(0)
     unmount()
-
-    expect(model.isDisposed).toBe(true)
+    expect(spy).toBeCalledTimes(1)
   })
 
   it(`should dispose previous model if return new model`, () => {
@@ -60,19 +61,13 @@ describe(`useLocalModel`, () => {
       { initialProps: {} },
     )
 
+    const spy = vi.fn()
     const prevModel = result.current
 
+    subscribe('reset', prevModel, spy)
+
+    expect(spy).toBeCalledTimes(0)
     rerender({ state: { count: 44 } })
-
-    expect(prevModel.isDisposed).toBe(true)
-  })
-
-  it(`should prevent others to dispose model`, () => {
-    const { result } = renderHook(() => useLocalModel(CountModel, []))
-    const model = result.current
-
-    disposeModel(model, null)
-
-    expect(model.isDisposed).toBeFalsy()
+    expect(spy).toBeCalledTimes(1)
   })
 })
