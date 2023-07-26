@@ -1,5 +1,5 @@
 import { DefaultStateSymbol, ListenersSymbol, StateSymbol } from './const'
-import { immutableState } from './utils'
+import { immutableState } from './internal-utils'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
   new (...params: P): M

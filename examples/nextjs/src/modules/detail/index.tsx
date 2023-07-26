@@ -1,16 +1,10 @@
-import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 
-import {
-  useContextModel,
-  useLocalModel,
-  useModelState,
-  withContextModelProvider,
-} from '@orch/react'
+import { useContextModel, useModelState } from '@orch/react'
 
 import { DetailModel } from './model'
 
-function DetailComponent() {
+export function DetailComponent() {
   const model = useContextModel(DetailModel)
   const [needFetchData, detail] = useModelState(
     model,
@@ -41,13 +35,3 @@ function DetailComponent() {
     </div>
   )
 }
-
-export const Detail = withContextModelProvider(DetailComponent, () => {
-  const router = useRouter()
-  const detailId = Array.isArray(router.query.detailId)
-    ? router.query.detailId[0]
-    : router.query.detailId
-  const model = useLocalModel(DetailModel, [detailId!])
-
-  return [[DetailModel, model]]
-})

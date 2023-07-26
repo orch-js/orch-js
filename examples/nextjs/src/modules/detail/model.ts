@@ -24,10 +24,11 @@ export class DetailModel extends OrchModel<DetailState> {
     return this.state.detail.status !== 'success'
   }
 
-  constructor(public readonly detailId: string) {
-    super({
-      detail: { status: 'loading' },
-    })
+  constructor(
+    public readonly detailId: string,
+    defaultState: DetailState = { detail: { status: 'loading' } },
+  ) {
+    super(defaultState)
   }
 
   cancelFetchData = signal()

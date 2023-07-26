@@ -12,7 +12,14 @@ function request<T>(url: string, options: AxiosRequestConfig): Observable<T> {
       cancelToken.promise.then((reason) => source.cancel(reason.message))
     }
 
-    axios(url, { cancelToken: source.token, ...restOptions })
+    axios(url, {
+      cancelToken: source.token,
+      ...restOptions,
+      baseURL:
+        process.env.NODE_ENV === 'development'
+          ? `http://0.0.0.0:${process.env.PORT}`
+          : process.env.NEXT_PUBLIC_API_URL,
+    })
       .then(({ data }) => data)
       .then((result: T) => {
         observer.next(result)

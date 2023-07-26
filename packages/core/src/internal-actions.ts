@@ -1,9 +1,9 @@
 import { produce, type Draft } from 'immer'
 
 import { DefaultStateSymbol, ListenersSymbol, StateSymbol } from './const'
+import { immutableState } from './internal-utils'
 import { OrchModel, OrchModelEventMap, OrchModelState } from './model'
 import { disposePerformer, isPerformer, Performer } from './performers/performer'
-import { immutableState } from './utils'
 
 type Mutation<S> = (state: Draft<S>) => undefined | void | Draft<S>
 
