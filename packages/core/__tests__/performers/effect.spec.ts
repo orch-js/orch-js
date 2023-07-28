@@ -2,7 +2,7 @@ import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
 import { describe, expect, it, vi } from 'vitest'
 
 import { action, effect } from '../../src'
-import { disposePerformer } from '../../src/performers/performer'
+import { resetPerformer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
 
 describe(`performers`, () => {
@@ -81,7 +81,7 @@ describe(`performers`, () => {
       restoreConsole()
     })
 
-    it(`should complete payload$ after it is disposed`, () => {
+    it(`should complete payload$ after it is reset`, () => {
       const spy = vi.fn()
 
       const _performer = effect<number>((payload$) =>
@@ -91,7 +91,7 @@ describe(`performers`, () => {
         ),
       )
 
-      disposePerformer(_performer)
+      resetPerformer(_performer)
 
       expect(spy.mock.calls).toEqual([['end']])
     })

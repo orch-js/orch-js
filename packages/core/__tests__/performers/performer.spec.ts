@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { disposePerformer, performer } from '../../src/performers/performer'
+import { performer, resetPerformer } from '../../src/performers/performer'
 
 describe(`performers:performer`, () => {
   it(`should trigger 'next' while triggering performer`, () => {
@@ -25,15 +25,15 @@ describe(`performers:performer`, () => {
     expect(_performer()).toBe(obj)
   })
 
-  it(`should trigger 'dispose' while disposing performer`, () => {
+  it(`should trigger 'reset' while disposing performer`, () => {
     const spy = vi.fn()
 
     const _performer = performer<number>(() => ({
       next() {},
-      dispose: spy,
+      reset: spy,
     }))
 
-    disposePerformer(_performer)
+    resetPerformer(_performer)
 
     expect(spy).toBeCalledTimes(1)
   })

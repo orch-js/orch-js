@@ -37,7 +37,7 @@ export function switchAsync<P = void, FR = void, HR = void>(
         .then((value) => skipIfAborted(signal, () => (handler ?? defaultHandler)(value)))
         .catch((error) => skipIfAborted(signal, () => Promise.reject(error)))
     },
-    dispose() {
+    reset() {
       abortCtl?.abort()
       abortCtl = null
     },
@@ -73,7 +73,7 @@ export function exhaustAsync<P = void, FR = void, HR = void>(
 
       return current.promise
     },
-    dispose() {
+    reset() {
       current?.abortCtl.abort()
       current = null
     },

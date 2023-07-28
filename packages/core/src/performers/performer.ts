@@ -1,17 +1,17 @@
-import { DisposeSymbol } from '../const'
+import { ResetSymbol } from '../const'
 import { PayloadFunc } from '../utility-types'
 
 export type Performer<P, R> = PayloadFunc<P, R> & {
-  [DisposeSymbol]: () => void
+  [ResetSymbol]: () => void
 }
 
 export type PerformerFactory<P, R = void> = () => {
   next: (payload: P) => R
-  dispose?: () => void
+  reset?: () => void
 }
 
 export function performer<P, R = void>(factory: PerformerFactory<P, R>): Performer<P, R> {
-  const { next, dispose } = factory()
+  const { next, reset } = factory()
 
   return Object.assign(
     function trigger(payload: P) {
@@ -19,17 +19,17 @@ export function performer<P, R = void>(factory: PerformerFactory<P, R>): Perform
     } as PayloadFunc<P, R>,
 
     {
-      [DisposeSymbol]() {
-        dispose?.()
+      [ResetSymbol]() {
+        reset?.()
       },
     },
   )
 }
 
 export function isPerformer(obj: any): obj is Performer<unknown, unknown> {
-  return obj && typeof obj === 'function' && typeof obj[DisposeSymbol] === 'function'
+  return obj && typeof obj === 'function' && typeof obj[ResetSymbol] === 'function'
 }
 
-export function disposePerformer(performer: Performer<any, any>) {
-  performer[DisposeSymbol]()
+export function resetPerformer(performer: Performer<any, any>) {
+  performer[ResetSymbol]()
 }

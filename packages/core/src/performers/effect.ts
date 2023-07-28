@@ -50,7 +50,7 @@ export function effect<P = void>(factory: EffectFactory<P>, config?: EffectConfi
       next(payload) {
         current.subject.next(payload)
       },
-      dispose() {
+      reset() {
         current.subject.complete()
         current.subscription.unsubscribe()
         current = init()

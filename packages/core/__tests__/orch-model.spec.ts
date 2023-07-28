@@ -60,20 +60,20 @@ describe(`OrchModel`, () => {
     })
 
     it(`should reset performers as well`, () => {
-      const disposeA = vi.fn()
-      const disposeB = vi.fn()
+      const resetA = vi.fn()
+      const resetB = vi.fn()
 
       class Model extends OrchModel<{ count: 0 }> {
-        a = performer(() => ({ next() {}, dispose: disposeA }))
-        b = performer(() => ({ next() {}, dispose: disposeB }))
+        a = performer(() => ({ next() {}, reset: resetA }))
+        b = performer(() => ({ next() {}, reset: resetB }))
       }
 
       const model = new Model({ count: 0 })
 
       reset(model)
 
-      expect(disposeA).toHaveBeenCalledOnce()
-      expect(disposeB).toHaveBeenCalledOnce()
+      expect(resetA).toHaveBeenCalledOnce()
+      expect(resetB).toHaveBeenCalledOnce()
     })
   })
 
@@ -136,7 +136,7 @@ describe(`OrchModel`, () => {
     })
 
     describe(`reset`, () => {
-      it(`should trigger reset callback after dispose`, () => {
+      it(`should trigger reset callback after reset`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 

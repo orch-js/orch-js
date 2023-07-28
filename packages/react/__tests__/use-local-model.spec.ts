@@ -43,7 +43,7 @@ describe(`useLocalModel`, () => {
     expect(result.current.state).toEqual({ count: 44 })
   })
 
-  it(`should dispose model if unmount`, () => {
+  it(`should reset model if unmount`, () => {
     const { result, unmount } = renderHook(() => useLocalModel(CountModel, []))
     const model = result.current
     const spy = vi.fn()
@@ -55,7 +55,7 @@ describe(`useLocalModel`, () => {
     expect(spy).toBeCalledTimes(1)
   })
 
-  it(`should dispose previous model if return new model`, () => {
+  it(`should reset previous model if return new model`, () => {
     const { result, rerender } = renderHook(
       ({ state }: { state?: CountModelState }) => useLocalModel(CountModel, [state]),
       { initialProps: {} },

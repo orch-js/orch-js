@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { AsyncContext, exhaustAsync, switchAsync } from '../../src'
-import { DisposeSymbol } from '../../src/const'
+import { ResetSymbol } from '../../src/const'
 
 describe(`switchAsync`, () => {
   it(`should run with correct params`, async () => {
@@ -63,7 +63,7 @@ describe(`switchAsync`, () => {
     expect(handlerSpy.mock.calls).toEqual([['#456']])
   })
 
-  it(`should should abort the ongoing task if action being disposed`, () => {
+  it(`should should abort the ongoing task if action being reset`, () => {
     const abortSpy = vi.fn()
     const handlerSpy = vi.fn()
 
@@ -73,7 +73,7 @@ describe(`switchAsync`, () => {
     }, handlerSpy)
 
     action()
-    action[DisposeSymbol]()
+    action[ResetSymbol]()
 
     expect(abortSpy).toBeCalledTimes(1)
     expect(handlerSpy).toBeCalledTimes(0)
@@ -148,7 +148,7 @@ describe(`exhaustAsync`, () => {
     expect(await b).toBe(`#10`)
   })
 
-  it(`should should abort the ongoing task if action being disposed`, () => {
+  it(`should should abort the ongoing task if action being reset`, () => {
     const abortSpy = vi.fn()
 
     const action = exhaustAsync(({ signal }) => {
@@ -157,7 +157,7 @@ describe(`exhaustAsync`, () => {
     })
 
     action()
-    action[DisposeSymbol]()
+    action[ResetSymbol]()
 
     expect(abortSpy).toBeCalledTimes(1)
   })

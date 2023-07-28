@@ -3,7 +3,7 @@ import { produce, type Draft } from 'immer'
 import { DefaultStateSymbol, ListenersSymbol, StateSymbol } from './const'
 import { immutableState } from './internal-utils'
 import { OrchModel, OrchModelEventMap, OrchModelState } from './model'
-import { disposePerformer, isPerformer, Performer } from './performers/performer'
+import { isPerformer, Performer, resetPerformer } from './performers/performer'
 
 type Mutation<S> = (state: Draft<S>) => undefined | void | Draft<S>
 
@@ -33,7 +33,7 @@ export function reset<M extends OrchModel<any>>(model: M) {
   model[ListenersSymbol].reset.forEach((cb) => cb())
   model[ListenersSymbol].change.clear()
   model[ListenersSymbol].reset.clear()
-  getAllPerformers(model).forEach(disposePerformer)
+  getAllPerformers(model).forEach(resetPerformer)
   setStateAndNotify(model, model[DefaultStateSymbol])
 }
 
