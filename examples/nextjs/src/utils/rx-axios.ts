@@ -16,9 +16,7 @@ function request<T>(url: string, options: AxiosRequestConfig): Observable<T> {
       cancelToken: source.token,
       ...restOptions,
       baseURL:
-        process.env.NODE_ENV === 'development'
-          ? `http://0.0.0.0:${process.env.PORT}`
-          : process.env.NEXT_PUBLIC_API_URL,
+        typeof window === 'undefined' ? `http://0.0.0.0:${process.env.PORT ?? 3000}` : undefined,
     })
       .then(({ data }) => data)
       .then((result: T) => {

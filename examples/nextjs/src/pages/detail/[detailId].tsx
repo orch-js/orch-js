@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next'
-import { useRouter } from 'next/router'
 
 import { waitUntil } from '@orch/core'
 import { useLocalModel, withContextModelProvider } from '@orch/react'
@@ -10,17 +9,14 @@ import { DetailModel, DetailState } from '@/modules/detail/model'
 export default withContextModelProvider(
   DetailComponent,
   ({ defaultState }: { defaultState: DetailState }) => {
-    const router = useRouter()
-    const model = useLocalModel(DetailModel, [`${router.query.detailId}`, defaultState])
+    const model = useLocalModel(DetailModel, [defaultState])
 
     return [[DetailModel, model]]
   },
 )
 
 export const getServerSideProps: GetServerSideProps = async (req) => {
-  const model = new DetailModel(`${req.query.detailId}`)
-
-  model.fetchData()
+  const model = new DetailModel({ detailId: `${req.query.detailId}` })
 
   await waitUntil(model, ({ state }) => state.detail.status !== 'loading')
 
