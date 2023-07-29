@@ -126,13 +126,13 @@ importers:
       nanoid:
         specifier: ^3.3.6
         version: 3.3.6
+      rxjs:
+        specifier: '>=6'
+        version: 7.8.1
     devDependencies:
       conditional-type-checks:
         specifier: ^1.0.6
         version: 1.0.6
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
 
   packages/react:
     dependencies:
@@ -3726,7 +3726,6 @@ packages:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
       tslib: 2.6.0
-    dev: true
 
   /safe-array-concat@1.0.0:
     resolution: {integrity: sha512-9dVEFruWIsnie89yym+xWTAYASdpw3CJV7Li/6zBewGf9z2i1j31rP6jnY0pHEO4QZh6N0K11bFjWmdR8UGdPQ==}

@@ -19,13 +19,10 @@
   },
   "dependencies": {
     "immer": "^10.0.2",
-    "nanoid": "^3.3.6"
-  },
-  "peerDependencies": {
+    "nanoid": "^3.3.6",
     "rxjs": ">=6"
   },
   "devDependencies": {
-    "conditional-type-checks": "^1.0.6",
-    "rxjs": "^7.8.1"
+    "conditional-type-checks": "^1.0.6"
   }
 }
