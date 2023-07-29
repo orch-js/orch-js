@@ -1,6 +1,6 @@
 import { map, Observable, Subject } from 'rxjs'
 
-import { action, epic } from './epic'
+import { epic } from './epic'
 import { Performer } from './performer'
 
 export type SignalFactory<P, R> = (payload$: Observable<P>) => Observable<R>
@@ -14,7 +14,7 @@ export function signal(factory?: SignalFactory<any, any>): SignalPerformer<any, 
 
   return Object.assign(
     epic(
-      (payload$) =>
+      (payload$, { action }) =>
         (factory ? factory(payload$) : payload$).pipe(
           map((value) => action(() => signalSource.next(value))),
         ),

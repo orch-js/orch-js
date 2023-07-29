@@ -1,27 +1,29 @@
-import { catchError, Observable, Subject, tap } from 'rxjs'
+import { catchError, map, Observable, OperatorFunction, Subject, tap } from 'rxjs'
 
 import { performer } from './performer'
 
-export type EpicAction = null | (() => void)
+export type ValidEpicAction = null | (() => void)
 
-export type EpicFactory<P> = (payload$: Observable<P>) => Observable<EpicAction>
+export type EpicFactory<P> = (
+  payload$: Observable<P>,
+  options: { action: EpicAction },
+) => Observable<ValidEpicAction>
 
 export type EpicConfig = { factoryToLog?: unknown }
 
-export type Action = {
-  <P extends any[]>(func: (...params: P) => void, ...params: P): Exclude<EpicAction, null>
-  curry<P extends any[]>(func: (...params: P) => void): (...params: P) => Exclude<EpicAction, null>
+export type EpicAction = {
+  <P extends any[]>(func: (...params: P) => void, ...params: P): Exclude<ValidEpicAction, null>
+
+  map<P>(func: (payload: P) => void): OperatorFunction<P, ValidEpicAction>
 }
 
-export const action: Action = Object.assign(
+const action: EpicAction = Object.assign(
   function action<P extends any[]>(func: (...params: P) => void, ...params: P) {
     return () => func(...params)
   },
   {
-    curry<P extends any[]>(func: (...params: P) => void) {
-      return (...params: P) => {
-        return () => func(...params)
-      }
+    map<P>(func: (payload: P) => void): OperatorFunction<P, ValidEpicAction> {
+      return map((value) => action(func, value))
     },
   },
 )
@@ -29,7 +31,7 @@ export const action: Action = Object.assign(
 export function epic<P = void>(factory: EpicFactory<P>, config?: EpicConfig) {
   function init() {
     const subject = new Subject<P>()
-    const subscription = factory(subject.asObservable())
+    const subscription = factory(subject.asObservable(), { action })
       .pipe(
         tap((epicAction) => epicAction?.()),
         logAngIgnoreError(config?.factoryToLog ?? factory),

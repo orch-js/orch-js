@@ -1,6 +1,6 @@
 import { catchError, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 
-import { action, epic, OrchModel, reducer, signal } from '@orch/core'
+import { epic, OrchModel, reducer, signal } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -33,7 +33,7 @@ export class DetailModel extends OrchModel<DetailState> {
 
   cancelFetchData = signal()
 
-  fetchData = epic<void>((payload$) => {
+  fetchData = epic<void>((payload$, { action }) => {
     return payload$.pipe(
       switchMap(() =>
         rxAxios.get<DetailData>(`/resource/${this.detailId}.json`).pipe(
