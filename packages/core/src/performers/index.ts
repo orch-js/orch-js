@@ -1,4 +1,4 @@
 export * from './async'
-export * from './effect'
+export * from './epic'
 export * from './signal'
 export * from './reducer'

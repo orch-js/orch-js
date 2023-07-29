@@ -2,17 +2,15 @@ import { catchError, Observable, Subject, tap } from 'rxjs'
 
 import { performer } from './performer'
 
-export type EffectAction = null | (() => void)
+export type EpicAction = null | (() => void)
 
-export type EffectFactory<P> = (payload$: Observable<P>) => Observable<EffectAction>
+export type EpicFactory<P> = (payload$: Observable<P>) => Observable<EpicAction>
 
-export type EffectConfig = { factoryToLog?: unknown }
+export type EpicConfig = { factoryToLog?: unknown }
 
 export type Action = {
-  <P extends any[]>(func: (...params: P) => void, ...params: P): Exclude<EffectAction, null>
-  curry<P extends any[]>(
-    func: (...params: P) => void,
-  ): (...params: P) => Exclude<EffectAction, null>
+  <P extends any[]>(func: (...params: P) => void, ...params: P): Exclude<EpicAction, null>
+  curry<P extends any[]>(func: (...params: P) => void): (...params: P) => Exclude<EpicAction, null>
 }
 
 export const action: Action = Object.assign(
@@ -28,14 +26,12 @@ export const action: Action = Object.assign(
   },
 )
 
-export function effect<P = void>(factory: EffectFactory<P>, config?: EffectConfig) {
+export function epic<P = void>(factory: EpicFactory<P>, config?: EpicConfig) {
   function init() {
     const subject = new Subject<P>()
     const subscription = factory(subject.asObservable())
       .pipe(
-        tap((effectAction) => {
-          effectAction?.()
-        }),
+        tap((epicAction) => epicAction?.()),
         logAngIgnoreError(config?.factoryToLog ?? factory),
       )
       .subscribe()
@@ -62,7 +58,7 @@ export function effect<P = void>(factory: EffectFactory<P>, config?: EffectConfi
 function logAngIgnoreError(factory: unknown) {
   return catchError((err, caught) => {
     /* eslint-disable no-console */
-    console.group('[Orch]: Effect error')
+    console.group('[Orch]: Epic error')
     console.log(factory)
     console.error(err)
     console.groupEnd()

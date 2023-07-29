@@ -1,7 +1,7 @@
 import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
 import { describe, expect, it, vi } from 'vitest'
 
-import { action, effect } from '../../src'
+import { action, epic } from '../../src'
 import { resetPerformer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
 
@@ -9,27 +9,27 @@ describe(`performers`, () => {
   describe(`action`, () => {
     it('should execute the provided function with the provided parameters when called', () => {
       const mockFunc = vi.fn()
-      const effectAction = action(mockFunc, 'param1', 'param2')
-      effectAction()
+      const epicAction = action(mockFunc, 'param1', 'param2')
+      epicAction()
       expect(mockFunc).toHaveBeenCalledWith('param1', 'param2')
     })
 
     it('should return a function that executes the provided function with the provided parameters when the curry method is used', () => {
       const mockFunc = vi.fn()
       const curriedAction = action.curry(mockFunc)
-      const effectAction = curriedAction('param1', 'param2')
-      effectAction()
+      const epicAction = curriedAction('param1', 'param2')
+      epicAction()
       expect(mockFunc).toHaveBeenCalledWith('param1', 'param2')
     })
   })
 
-  describe(`effect`, () => {
+  describe(`epic`, () => {
     it(`should handle action properly`, () => {
       vi.useFakeTimers()
 
       const spy = vi.fn()
 
-      const debounceSpy = effect<string>((payload$) =>
+      const debounceSpy = epic<string>((payload$) =>
         payload$.pipe(map(action.curry(spy)), debounceTime(1000)),
       )
 
@@ -45,7 +45,7 @@ describe(`performers`, () => {
     it(`should ignore null actions`, () => {
       const spy = vi.fn()
 
-      const _effect = effect<number>((payload$) =>
+      const _effect = epic<number>((payload$) =>
         payload$.pipe(map((num) => (num % 2 ? action(spy, num) : null))),
       )
 
@@ -61,7 +61,7 @@ describe(`performers`, () => {
 
       const restoreConsole = ignoreConsole()
 
-      const _effect = effect<number>((payload$) =>
+      const _effect = epic<number>((payload$) =>
         payload$.pipe(
           map((num) => {
             if (num % 2 === 0) {
@@ -84,7 +84,7 @@ describe(`performers`, () => {
     it(`should complete payload$ after it is reset`, () => {
       const spy = vi.fn()
 
-      const _performer = effect<number>((payload$) =>
+      const _performer = epic<number>((payload$) =>
         payload$.pipe(
           endWith('end'),
           map((value) => action(spy, value)),
@@ -100,7 +100,7 @@ describe(`performers`, () => {
       const restoreConsole = ignoreConsole()
       const spy = vi.fn()
 
-      const _effect = effect<string>((payload$) =>
+      const _effect = epic<string>((payload$) =>
         payload$.pipe(
           startWith('a'),
           map((str) => {
