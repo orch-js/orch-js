@@ -45,20 +45,21 @@ export class OrchModel<State> {
   reset() {
     this.#listeners.reset.forEach((cb) => cb())
     getAllPerformers(this).forEach(resetPerformer)
-    this.#setState(this.#defaultState)
+    this.setState(this.#defaultState)
   }
 
   protected reducer<P extends any[]>(
     fn: (state: Draft<State>, ...payload: P) => Draft<State> | void,
   ) {
     return (...payload: P) => {
-      this.#setState(produce(this.#defaultState, (state) => fn(state, ...payload)))
+      this.setState(produce(this.#defaultState, (state) => fn(state, ...payload)))
     }
   }
 
-  #setState(newState: State) {
-    if (newState !== this.state) {
-      const oldState = this.state
+  protected setState(newState: State) {
+    const oldState = this.getState()
+
+    if (newState !== oldState) {
       this.#state = newState
       this.#listeners.change.forEach((cb) => cb(newState, oldState))
     }
