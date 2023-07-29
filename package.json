@@ -2,6 +2,9 @@
   "name": "orch-js",
   "version": "0.2.0",
   "private": true,
+  "repository": {
+    "url": "https://github.com/orch-js/orch-js"
+  },
   "author": "Runjuu",
   "scripts": {
     "build": "run-s clean build:lib build:examples",

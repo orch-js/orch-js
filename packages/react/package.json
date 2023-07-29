@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/orch-js/orch-js"
+  },
   "author": "Runjuu",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
