@@ -18,7 +18,7 @@ export default withContextModelProvider(
 export const getServerSideProps: GetServerSideProps = async (req) => {
   const model = new DetailModel({ detailId: `${req.query.detailId}` })
 
-  await waitUntil(model, ({ state }) => state.detail.status !== 'loading')
+  await waitUntil(model, ({ detail }) => detail.status !== 'loading')
 
-  return { props: { defaultState: model.state } }
+  return { props: { defaultState: model.getState() } }
 }

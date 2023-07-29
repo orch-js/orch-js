@@ -31,19 +31,19 @@ describe(`OrchModel`, () => {
   it(`should be able to custom default state`, () => {
     const model = new OrchModel({ count: 10 })
 
-    expect(model.state).toEqual({ count: 10 })
+    expect(model.getState()).toEqual({ count: 10 })
   })
 
   it(`should be able to nest OrchModel`, () => {
     const nameModel = new NameModel('home')
 
-    expect(nameModel.state).toEqual({ name: 'home' })
-    expect(nameModel.count.state).toEqual({ count: 4 })
+    expect(nameModel.getState()).toEqual({ name: 'home' })
+    expect(nameModel.count.getState()).toEqual({ count: 4 })
 
     nameModel.updateName('school')
 
-    expect(nameModel.state).toEqual({ name: 'school' })
-    expect(nameModel.count.state).toEqual({ count: 6 })
+    expect(nameModel.getState()).toEqual({ name: 'school' })
+    expect(nameModel.count.getState()).toEqual({ count: 6 })
   })
 
   describe(`reset model`, () => {
@@ -97,19 +97,19 @@ describe(`OrchModel`, () => {
     })
   })
 
-  describe(`state`, () => {
+  describe(`getState`, () => {
     it(`should return current state`, () => {
       const model = new CountModel({ count: 0 })
-      expect(model.state).toEqual({ count: 0 })
+      expect(model.getState()).toEqual({ count: 0 })
     })
 
     it(`should not able to mutate current state`, () => {
       const model = new CountModel({ count: 0 })
-      const currentState = model.state
+      const currentState = model.getState()
 
       expect(() => ((currentState as { count: number }).count = 44)).toThrow()
       expect(currentState).toEqual({ count: 0 })
-      expect(model.state).toEqual({ count: 0 })
+      expect(model.getState()).toEqual({ count: 0 })
     })
   })
 
@@ -174,7 +174,7 @@ describe(`OrchModel`, () => {
 
       model.setCount(44)
 
-      expect(model.state).toEqual({ count: 44 })
+      expect(model.getState()).toEqual({ count: 44 })
     })
 
     it(`should be able to update state by return the new one`, () => {
@@ -186,7 +186,7 @@ describe(`OrchModel`, () => {
 
       model.setCount(44)
 
-      expect(model.state).toEqual({ count: 44 })
+      expect(model.getState()).toEqual({ count: 44 })
     })
 
     it(`should keep working after error`, () => {
@@ -206,7 +206,7 @@ describe(`OrchModel`, () => {
 
       model.setCount(55)
 
-      expect(model.state).toEqual({ count: 55 })
+      expect(model.getState()).toEqual({ count: 55 })
     })
   })
 })

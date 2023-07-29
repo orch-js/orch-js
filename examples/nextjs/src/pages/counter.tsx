@@ -11,11 +11,11 @@ class CountModel extends OrchModel<{ count: number }> {
   })
 
   add1 = () => {
-    this.setCount(this.state.count + 1)
+    this.setCount(this.getState().count + 1)
   }
 
   minus1 = () => {
-    this.setCount(this.state.count - 1)
+    this.setCount(this.getState().count - 1)
   }
 }
 

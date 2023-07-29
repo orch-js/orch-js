@@ -33,7 +33,7 @@ export class OrchModel<State> {
     }
   }
 
-  get state(): Readonly<State> {
+  getState(): Readonly<State> {
     return this.#state
   }
 

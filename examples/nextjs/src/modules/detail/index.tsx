@@ -8,7 +8,7 @@ export function DetailComponent() {
   const model = useContextModel(DetailModel)
   const [needFetchData, detail] = useModelState(
     model,
-    ({ needFetchData, state }) => [needFetchData, state.detail],
+    ({ detail }, { needFetchData }) => [needFetchData, detail],
     [],
   )
 

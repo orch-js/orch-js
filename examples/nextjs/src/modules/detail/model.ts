@@ -16,7 +16,7 @@ export type DetailState = {
 
 export class DetailModel extends OrchModel<DetailState> {
   get needFetchData() {
-    return this.state.detail.status !== 'success'
+    return this.getState().detail.status !== 'success'
   }
 
   constructor(defaultState: MarkOptional<DetailState, 'detail'>) {
@@ -35,7 +35,7 @@ export class DetailModel extends OrchModel<DetailState> {
     return payload$.pipe(
       filter(() => this.needFetchData),
       switchMap(() =>
-        rxAxios.get<DetailData>(`/resource/${this.state.detailId}.json`).pipe(
+        rxAxios.get<DetailData>(`/resource/${this.getState().detailId}.json`).pipe(
           takeUntil(this.cancelFetchData.signal$),
           map((data) => action(updateDetail, { status: 'success', ...data })),
           startWith(action(updateDetail, { status: 'loading' })),

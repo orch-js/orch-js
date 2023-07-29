@@ -37,10 +37,10 @@ const action: EpicAction = Object.assign(
 
 const state$ = (<M extends OrchModel<any>>(model: M) => {
   return new Observable<Readonly<OrchModelState<M>>>((observer) => {
-    observer.next(model.state)
+    observer.next(model.getState())
 
     return model.on('change', () => {
-      observer.next(model.state)
+      observer.next(model.getState())
     })
   })
 }) as ToObservableState
