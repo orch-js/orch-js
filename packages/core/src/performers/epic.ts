@@ -1,12 +1,14 @@
 import { catchError, map, Observable, OperatorFunction, Subject, tap } from 'rxjs'
 
+import { OrchModel, OrchModelState, subscribe } from '@orch/core'
+
 import { performer } from './performer'
 
 export type ValidEpicAction = null | (() => void)
 
 export type EpicFactory<P> = (
   payload$: Observable<P>,
-  options: { action: EpicAction },
+  options: { action: EpicAction; state$: ToObservableState },
 ) => Observable<ValidEpicAction>
 
 export type EpicConfig = { factoryToLog?: unknown }
@@ -16,6 +18,10 @@ export type EpicAction = {
 
   map<P>(func: (payload: P) => void): OperatorFunction<P, ValidEpicAction>
 }
+
+export type ToObservableState = <M extends OrchModel<any>>(
+  model: M,
+) => Observable<OrchModelState<M>>
 
 const action: EpicAction = Object.assign(
   function action<P extends any[]>(func: (...params: P) => void, ...params: P) {
@@ -28,10 +34,20 @@ const action: EpicAction = Object.assign(
   },
 )
 
+const state$ = (<M extends OrchModel<any>>(model: M) => {
+  return new Observable<Readonly<OrchModelState<M>>>((observer) => {
+    observer.next(model.state)
+
+    return subscribe('change', model, () => {
+      observer.next(model.state)
+    })
+  })
+}) as ToObservableState
+
 export function epic<P = void>(factory: EpicFactory<P>, config?: EpicConfig) {
   function init() {
     const subject = new Subject<P>()
-    const subscription = factory(subject.asObservable(), { action })
+    const subscription = factory(subject.asObservable(), { action, state$ })
       .pipe(
         tap((epicAction) => epicAction?.()),
         logAngIgnoreError(config?.factoryToLog ?? factory),

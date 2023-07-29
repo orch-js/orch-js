@@ -75,6 +75,27 @@ describe(`OrchModel`, () => {
       expect(resetA).toHaveBeenCalledOnce()
       expect(resetB).toHaveBeenCalledOnce()
     })
+
+    it(`should keep subscriptions untouched`, () => {
+      const onChange = vi.fn()
+      const onReset = vi.fn()
+
+      const model = new OrchModel({ count: 0 })
+
+      subscribe('change', model, onChange)
+      subscribe('reset', model, onReset)
+
+      reset(model)
+
+      setState(model, { count: 1 })
+      reset(model)
+
+      expect(onChange.mock.calls).toEqual([
+        [{ count: 1 }, { count: 0 }],
+        [{ count: 0 }, { count: 1 }],
+      ])
+      expect(onReset).toHaveBeenCalledTimes(2)
+    })
   })
 
   describe(`state`, () => {

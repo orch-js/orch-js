@@ -31,8 +31,6 @@ export function subscribe<M extends OrchModel<any>, K extends keyof OrchModelEve
 
 export function reset<M extends OrchModel<any>>(model: M) {
   model[ListenersSymbol].reset.forEach((cb) => cb())
-  model[ListenersSymbol].change.clear()
-  model[ListenersSymbol].reset.clear()
   getAllPerformers(model).forEach(resetPerformer)
   setStateAndNotify(model, model[DefaultStateSymbol])
 }
