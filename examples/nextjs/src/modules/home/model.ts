@@ -1,6 +1,6 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 
-import { epic, OrchModel, reducer, signal } from '@orch/core'
+import { epic, OrchModel, signal } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -37,11 +37,11 @@ export class HomeModel extends OrchModel<HomeState> {
     ),
   )
 
-  private updateStatus = reducer(this, (state, status: HomeStatus) => {
+  private updateStatus = this.reducer((state, status: HomeStatus) => {
     state.status = status
   })
 
-  private updateListData = reducer(this, (state, list: ListValue[]) => {
+  private updateListData = this.reducer((state, list: ListValue[]) => {
     state.list = list
   })
 }

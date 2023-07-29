@@ -2,9 +2,14 @@ import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
 import { describe, expect, it, vi } from 'vitest'
 
 import { epic, OrchModel } from '../../src'
-import { setState } from '../../src/internal-actions'
 import { resetPerformer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
+
+class CountModel extends OrchModel<{ count: number }> {
+  setCount = this.reducer((state, count: number) => {
+    state.count = count
+  })
+}
 
 describe(`performers/epic`, () => {
   it(`should handle action properly`, () => {
@@ -109,13 +114,13 @@ describe(`performers/epic`, () => {
     it(`should convert model's state to observable`, () => {
       const spy = vi.fn()
 
-      const model = new OrchModel({ count: 0 })
+      const model = new CountModel({ count: 0 })
 
       const _epic = epic<string>(({ action, state$ }) => state$(model).pipe(action.map(spy)))
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }]])
 
-      setState(model, { count: 2 })
+      model.setCount(2)
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }]])
 

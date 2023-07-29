@@ -1,11 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { OrchModel, reducer } from '../src'
-import { reset, setState, subscribe } from '../src/internal-actions'
+import { OrchModel } from '../src'
 import { performer } from '../src/performers/performer'
 
 class CountModel extends OrchModel<{ count: number }> {
-  setCount = reducer(this, (state, payload: number) => {
+  setCount = this.reducer((state, payload: number) => {
     state.count = payload
   })
 }
@@ -23,7 +22,7 @@ class NameModel extends OrchModel<{ name: string }> {
     this.count.setCount(name.length)
   }
 
-  private setName = reducer(this, (state, payload: string) => {
+  private setName = this.reducer((state, payload: string) => {
     state.name = payload
   })
 }
@@ -53,8 +52,8 @@ describe(`OrchModel`, () => {
 
       const model = new OrchModel({ count: 1 })
 
-      subscribe('reset', model, spy)
-      reset(model)
+      model.on('reset', spy)
+      model.reset()
 
       expect(spy).toHaveBeenCalledOnce()
     })
@@ -70,7 +69,7 @@ describe(`OrchModel`, () => {
 
       const model = new Model({ count: 0 })
 
-      reset(model)
+      model.reset()
 
       expect(resetA).toHaveBeenCalledOnce()
       expect(resetB).toHaveBeenCalledOnce()
@@ -80,15 +79,15 @@ describe(`OrchModel`, () => {
       const onChange = vi.fn()
       const onReset = vi.fn()
 
-      const model = new OrchModel({ count: 0 })
+      const model = new CountModel({ count: 0 })
 
-      subscribe('change', model, onChange)
-      subscribe('reset', model, onReset)
+      model.on('change', onChange)
+      model.on('reset', onReset)
 
-      reset(model)
+      model.reset()
 
-      setState(model, { count: 1 })
-      reset(model)
+      model.setCount(1)
+      model.reset()
 
       expect(onChange.mock.calls).toEqual([
         [{ count: 1 }, { count: 0 }],
@@ -114,32 +113,15 @@ describe(`OrchModel`, () => {
     })
   })
 
-  describe(`setState`, () => {
-    it(`should replace current state`, () => {
-      const model = new CountModel({ count: 0 })
-      setState(model, { count: 50 })
-      expect(model.state).toEqual({ count: 50 })
-    })
-
-    it(`should accept a function to mutate current state`, () => {
-      const model = new CountModel({ count: 0 })
-
-      setState(model, (s) => {
-        s.count = 24
-      })
-      expect(model.state).toEqual({ count: 24 })
-    })
-  })
-
-  describe(`subscribe`, () => {
+  describe(`on`, () => {
     describe(`change`, () => {
       it(`should trigger on:change if state changed`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        subscribe('change', model, spy)
+        model.on('change', spy)
+        model.setCount(44)
 
-        setState(model, () => ({ count: 44 }))
         expect(spy.mock.calls).toEqual([[{ count: 44 }, { count: 0 }]])
       })
 
@@ -147,11 +129,11 @@ describe(`OrchModel`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        const unsubscribe = subscribe('change', model, spy)
+        const unsubscribe = model.on('change', spy)
 
         unsubscribe()
 
-        setState(model, () => ({ count: 44 }))
+        model.setCount(44)
         expect(spy).toBeCalledTimes(0)
       })
     })
@@ -161,8 +143,8 @@ describe(`OrchModel`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        subscribe('reset', model, spy)
-        reset(model)
+        model.on('reset', spy)
+        model.reset()
 
         expect(spy).toBeCalledTimes(1)
       })
@@ -170,13 +152,61 @@ describe(`OrchModel`, () => {
       it(`should return a unsubscribe function`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
-        const unsubscribe = subscribe('reset', model, spy)
+        const unsubscribe = model.on('reset', spy)
 
         unsubscribe()
-        reset(model)
+        model.reset()
 
         expect(spy).toBeCalledTimes(0)
       })
+    })
+  })
+
+  describe(`performers:reducer`, () => {
+    it(`should be able to update state by mutating the current one`, () => {
+      class CountModel extends OrchModel<{ count: number }> {
+        setCount = this.reducer((state, count: number) => {
+          state.count = count
+        })
+      }
+
+      const model = new CountModel({ count: 0 })
+
+      model.setCount(44)
+
+      expect(model.state).toEqual({ count: 44 })
+    })
+
+    it(`should be able to update state by return the new one`, () => {
+      class CountModel extends OrchModel<{ count: number }> {
+        setCount = this.reducer((_, count: number) => ({ count }))
+      }
+
+      const model = new CountModel({ count: 0 })
+
+      model.setCount(44)
+
+      expect(model.state).toEqual({ count: 44 })
+    })
+
+    it(`should keep working after error`, () => {
+      class CountModel extends OrchModel<{ count: number }> {
+        setCount = this.reducer((_, count: number) => {
+          if (count < 0) {
+            throw new Error()
+          }
+
+          return { count }
+        })
+      }
+
+      const model = new CountModel({ count: 0 })
+
+      expect(() => model.setCount(-1)).toThrow()
+
+      model.setCount(55)
+
+      expect(model.state).toEqual({ count: 55 })
     })
   })
 })

@@ -1,5 +1,6 @@
-import { DefaultStateSymbol, ListenersSymbol, StateSymbol } from './const'
-import { immutableState } from './internal-utils'
+import { Draft, produce } from 'immer'
+
+import { isPerformer, Performer, resetPerformer } from './performers/performer'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
   new (...params: P): M
@@ -17,24 +18,67 @@ export type OrchModelEventMap<S> = {
 }
 
 export class OrchModel<State> {
-  [StateSymbol]: State;
-  [DefaultStateSymbol]: State;
-  [ListenersSymbol]: {
-    [K in keyof OrchModelEventMap<State>]: Set<OrchModelEventMap<State>[K]>
-  }
+  #state: State
+  #defaultState: State
+  #listeners: { [K in keyof OrchModelEventMap<State>]: Set<OrchModelEventMap<State>[K]> }
 
   constructor(defaultState: State) {
     const state = immutableState(defaultState)
 
-    this[DefaultStateSymbol] = state
-    this[StateSymbol] = state
-    this[ListenersSymbol] = {
+    this.#defaultState = state
+    this.#state = state
+    this.#listeners = {
       change: new Set(),
       reset: new Set(),
     }
   }
 
   get state(): Readonly<State> {
-    return this[StateSymbol]
+    return this.#state
   }
+
+  on<K extends keyof OrchModelEventMap<any>>(key: K, fn: OrchModelEventMap<State>[K]) {
+    this.#listeners[key].add(fn)
+    return () => this.#listeners[key].delete(fn)
+  }
+
+  reset() {
+    this.#listeners.reset.forEach((cb) => cb())
+    getAllPerformers(this).forEach(resetPerformer)
+    this.#setState(this.#defaultState)
+  }
+
+  protected reducer<P extends any[]>(
+    fn: (state: Draft<State>, ...payload: P) => Draft<State> | void,
+  ) {
+    return (...payload: P) => {
+      this.#setState(produce(this.#defaultState, (state) => fn(state, ...payload)))
+    }
+  }
+
+  #setState(newState: State) {
+    if (newState !== this.state) {
+      const oldState = this.state
+      this.#state = newState
+      this.#listeners.change.forEach((cb) => cb(newState, oldState))
+    }
+  }
+}
+
+function getAllPerformers(model: OrchModel<any>) {
+  const performers: Performer<unknown, unknown>[] = []
+
+  Object.keys(model).forEach((key) => {
+    const value = (model as any)[key]
+
+    if (isPerformer(value)) {
+      performers.push(value)
+    }
+  })
+
+  return performers
+}
+
+function immutableState<T>(state: T): T {
+  return produce(state, () => {})
 }

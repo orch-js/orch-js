@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { OrchModel, reducer } from '@orch/core'
+import { OrchModel } from '@orch/core'
 
 import { useModelState } from '../src'
 
@@ -12,7 +12,7 @@ class CountModel extends OrchModel<CountModelState> {
     super(defaultState)
   }
 
-  setCount = reducer(this, (state, payload: number) => {
+  setCount = this.reducer((state, payload: number) => {
     state.count = payload
   })
 }

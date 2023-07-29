@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector'
 
-import { OrchModel, OrchModelState, subscribe } from '@orch/core'
+import { OrchModel, OrchModelState } from '@orch/core'
 
 const defaultSelector = <M extends OrchModel<any>>(model: M) => model.state
 
@@ -18,10 +18,7 @@ export function useModelState(
   deps: React.DependencyList = [],
   isEqual?: (a: any, b: any) => boolean,
 ): any {
-  const onChange = React.useCallback(
-    (notify: () => void) => subscribe('change', model, notify),
-    [model],
-  )
+  const onChange = React.useCallback((notify: () => void) => model.on('change', notify), [model])
 
   const getSnapshot = React.useCallback(() => model.state, [model])
 

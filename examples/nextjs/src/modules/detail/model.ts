@@ -1,6 +1,6 @@
 import { catchError, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 
-import { epic, OrchModel, reducer, signal } from '@orch/core'
+import { epic, OrchModel, signal } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -46,7 +46,7 @@ export class DetailModel extends OrchModel<DetailState> {
     )
   })
 
-  private updateDetail = reducer(this, (state, detail: DetailState['detail']) => {
+  private updateDetail = this.reducer((state, detail: DetailState['detail']) => {
     state.detail = detail
   })
 }

@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { describe, expect, it, vi } from 'vitest'
 
-import { OrchModel, subscribe } from '@orch/core'
+import { OrchModel } from '@orch/core'
 
 import { useLocalModel } from '../src'
 
@@ -48,7 +48,7 @@ describe(`useLocalModel`, () => {
     const model = result.current
     const spy = vi.fn()
 
-    subscribe('reset', model, spy)
+    model.on('reset', spy)
 
     expect(spy).toBeCalledTimes(0)
     unmount()
@@ -64,7 +64,7 @@ describe(`useLocalModel`, () => {
     const spy = vi.fn()
     const prevModel = result.current
 
-    subscribe('reset', prevModel, spy)
+    prevModel.on('reset', spy)
 
     expect(spy).toBeCalledTimes(0)
     rerender({ state: { count: 44 } })

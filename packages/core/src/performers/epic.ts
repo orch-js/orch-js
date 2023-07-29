@@ -1,6 +1,6 @@
 import { catchError, map, Observable, OperatorFunction, Subject, tap } from 'rxjs'
 
-import { OrchModel, OrchModelState, subscribe } from '@orch/core'
+import { OrchModel, OrchModelState } from '@orch/core'
 
 import { performer } from './performer'
 
@@ -39,7 +39,7 @@ const state$ = (<M extends OrchModel<any>>(model: M) => {
   return new Observable<Readonly<OrchModelState<M>>>((observer) => {
     observer.next(model.state)
 
-    return subscribe('change', model, () => {
+    return model.on('change', () => {
       observer.next(model.state)
     })
   })
