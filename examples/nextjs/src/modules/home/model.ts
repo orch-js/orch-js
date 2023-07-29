@@ -24,7 +24,7 @@ export class HomeModel extends OrchModel<HomeState> {
 
   cancelFetchData = signal()
 
-  fetchData = epic<void>((payload$, { action }) =>
+  fetchData = epic<void>(({ payload$, action }) =>
     payload$.pipe(
       switchMap(() =>
         rxAxios.get<ListValue[]>('/resource/list.json').pipe(

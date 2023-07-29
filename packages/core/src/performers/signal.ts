@@ -14,7 +14,7 @@ export function signal(factory?: SignalFactory<any, any>): SignalPerformer<any, 
 
   return Object.assign(
     epic(
-      (payload$, { action }) =>
+      ({ payload$, action }) =>
         (factory ? factory(payload$) : payload$).pipe(
           map((value) => action(() => signalSource.next(value))),
         ),

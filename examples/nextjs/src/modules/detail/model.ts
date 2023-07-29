@@ -33,7 +33,7 @@ export class DetailModel extends OrchModel<DetailState> {
 
   cancelFetchData = signal()
 
-  fetchData = epic<void>((payload$, { action }) => {
+  fetchData = epic<void>(({ payload$, action }) => {
     return payload$.pipe(
       switchMap(() =>
         rxAxios.get<DetailData>(`/resource/${this.detailId}.json`).pipe(

@@ -6,10 +6,11 @@ import { performer } from './performer'
 
 export type ValidEpicAction = null | (() => void)
 
-export type EpicFactory<P> = (
-  payload$: Observable<P>,
-  options: { action: EpicAction; state$: ToObservableState },
-) => Observable<ValidEpicAction>
+export type EpicFactory<P> = (params: {
+  payload$: Observable<P>
+  action: EpicAction
+  state$: ToObservableState
+}) => Observable<ValidEpicAction>
 
 export type EpicConfig = { factoryToLog?: unknown }
 
@@ -47,7 +48,7 @@ const state$ = (<M extends OrchModel<any>>(model: M) => {
 export function epic<P = void>(factory: EpicFactory<P>, config?: EpicConfig) {
   function init() {
     const subject = new Subject<P>()
-    const subscription = factory(subject.asObservable(), { action, state$ })
+    const subscription = factory({ payload$: subject.asObservable(), action, state$ })
       .pipe(
         tap((epicAction) => epicAction?.()),
         logAngIgnoreError(config?.factoryToLog ?? factory),

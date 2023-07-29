@@ -12,7 +12,7 @@ describe(`performers/epic`, () => {
 
     const spy = vi.fn()
 
-    const debounceSpy = epic<string>((payload$, { action }) =>
+    const debounceSpy = epic<string>(({ payload$, action }) =>
       payload$.pipe(action.map(spy), debounceTime(1000)),
     )
 
@@ -28,13 +28,13 @@ describe(`performers/epic`, () => {
   it(`should ignore null actions`, () => {
     const spy = vi.fn()
 
-    const _effect = epic<number>((payload$, { action }) =>
+    const _epic = epic<number>(({ payload$, action }) =>
       payload$.pipe(map((num) => (num % 2 ? action(spy, num) : null))),
     )
 
-    _effect(1)
-    _effect(2)
-    _effect(3)
+    _epic(1)
+    _epic(2)
+    _epic(3)
 
     expect(spy.mock.calls).toEqual([[1], [3]])
   })
@@ -44,7 +44,7 @@ describe(`performers/epic`, () => {
 
     const restoreConsole = ignoreConsole()
 
-    const _effect = epic<number>((payload$, { action }) =>
+    const _epic = epic<number>(({ payload$, action }) =>
       payload$.pipe(
         map((num) => {
           if (num % 2 === 0) {
@@ -56,8 +56,8 @@ describe(`performers/epic`, () => {
       ),
     )
 
-    _effect(0)
-    _effect(1)
+    _epic(0)
+    _epic(1)
 
     expect(spy.mock.calls).toEqual([[1]])
 
@@ -67,7 +67,7 @@ describe(`performers/epic`, () => {
   it(`should complete payload$ after it is reset`, () => {
     const spy = vi.fn()
 
-    const _performer = epic<number>((payload$, { action }) =>
+    const _performer = epic<number>(({ payload$, action }) =>
       payload$.pipe(
         endWith('end'),
         map((value) => action(spy, value)),
@@ -83,7 +83,7 @@ describe(`performers/epic`, () => {
     const restoreConsole = ignoreConsole()
     const spy = vi.fn()
 
-    const _effect = epic<string>((payload$, { action }) =>
+    const _epic = epic<string>(({ payload$, action }) =>
       payload$.pipe(
         startWith('a'),
         map((str) => {
@@ -97,8 +97,8 @@ describe(`performers/epic`, () => {
       ),
     )
 
-    _effect('b')
-    _effect('c')
+    _epic('b')
+    _epic('c')
 
     expect(spy.mock.calls).toEqual([['a'], ['a'], ['c']])
 
@@ -111,9 +111,7 @@ describe(`performers/epic`, () => {
 
       const model = new OrchModel({ count: 0 })
 
-      const _epic = epic<string>((_payload$, { action, state$ }) =>
-        state$(model).pipe(action.map(spy)),
-      )
+      const _epic = epic<string>(({ action, state$ }) => state$(model).pipe(action.map(spy)))
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }]])
 
