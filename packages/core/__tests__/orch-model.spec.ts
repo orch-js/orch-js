@@ -163,6 +163,21 @@ describe(`OrchModel`, () => {
   })
 
   describe(`performers:reducer`, () => {
+    it(`should use current state to produce`, () => {
+      class CountModel extends OrchModel<{ count: number }> {
+        addCount = this.reducer((state, num: number) => {
+          state.count += num
+        })
+      }
+
+      const model = new CountModel({ count: 0 })
+
+      model.addCount(1)
+      model.addCount(2)
+
+      expect(model.getState()).toEqual({ count: 3 })
+    })
+
     it(`should be able to update state by mutating the current one`, () => {
       class CountModel extends OrchModel<{ count: number }> {
         setCount = this.reducer((state, count: number) => {

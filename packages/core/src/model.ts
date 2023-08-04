@@ -52,7 +52,7 @@ export class OrchModel<State> {
     fn: (state: Draft<State>, ...payload: P) => Draft<State> | void,
   ) {
     return (...payload: P) => {
-      this.setState(produce(this.#defaultState, (state) => fn(state, ...payload)))
+      this.setState(produce(this.#state, (state) => fn(state, ...payload)))
     }
   }
 
