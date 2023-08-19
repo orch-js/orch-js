@@ -1,12 +1,19 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { performer, resetPerformer } from '../../src/performers/performer'
+import { OrchModel } from '../../src'
+import { performer } from '../../src/performers/performer'
 
 describe(`performers:performer`, () => {
+  let model: OrchModel<NonNullable<unknown>>
+
+  beforeEach(() => {
+    model = new OrchModel({})
+  })
+
   it(`should trigger 'next' while triggering performer`, () => {
     const spy = vi.fn()
 
-    const _performer = performer<number>(() => ({ next: spy }))
+    const _performer = performer<number>(model, () => ({ next: spy }))
 
     _performer(44)
 
@@ -16,11 +23,7 @@ describe(`performers:performer`, () => {
   it(`should return 'next' fn's result while triggering performer`, () => {
     const obj = {}
 
-    const _performer = performer<void, object>(() => ({
-      next() {
-        return obj
-      },
-    }))
+    const _performer = performer<void, object>(model, () => ({ next: () => obj }))
 
     expect(_performer()).toBe(obj)
   })
@@ -28,12 +31,9 @@ describe(`performers:performer`, () => {
   it(`should trigger 'reset' while disposing performer`, () => {
     const spy = vi.fn()
 
-    const _performer = performer<number>(() => ({
-      next() {},
-      reset: spy,
-    }))
+    performer<number>(model, () => ({ next() {}, reset: spy }))
 
-    resetPerformer(_performer)
+    model.reset()
 
     expect(spy).toBeCalledTimes(1)
   })

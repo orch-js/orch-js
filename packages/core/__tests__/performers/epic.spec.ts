@@ -1,8 +1,7 @@
 import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { epic, mutation, OrchModel } from '../../src'
-import { resetPerformer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
 
 class CountModel extends OrchModel<{ count: number }> {
@@ -12,12 +11,18 @@ class CountModel extends OrchModel<{ count: number }> {
 }
 
 describe(`performers/epic`, () => {
+  let model: OrchModel<NonNullable<unknown>>
+
+  beforeEach(() => {
+    model = new OrchModel({})
+  })
+
   it(`should handle action properly`, () => {
     vi.useFakeTimers()
 
     const spy = vi.fn()
 
-    const debounceSpy = epic<string>(({ payload$, action }) =>
+    const debounceSpy = epic<string>(model, ({ payload$, action }) =>
       payload$.pipe(action.map(spy), debounceTime(1000)),
     )
 
@@ -33,7 +38,7 @@ describe(`performers/epic`, () => {
   it(`should ignore null actions`, () => {
     const spy = vi.fn()
 
-    const _epic = epic<number>(({ payload$, action }) =>
+    const _epic = epic<number>(model, ({ payload$, action }) =>
       payload$.pipe(map((num) => (num % 2 ? action(spy, num) : null))),
     )
 
@@ -49,7 +54,7 @@ describe(`performers/epic`, () => {
 
     const restoreConsole = ignoreConsole()
 
-    const _epic = epic<number>(({ payload$, action }) =>
+    const _epic = epic<number>(model, ({ payload$, action }) =>
       payload$.pipe(
         map((num) => {
           if (num % 2 === 0) {
@@ -72,14 +77,14 @@ describe(`performers/epic`, () => {
   it(`should complete payload$ after it is reset`, () => {
     const spy = vi.fn()
 
-    const _performer = epic<number>(({ payload$, action }) =>
+    epic<number>(model, ({ payload$, action }) =>
       payload$.pipe(
         endWith('end'),
         map((value) => action(spy, value)),
       ),
     )
 
-    resetPerformer(_performer)
+    model.reset()
 
     expect(spy.mock.calls).toEqual([['end']])
   })
@@ -88,7 +93,7 @@ describe(`performers/epic`, () => {
     const restoreConsole = ignoreConsole()
     const spy = vi.fn()
 
-    const _epic = epic<string>(({ payload$, action }) =>
+    const _epic = epic<string>(model, ({ payload$, action }) =>
       payload$.pipe(
         startWith('a'),
         map((str) => {
@@ -116,7 +121,7 @@ describe(`performers/epic`, () => {
 
       const model = new CountModel({ count: 0 })
 
-      const _epic = epic<string>(({ action, state$ }) => state$(model).pipe(action.map(spy)))
+      epic<string>(model, ({ action, state$ }) => state$(model).pipe(action.map(spy)))
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }]])
 
@@ -124,9 +129,14 @@ describe(`performers/epic`, () => {
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }]])
 
-      resetPerformer(_epic)
+      model.reset()
 
-      expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }], [{ count: 2 }]])
+      expect(spy.mock.calls).toEqual([
+        [{ count: 0 }],
+        [{ count: 2 }],
+        [{ count: 0 }], // state being reset
+        [{ count: 0 }], // epic being reset
+      ])
     })
   })
 })

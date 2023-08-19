@@ -1,12 +1,18 @@
 import { map } from 'rxjs/operators'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { signal } from '../../src'
+import { OrchModel, signal } from '../../src'
 import { ignoreConsole } from './utils'
 
 describe(`performers:signal`, () => {
+  let model: OrchModel<NonNullable<unknown>>
+
+  beforeEach(() => {
+    model = new OrchModel({})
+  })
+
   it(`should emit payload if trigger signal performer`, () => {
-    const _signal = signal<number>()
+    const _signal = signal<number>(model)
     const spy = vi.fn()
 
     _signal.signal$.subscribe(spy)
@@ -17,7 +23,7 @@ describe(`performers:signal`, () => {
   })
 
   it(`should be able to process payload`, () => {
-    const _signal = signal<number, { num: number }>((payload$) =>
+    const _signal = signal<number, { num: number }>(model, (payload$) =>
       payload$.pipe(map((num) => ({ num }))),
     )
 
@@ -32,7 +38,7 @@ describe(`performers:signal`, () => {
 
   it(`should keep working after error`, () => {
     const restoreConsole = ignoreConsole()
-    const _signal = signal<number, { num: number }>((payload$) =>
+    const _signal = signal<number, { num: number }>(model, (payload$) =>
       payload$.pipe(
         map((num) => {
           if (num < 0) {

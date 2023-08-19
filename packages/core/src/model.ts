@@ -1,5 +1,4 @@
 import { SetStateSymbol } from './const'
-import { isPerformer, Performer, resetPerformer } from './performers/performer'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
   new (...params: P): M
@@ -37,9 +36,8 @@ export class OrchModel<State> {
   }
 
   reset() {
-    this.#listeners.reset.forEach((cb) => cb())
-    getAllPerformers(this).forEach(resetPerformer)
     this.setState(this.#defaultState)
+    this.#listeners.reset.forEach((cb) => cb())
   }
 
   protected setState = this[SetStateSymbol];
@@ -52,18 +50,4 @@ export class OrchModel<State> {
       this.#listeners.change.forEach((cb) => cb(newState, oldState))
     }
   }
-}
-
-function getAllPerformers(model: OrchModel<any>) {
-  const performers: Performer<unknown, unknown>[] = []
-
-  Object.keys(model).forEach((key) => {
-    const value = (model as any)[key]
-
-    if (isPerformer(value)) {
-      performers.push(value)
-    }
-  })
-
-  return performers
 }

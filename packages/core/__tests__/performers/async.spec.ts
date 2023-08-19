@@ -1,13 +1,18 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AsyncContext, exhaustAsync, switchAsync } from '../../src'
-import { ResetSymbol } from '../../src/const'
+import { AsyncContext, exhaustAsync, OrchModel, switchAsync } from '../../src'
 
 describe(`switchAsync`, () => {
+  let model: OrchModel<NonNullable<unknown>>
+
+  beforeEach(() => {
+    model = new OrchModel({})
+  })
+
   it(`should run with correct params`, async () => {
     const factorySpy = vi.fn(async (_a: AsyncContext, b: number) => `#${b}`)
     const handlerSpy = vi.fn(async (b: string) => b)
-    const action = switchAsync(factorySpy, handlerSpy)
+    const action = switchAsync(model, factorySpy, handlerSpy)
 
     await action(123)
 
@@ -18,13 +23,14 @@ describe(`switchAsync`, () => {
 
   it(`should return factory's result if no handler exist`, async () => {
     const factorySpy = vi.fn(async (_a: AsyncContext, b: number) => `#${b}`)
-    const action = switchAsync(factorySpy)
+    const action = switchAsync(model, factorySpy)
 
     expect(await action(123)).toBe('#123')
   })
 
   it(`should return handler's result if handler exist`, async () => {
     const action = switchAsync(
+      model,
       async (_, num: number) => num + 1,
       async (num: number) => `#${num}`,
     )
@@ -35,7 +41,7 @@ describe(`switchAsync`, () => {
   it(`should start a new task if previous task finished`, async () => {
     const factorySpy = vi.fn(async (_a: AsyncContext, b: number) => `#${b}`)
     const handlerSpy = vi.fn((b: string) => b)
-    const action = switchAsync(factorySpy, handlerSpy)
+    const action = switchAsync(model, factorySpy, handlerSpy)
 
     await action(123)
     await action(456)
@@ -49,11 +55,15 @@ describe(`switchAsync`, () => {
     const factorySpy = vi.fn()
     const handlerSpy = vi.fn()
 
-    const action = switchAsync(({ signal }, num: number) => {
-      signal.addEventListener('abort', abortSpy)
-      factorySpy()
-      return new Promise((resolve) => setTimeout(() => resolve(`#${num}`), 100))
-    }, handlerSpy)
+    const action = switchAsync(
+      model,
+      ({ signal }, num: number) => {
+        signal.addEventListener('abort', abortSpy)
+        factorySpy()
+        return new Promise((resolve) => setTimeout(() => resolve(`#${num}`), 100))
+      },
+      handlerSpy,
+    )
 
     action(123)
     await action(456)
@@ -63,17 +73,21 @@ describe(`switchAsync`, () => {
     expect(handlerSpy.mock.calls).toEqual([['#456']])
   })
 
-  it(`should should abort the ongoing task if action being reset`, () => {
+  it(`should should abort the ongoing task if model being reset`, () => {
     const abortSpy = vi.fn()
     const handlerSpy = vi.fn()
 
-    const action = switchAsync(({ signal }) => {
-      signal.addEventListener('abort', abortSpy)
-      return new Promise(() => {})
-    }, handlerSpy)
+    const action = switchAsync(
+      model,
+      ({ signal }) => {
+        signal.addEventListener('abort', abortSpy)
+        return new Promise(() => {})
+      },
+      handlerSpy,
+    )
 
     action()
-    action[ResetSymbol]()
+    model.reset()
 
     expect(abortSpy).toBeCalledTimes(1)
     expect(handlerSpy).toBeCalledTimes(0)
@@ -81,10 +95,16 @@ describe(`switchAsync`, () => {
 })
 
 describe(`exhaustAsync`, () => {
+  let model: OrchModel<NonNullable<unknown>>
+
+  beforeEach(() => {
+    model = new OrchModel({})
+  })
+
   it(`should run with correct params`, async () => {
     const factorySpy = vi.fn(async (_context: AsyncContext, num: number) => num + 10)
     const handlerSpy = vi.fn(async (num: number) => `#${num}`)
-    const action = exhaustAsync(factorySpy, handlerSpy)
+    const action = exhaustAsync(model, factorySpy, handlerSpy)
 
     await action(456)
 
@@ -95,13 +115,14 @@ describe(`exhaustAsync`, () => {
 
   it(`should return factory's result if no handler exist`, async () => {
     const factorySpy = vi.fn(async (_a: AsyncContext, b: number) => `#${b}`)
-    const action = exhaustAsync(factorySpy)
+    const action = exhaustAsync(model, factorySpy)
 
     expect(await action(123)).toBe('#123')
   })
 
   it(`should return handler's result if handler exist`, async () => {
     const action = exhaustAsync(
+      model,
       async (_, num: number) => num + 1,
       async (num: number) => `#${num}`,
     )
@@ -111,7 +132,7 @@ describe(`exhaustAsync`, () => {
 
   it(`should start a new task if there's no ongoing task`, () => {
     const spy = vi.fn(async () => {})
-    const action = exhaustAsync(spy)
+    const action = exhaustAsync(model, spy)
 
     action()
 
@@ -120,7 +141,7 @@ describe(`exhaustAsync`, () => {
 
   it(`should start a new task if previous task finished`, async () => {
     const spy = vi.fn(async () => {})
-    const action = exhaustAsync(spy)
+    const action = exhaustAsync(model, spy)
 
     await action()
     await action()
@@ -133,11 +154,15 @@ describe(`exhaustAsync`, () => {
     const actionSpy = vi.fn()
     const handlerSpy = vi.fn((num: number) => `#${num}`)
 
-    const action = exhaustAsync(({ signal }, num: number) => {
-      signal.addEventListener('abort', abortSpy)
-      actionSpy()
-      return new Promise((resolve) => setTimeout(() => resolve(num * 10), 50))
-    }, handlerSpy)
+    const action = exhaustAsync(
+      model,
+      ({ signal }, num: number) => {
+        signal.addEventListener('abort', abortSpy)
+        actionSpy()
+        return new Promise((resolve) => setTimeout(() => resolve(num * 10), 50))
+      },
+      handlerSpy,
+    )
 
     const a = action(1)
     const b = action(2)
@@ -151,13 +176,13 @@ describe(`exhaustAsync`, () => {
   it(`should should abort the ongoing task if action being reset`, () => {
     const abortSpy = vi.fn()
 
-    const action = exhaustAsync(({ signal }) => {
+    const action = exhaustAsync(model, ({ signal }) => {
       signal.addEventListener('abort', abortSpy)
       return new Promise(() => {})
     })
 
     action()
-    action[ResetSymbol]()
+    model.reset()
 
     expect(abortSpy).toBeCalledTimes(1)
   })

@@ -1,7 +1,6 @@
-import { catchError, map, Observable, OperatorFunction, Subject, tap } from 'rxjs'
+import { catchError, map, Observable, Subject, tap, type OperatorFunction } from 'rxjs'
 
-import { OrchModel, OrchModelState } from '@orch/core'
-
+import type { OrchModel, OrchModelState } from '../model'
 import { performer } from './performer'
 
 export type ValidEpicAction = null | (() => void)
@@ -45,7 +44,11 @@ const state$ = (<M extends OrchModel<any>>(model: M) => {
   })
 }) as ToObservableState
 
-export function epic<P = void>(factory: EpicFactory<P>, config?: EpicConfig) {
+export function epic<P = void>(
+  model: OrchModel<any>,
+  factory: EpicFactory<P>,
+  config?: EpicConfig,
+) {
   function init() {
     const subject = new Subject<P>()
     const subscription = factory({ payload$: subject.asObservable(), action, state$ })
@@ -58,7 +61,7 @@ export function epic<P = void>(factory: EpicFactory<P>, config?: EpicConfig) {
     return { subject, subscription }
   }
 
-  return performer<P, void>(() => {
+  return performer<P, void>(model, () => {
     let current = init()
 
     return {

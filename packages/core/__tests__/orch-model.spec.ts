@@ -63,8 +63,8 @@ describe(`OrchModel`, () => {
       const resetB = vi.fn()
 
       class Model extends OrchModel<{ count: 0 }> {
-        a = performer(() => ({ next() {}, reset: resetA }))
-        b = performer(() => ({ next() {}, reset: resetB }))
+        a = performer(this, () => ({ next() {}, reset: resetA }))
+        b = performer(this, () => ({ next() {}, reset: resetB }))
       }
 
       const model = new Model({ count: 0 })
