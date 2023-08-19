@@ -1,7 +1,7 @@
 import { catchError, filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 import { MarkOptional } from 'ts-essentials'
 
-import { epic, OrchModel, signal } from '@orch/core'
+import { epic, mutation, OrchModel, signal } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -25,10 +25,10 @@ export class DetailModel extends OrchModel<DetailState> {
     this.fetchData()
   }
 
-  cancelFetchData = signal()
+  cancelFetchData = signal(this)
 
-  fetchData = epic<void>(({ payload$, action }) => {
-    const updateDetail = this.reducer((state, detail: DetailState['detail']) => {
+  fetchData = epic(this, ({ payload$, action }) => {
+    const updateDetail = mutation(this, (state, detail: DetailState['detail']) => {
       state.detail = detail
     })
 

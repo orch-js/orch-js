@@ -1,6 +1,6 @@
 import { endWith, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
 
-import { epic, OrchModel, signal } from '@orch/core'
+import { epic, mutation, OrchModel, signal } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -22,9 +22,9 @@ export class HomeModel extends OrchModel<HomeState> {
     return this.getState().list.length > 0
   }
 
-  cancelFetchData = signal()
+  cancelFetchData = signal(this)
 
-  fetchData = epic<void>(({ payload$, action }) =>
+  fetchData = epic(this, ({ payload$, action }) =>
     payload$.pipe(
       switchMap(() =>
         rxAxios.get<ListValue[]>('/resource/list.json').pipe(
@@ -37,11 +37,11 @@ export class HomeModel extends OrchModel<HomeState> {
     ),
   )
 
-  private updateStatus = this.reducer((state, status: HomeStatus) => {
+  private updateStatus = mutation(this, (state, status: HomeStatus) => {
     state.status = status
   })
 
-  private updateListData = this.reducer((state, list: ListValue[]) => {
+  private updateListData = mutation(this, (state, list: ListValue[]) => {
     state.list = list
   })
 }
