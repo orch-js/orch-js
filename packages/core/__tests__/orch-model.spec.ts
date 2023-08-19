@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { OrchModel } from '../src'
+import { mutation, OrchModel } from '../src'
 import { performer } from '../src/performers/performer'
 
 class CountModel extends OrchModel<{ count: number }> {
-  setCount = this.reducer((state, payload: number) => {
+  setCount = mutation(this, (state, payload: number) => {
     state.count = payload
   })
 }
@@ -22,7 +22,7 @@ class NameModel extends OrchModel<{ name: string }> {
     this.count.setCount(name.length)
   }
 
-  private setName = this.reducer((state, payload: string) => {
+  private setName = mutation(this, (state, payload: string) => {
     state.name = payload
   })
 }
@@ -102,15 +102,6 @@ describe(`OrchModel`, () => {
       const model = new CountModel({ count: 0 })
       expect(model.getState()).toEqual({ count: 0 })
     })
-
-    it(`should not able to mutate current state`, () => {
-      const model = new CountModel({ count: 0 })
-      const currentState = model.getState()
-
-      expect(() => ((currentState as { count: number }).count = 44)).toThrow()
-      expect(currentState).toEqual({ count: 0 })
-      expect(model.getState()).toEqual({ count: 0 })
-    })
   })
 
   describe(`on`, () => {
@@ -159,69 +150,6 @@ describe(`OrchModel`, () => {
 
         expect(spy).toBeCalledTimes(0)
       })
-    })
-  })
-
-  describe(`performers:reducer`, () => {
-    it(`should use current state to produce`, () => {
-      class CountModel extends OrchModel<{ count: number }> {
-        addCount = this.reducer((state, num: number) => {
-          state.count += num
-        })
-      }
-
-      const model = new CountModel({ count: 0 })
-
-      model.addCount(1)
-      model.addCount(2)
-
-      expect(model.getState()).toEqual({ count: 3 })
-    })
-
-    it(`should be able to update state by mutating the current one`, () => {
-      class CountModel extends OrchModel<{ count: number }> {
-        setCount = this.reducer((state, count: number) => {
-          state.count = count
-        })
-      }
-
-      const model = new CountModel({ count: 0 })
-
-      model.setCount(44)
-
-      expect(model.getState()).toEqual({ count: 44 })
-    })
-
-    it(`should be able to update state by return the new one`, () => {
-      class CountModel extends OrchModel<{ count: number }> {
-        setCount = this.reducer((_, count: number) => ({ count }))
-      }
-
-      const model = new CountModel({ count: 0 })
-
-      model.setCount(44)
-
-      expect(model.getState()).toEqual({ count: 44 })
-    })
-
-    it(`should keep working after error`, () => {
-      class CountModel extends OrchModel<{ count: number }> {
-        setCount = this.reducer((_, count: number) => {
-          if (count < 0) {
-            throw new Error()
-          }
-
-          return { count }
-        })
-      }
-
-      const model = new CountModel({ count: 0 })
-
-      expect(() => model.setCount(-1)).toThrow()
-
-      model.setCount(55)
-
-      expect(model.getState()).toEqual({ count: 55 })
     })
   })
 })

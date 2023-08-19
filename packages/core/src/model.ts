@@ -1,5 +1,4 @@
-import { Draft, produce } from 'immer'
-
+import { SetStateSymbol } from './const'
 import { isPerformer, Performer, resetPerformer } from './performers/performer'
 
 export type OrchModelConstructor<P extends any[], M extends OrchModel<any>> = {
@@ -19,18 +18,13 @@ export type OrchModelEventMap<S> = {
 
 export class OrchModel<State> {
   #state: State
-  #defaultState: State
-  #listeners: { [K in keyof OrchModelEventMap<State>]: Set<OrchModelEventMap<State>[K]> }
+  readonly #defaultState: State
+  readonly #listeners: { [K in keyof OrchModelEventMap<State>]: Set<OrchModelEventMap<State>[K]> }
 
-  constructor(defaultState: State) {
-    const state = immutableState(defaultState)
-
-    this.#defaultState = state
+  constructor(state: State, defaultState = state) {
     this.#state = state
-    this.#listeners = {
-      change: new Set(),
-      reset: new Set(),
-    }
+    this.#defaultState = defaultState
+    this.#listeners = { change: new Set(), reset: new Set() }
   }
 
   getState(): Readonly<State> {
@@ -48,15 +42,9 @@ export class OrchModel<State> {
     this.setState(this.#defaultState)
   }
 
-  protected reducer<P extends any[]>(
-    fn: (state: Draft<State>, ...payload: P) => Draft<State> | void,
-  ) {
-    return (...payload: P) => {
-      this.setState(produce(this.#state, (state) => fn(state, ...payload)))
-    }
-  }
+  protected setState = this[SetStateSymbol];
 
-  protected setState(newState: State) {
+  [SetStateSymbol](newState: State) {
     const oldState = this.getState()
 
     if (newState !== oldState) {
@@ -78,8 +66,4 @@ function getAllPerformers(model: OrchModel<any>) {
   })
 
   return performers
-}
-
-function immutableState<T>(state: T): T {
-  return produce(state, () => {})
 }

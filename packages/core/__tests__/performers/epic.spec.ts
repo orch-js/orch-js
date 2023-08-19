@@ -1,12 +1,12 @@
 import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
 import { describe, expect, it, vi } from 'vitest'
 
-import { epic, OrchModel } from '../../src'
+import { epic, mutation, OrchModel } from '../../src'
 import { resetPerformer } from '../../src/performers/performer'
 import { ignoreConsole } from './utils'
 
 class CountModel extends OrchModel<{ count: number }> {
-  setCount = this.reducer((state, count: number) => {
+  setCount = mutation(this, (state, count: number) => {
     state.count = count
   })
 }
