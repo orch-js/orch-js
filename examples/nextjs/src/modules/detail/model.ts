@@ -1,7 +1,7 @@
-import { catchError, filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators'
+import { catchError, filter, map, startWith, switchMap } from 'rxjs/operators'
 import { MarkOptional } from 'ts-essentials'
 
-import { epic, mutation, OrchModel, signal } from '@orch/core'
+import { epic, mutation, OrchModel } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -22,10 +22,8 @@ export class DetailModel extends OrchModel<DetailState> {
   constructor(defaultState: MarkOptional<DetailState, 'detail'>) {
     super({ detail: { status: 'loading' }, ...defaultState })
 
-    this.fetchData()
+    this.on.activate(this.fetchData)
   }
-
-  cancelFetchData = signal(this)
 
   fetchData = epic(this, ({ payload$, action }) => {
     const updateDetail = mutation(this, (state, detail: DetailState['detail']) => {
@@ -36,7 +34,6 @@ export class DetailModel extends OrchModel<DetailState> {
       filter(() => this.needFetchData),
       switchMap(() =>
         rxAxios.get<DetailData>(`/resource/${this.getState().detailId}.json`).pipe(
-          takeUntil(this.cancelFetchData.signal$),
           map((data) => action(updateDetail, { status: 'success', ...data })),
           startWith(action(updateDetail, { status: 'loading' })),
           catchError(() => [action(updateDetail, { status: 'failed' })]),

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { useContextModel, useModelState } from '@orch/react'
 
@@ -6,19 +6,7 @@ import { DetailModel } from './model'
 
 export function DetailComponent() {
   const model = useContextModel(DetailModel)
-  const [needFetchData, detail] = useModelState(
-    model,
-    ({ detail }, { needFetchData }) => [needFetchData, detail],
-    [],
-  )
-
-  useEffect(() => {
-    if (needFetchData) {
-      model.fetchData()
-    }
-
-    return () => model.cancelFetchData()
-  }, [needFetchData, model])
+  const detail = useModelState(model, ({ detail }) => detail, [])
 
   return (
     <div>

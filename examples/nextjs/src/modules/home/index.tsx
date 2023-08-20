@@ -13,15 +13,7 @@ export type HomeProps = { defaultStatus: HomeState }
 
 export function Home({ defaultStatus }: HomeProps) {
   const model = useLocalModel(HomeModel, [defaultStatus])
-  const [hasData, state] = useModelState(model, (state, { hasData }) => [hasData, state], [])
-
-  React.useEffect(() => {
-    if (!hasData) {
-      model.fetchData()
-    }
-
-    return () => model.cancelFetchData()
-  }, [model, hasData])
+  const state = useModelState(model)
 
   return (
     <div>
