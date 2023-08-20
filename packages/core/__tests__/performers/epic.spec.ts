@@ -1,7 +1,7 @@
 import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { epic, mutation, OrchModel } from '../../src'
+import { dispose, epic, mutation, OrchModel, setup } from '../../src'
 import { ignoreConsole } from './utils'
 
 class CountModel extends OrchModel<{ count: number }> {
@@ -74,7 +74,7 @@ describe(`performers/epic`, () => {
     restoreConsole()
   })
 
-  it(`should complete payload$ after it is reset`, () => {
+  it(`should complete payload$ after it is disposed`, () => {
     const spy = vi.fn()
 
     epic<number>(model, ({ payload$, action }) =>
@@ -84,7 +84,7 @@ describe(`performers/epic`, () => {
       ),
     )
 
-    model.reset()
+    dispose(model)
 
     expect(spy.mock.calls).toEqual([['end']])
   })
@@ -129,14 +129,10 @@ describe(`performers/epic`, () => {
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }]])
 
-      model.reset()
+      dispose(model)
+      setup(model)
 
-      expect(spy.mock.calls).toEqual([
-        [{ count: 0 }],
-        [{ count: 2 }],
-        [{ count: 0 }], // state being reset
-        [{ count: 0 }], // epic being reset
-      ])
+      expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }], [{ count: 2 }]])
     })
   })
 })

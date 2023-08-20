@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { OrchModel } from '../../src'
+import { dispose, OrchModel, setup } from '../../src'
 import { performer } from '../../src/performers/performer'
 
 describe(`performers:performer`, () => {
@@ -10,31 +10,58 @@ describe(`performers:performer`, () => {
     model = new OrchModel({})
   })
 
-  it(`should trigger 'next' while triggering performer`, () => {
+  it(`should trigger 'next' method while triggering performer`, () => {
     const spy = vi.fn()
 
-    const _performer = performer<number>(model, () => ({ next: spy }))
+    const action = performer<number>(model, () => ({
+      next: spy,
+      dispose() {},
+    }))
 
-    _performer(44)
+    action(44)
 
     expect(spy.mock.calls).toEqual([[44]])
   })
 
-  it(`should return 'next' fn's result while triggering performer`, () => {
+  it(`should return 'next' method's result while triggering performer`, () => {
     const obj = {}
 
-    const _performer = performer<void, object>(model, () => ({ next: () => obj }))
+    const _performer = performer<void, object>(model, () => ({ next: () => obj, dispose() {} }))
 
     expect(_performer()).toBe(obj)
   })
 
-  it(`should trigger 'reset' while disposing performer`, () => {
+  it(`should trigger 'dispose' while disposing performer`, () => {
     const spy = vi.fn()
 
-    performer<number>(model, () => ({ next() {}, reset: spy }))
+    performer<number>(model, () => ({ next() {}, dispose: spy }))
 
-    model.reset()
+    dispose(model)
 
     expect(spy).toBeCalledTimes(1)
+  })
+
+  it('should throw an error while triggering the performer that has been disposed of', () => {
+    const spy = vi.fn()
+
+    const action = performer<void>(model, () => ({ next: spy, dispose() {} }))
+
+    dispose(model)
+
+    expect(action).toThrowError()
+    expect(spy).toHaveBeenCalledTimes(0)
+  })
+
+  it(`should call the factory function again if the model that has been disposed of is set up again`, () => {
+    const spy = vi.fn(() => ({ next() {}, dispose() {} }))
+
+    performer<number>(model, spy)
+
+    expect(spy).toBeCalledTimes(1)
+
+    dispose(model)
+    setup(model)
+
+    expect(spy).toBeCalledTimes(2)
   })
 })

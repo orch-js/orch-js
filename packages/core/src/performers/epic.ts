@@ -1,6 +1,7 @@
 import { catchError, map, Observable, Subject, tap, type OperatorFunction } from 'rxjs'
 
-import type { OrchModel, OrchModelState } from '../model'
+import type { OrchModel } from '../model'
+import type { OrchModelState } from '../types'
 import { performer } from './performer'
 
 export type ValidEpicAction = null | (() => void)
@@ -38,7 +39,7 @@ const state$ = (<M extends OrchModel<any>>(model: M) => {
   return new Observable<Readonly<OrchModelState<M>>>((observer) => {
     observer.next(model.getState())
 
-    return model.on('change', () => {
+    return model.on.change(() => {
       observer.next(model.getState())
     })
   })
@@ -62,16 +63,15 @@ export function epic<P = void>(
   }
 
   return performer<P, void>(model, () => {
-    let current = init()
+    const { subject, subscription } = init()
 
     return {
       next(payload) {
-        current.subject.next(payload)
+        subject.next(payload)
       },
-      reset() {
-        current.subject.complete()
-        current.subscription.unsubscribe()
-        current = init()
+      dispose() {
+        subject.complete()
+        subscription.unsubscribe()
       },
     }
   })

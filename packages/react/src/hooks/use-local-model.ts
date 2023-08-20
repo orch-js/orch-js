@@ -1,6 +1,12 @@
 import * as React from 'react'
 
-import { InitiatedOrchModel, OrchModelConstructor, OrchModelParams } from '@orch/core'
+import {
+  dispose,
+  setup,
+  type InitiatedOrchModel,
+  type OrchModelConstructor,
+  type OrchModelParams,
+} from '@orch/core'
 
 export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   Model: T,
@@ -12,7 +18,10 @@ export function useLocalModel<T extends OrchModelConstructor<any, any>>(
     [Model, ...(params as any), ...extraDeps],
   )
 
-  React.useEffect(() => () => model.reset(), [model])
+  React.useEffect(() => {
+    setup(model)
+    return () => dispose(model)
+  }, [model])
 
   return model
 }

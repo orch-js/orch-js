@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { mutation, OrchModel } from '../src'
-import { performer } from '../src/performers/performer'
+import { dispose, mutation, OrchModel, setup } from '../src'
 
 class CountModel extends OrchModel<{ count: number }> {
   setCount = mutation(this, (state, payload: number) => {
@@ -9,91 +8,33 @@ class CountModel extends OrchModel<{ count: number }> {
   })
 }
 
-class NameModel extends OrchModel<{ name: string }> {
-  count: CountModel
-
-  constructor(name: string) {
-    super({ name })
-    this.count = new CountModel({ count: name.length })
-  }
-
-  updateName(name: string) {
-    this.setName(name)
-    this.count.setCount(name.length)
-  }
-
-  private setName = mutation(this, (state, payload: string) => {
-    state.name = payload
-  })
-}
-
 describe(`OrchModel`, () => {
   it(`should be able to custom default state`, () => {
-    const model = new OrchModel({ count: 10 })
+    const model = new CountModel({ count: 10 })
 
     expect(model.getState()).toEqual({ count: 10 })
   })
 
-  it(`should be able to nest OrchModel`, () => {
-    const nameModel = new NameModel('home')
-
-    expect(nameModel.getState()).toEqual({ name: 'home' })
-    expect(nameModel.count.getState()).toEqual({ count: 4 })
-
-    nameModel.updateName('school')
-
-    expect(nameModel.getState()).toEqual({ name: 'school' })
-    expect(nameModel.count.getState()).toEqual({ count: 6 })
-  })
-
-  describe(`reset model`, () => {
-    it(`should trigger 'reset' event`, () => {
-      const spy = vi.fn()
-
-      const model = new OrchModel({ count: 1 })
-
-      model.on('reset', spy)
-      model.reset()
-
-      expect(spy).toHaveBeenCalledOnce()
+  describe('isDisposed', () => {
+    it('should be false by default', () => {
+      expect(new CountModel({ count: 1 }).isDisposed).toBe(false)
     })
 
-    it(`should reset performers as well`, () => {
-      const resetA = vi.fn()
-      const resetB = vi.fn()
+    it('should be true after the model has been disposed', () => {
+      const model = new CountModel({ count: 2 })
 
-      class Model extends OrchModel<{ count: 0 }> {
-        a = performer(this, () => ({ next() {}, reset: resetA }))
-        b = performer(this, () => ({ next() {}, reset: resetB }))
-      }
+      dispose(model)
 
-      const model = new Model({ count: 0 })
-
-      model.reset()
-
-      expect(resetA).toHaveBeenCalledOnce()
-      expect(resetB).toHaveBeenCalledOnce()
+      expect(model.isDisposed).toBe(true)
     })
 
-    it(`should keep subscriptions untouched`, () => {
-      const onChange = vi.fn()
-      const onReset = vi.fn()
+    it('should be false if the model has been disposed of is set up again', () => {
+      const model = new CountModel({ count: 2 })
 
-      const model = new CountModel({ count: 0 })
+      dispose(model)
+      setup(model)
 
-      model.on('change', onChange)
-      model.on('reset', onReset)
-
-      model.reset()
-
-      model.setCount(1)
-      model.reset()
-
-      expect(onChange.mock.calls).toEqual([
-        [{ count: 1 }, { count: 0 }],
-        [{ count: 0 }, { count: 1 }],
-      ])
-      expect(onReset).toHaveBeenCalledTimes(2)
+      expect(model.isDisposed).toBe(false)
     })
   })
 
@@ -106,49 +47,78 @@ describe(`OrchModel`, () => {
 
   describe(`on`, () => {
     describe(`change`, () => {
-      it(`should trigger on:change if state changed`, () => {
+      it(`should be triggered only when the state has changed after subscribing`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        model.on('change', spy)
-        model.setCount(44)
+        model.on.change(spy)
+        model.setCount(1)
 
-        expect(spy.mock.calls).toEqual([[{ count: 44 }, { count: 0 }]])
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith(
+          { count: 1 }, // Current State
+          { count: 0 }, // Previous State
+        )
       })
 
-      it(`should return a unsubscribe function`, () => {
+      it(`should return a function to unsubscribe`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
-
-        const unsubscribe = model.on('change', spy)
+        const unsubscribe = model.on.change(spy)
 
         unsubscribe()
+        model.setCount(1)
 
-        model.setCount(44)
-        expect(spy).toBeCalledTimes(0)
+        expect(spy).toHaveBeenCalledTimes(0)
       })
     })
 
-    describe(`reset`, () => {
-      it(`should trigger reset callback after reset`, () => {
+    describe(`dispose`, () => {
+      it(`should be triggered while disposing of the model`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
 
-        model.on('reset', spy)
-        model.reset()
+        model.on.dispose(spy)
+        dispose(model)
 
-        expect(spy).toBeCalledTimes(1)
+        expect(spy).toHaveBeenCalledTimes(1)
       })
 
-      it(`should return a unsubscribe function`, () => {
+      it(`should return a function to unsubscribe`, () => {
         const model = new CountModel({ count: 0 })
         const spy = vi.fn()
-        const unsubscribe = model.on('reset', spy)
+        const unsubscribe = model.on.dispose(spy)
 
         unsubscribe()
-        model.reset()
+        dispose(model)
 
-        expect(spy).toBeCalledTimes(0)
+        expect(spy).toHaveBeenCalledTimes(0)
+      })
+    })
+
+    describe(`setup`, () => {
+      it(`should be triggered if the model has been disposed of is set up again`, () => {
+        const model = new CountModel({ count: 0 })
+        const spy = vi.fn()
+
+        model.on.setup(spy)
+        expect(spy).toHaveBeenCalledTimes(0)
+
+        dispose(model)
+        setup(model)
+        expect(spy).toHaveBeenCalledTimes(1)
+      })
+
+      it(`should return a function to unsubscribe`, () => {
+        const model = new CountModel({ count: 0 })
+        const spy = vi.fn()
+        const unsubscribe = model.on.setup(spy)
+
+        unsubscribe()
+        dispose(model)
+        setup(model)
+
+        expect(spy).toHaveBeenCalledTimes(0)
       })
     })
   })

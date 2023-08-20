@@ -1,4 +1,5 @@
 export * from './model'
-export * from './utility-types'
+export * from './types'
 export * from './performers'
 export * from './helpers'
+export * from './utility-types'

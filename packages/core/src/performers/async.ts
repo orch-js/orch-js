@@ -28,24 +28,26 @@ export function switchAsync<P = void, FR = void, HR = void>(
   factory: AsyncFactory<P, FR>,
   handler?: (result: FR) => HR,
 ) {
-  let abortCtl: AbortController | null
+  return performer(model, () => {
+    let abortCtl: AbortController | null
 
-  return performer(model, () => ({
-    next(payload: P) {
-      abortCtl?.abort()
-      abortCtl = new AbortController()
+    return {
+      next(payload: P) {
+        abortCtl?.abort()
+        abortCtl = new AbortController()
 
-      const signal = abortCtl.signal
+        const signal = abortCtl.signal
 
-      return factory({ signal }, payload)
-        .then((value) => skipIfAborted(signal, () => (handler ?? defaultHandler)(value)))
-        .catch((error) => skipIfAborted(signal, () => Promise.reject(error)))
-    },
-    reset() {
-      abortCtl?.abort()
-      abortCtl = null
-    },
-  }))
+        return factory({ signal }, payload)
+          .then((value) => skipIfAborted(signal, () => (handler ?? defaultHandler)(value)))
+          .catch((error) => skipIfAborted(signal, () => Promise.reject(error)))
+      },
+      dispose() {
+        abortCtl?.abort()
+        abortCtl = null
+      },
+    }
+  })
 }
 
 export function exhaustAsync<P = void, FR = void>(
@@ -62,27 +64,29 @@ export function exhaustAsync<P = void, FR = void, HR = void>(
   factory: AsyncFactory<P, FR>,
   handler?: (result: FR) => HR,
 ) {
-  let current: { promise: Promise<HR | FR>; abortCtl: AbortController } | null = null
+  return performer(model, () => {
+    let current: { promise: Promise<HR | FR>; abortCtl: AbortController } | null = null
 
-  return performer(model, () => ({
-    next(payload: P): Promise<HR | FR> {
-      if (!current) {
-        const abortCtl = new AbortController()
-        const signal = abortCtl.signal
-        const promise = factory({ signal }, payload)
-          .then((value) => skipIfAborted(signal, () => (handler ?? defaultHandler<FR>)(value)))
-          .catch((error) => skipIfAborted(signal, () => Promise.reject<HR>(error)))
+    return {
+      next(payload: P): Promise<HR | FR> {
+        if (!current) {
+          const abortCtl = new AbortController()
+          const signal = abortCtl.signal
+          const promise = factory({ signal }, payload)
+            .then((value) => skipIfAborted(signal, () => (handler ?? defaultHandler<FR>)(value)))
+            .catch((error) => skipIfAborted(signal, () => Promise.reject<HR>(error)))
 
-        promise.finally(() => (current = null))
+          promise.finally(() => (current = null))
 
-        current = { promise, abortCtl }
-      }
+          current = { promise, abortCtl }
+        }
 
-      return current.promise
-    },
-    reset() {
-      current?.abortCtl.abort()
-      current = null
-    },
-  }))
+        return current.promise
+      },
+      dispose() {
+        current?.abortCtl.abort()
+        current = null
+      },
+    }
+  })
 }

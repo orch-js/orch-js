@@ -18,7 +18,7 @@ export function useModelState(
   deps: React.DependencyList = [],
   isEqual?: (a: any, b: any) => boolean,
 ): any {
-  const onChange = React.useCallback((notify: () => void) => model.on('change', notify), [model])
+  const onChange = React.useCallback((notify: () => void) => model.on.change(notify), [model])
 
   const getSnapshot = React.useCallback(() => model.getState(), [model])
 

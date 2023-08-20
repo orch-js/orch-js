@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AsyncContext, exhaustAsync, OrchModel, switchAsync } from '../../src'
+import { AsyncContext, dispose, exhaustAsync, OrchModel, switchAsync } from '../../src'
 
 describe(`switchAsync`, () => {
   let model: OrchModel<NonNullable<unknown>>
@@ -73,7 +73,7 @@ describe(`switchAsync`, () => {
     expect(handlerSpy.mock.calls).toEqual([['#456']])
   })
 
-  it(`should should abort the ongoing task if model being reset`, () => {
+  it(`should abort the ongoing task if model being disposed`, () => {
     const abortSpy = vi.fn()
     const handlerSpy = vi.fn()
 
@@ -87,7 +87,7 @@ describe(`switchAsync`, () => {
     )
 
     action()
-    model.reset()
+    dispose(model)
 
     expect(abortSpy).toBeCalledTimes(1)
     expect(handlerSpy).toBeCalledTimes(0)
@@ -173,7 +173,7 @@ describe(`exhaustAsync`, () => {
     expect(await b).toBe(`#10`)
   })
 
-  it(`should should abort the ongoing task if action being reset`, () => {
+  it(`should abort the ongoing task if action being disposed`, () => {
     const abortSpy = vi.fn()
 
     const action = exhaustAsync(model, ({ signal }) => {
@@ -182,7 +182,7 @@ describe(`exhaustAsync`, () => {
     })
 
     action()
-    model.reset()
+    dispose(model)
 
     expect(abortSpy).toBeCalledTimes(1)
   })
