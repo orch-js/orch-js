@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { dispose, OrchModel, setup } from '../../src'
+import { activate, deactivate, OrchModel } from '../../src'
 import { performer } from '../../src/performers/performer'
 
 describe(`performers:performer`, () => {
@@ -8,6 +8,7 @@ describe(`performers:performer`, () => {
 
   beforeEach(() => {
     model = new OrchModel({})
+    activate(model)
   })
 
   it(`should trigger 'next' method while triggering performer`, () => {
@@ -36,7 +37,7 @@ describe(`performers:performer`, () => {
 
     performer<number>(model, () => ({ next() {}, dispose: spy }))
 
-    dispose(model)
+    deactivate(model)
 
     expect(spy).toBeCalledTimes(1)
   })
@@ -46,7 +47,7 @@ describe(`performers:performer`, () => {
 
     const action = performer<void>(model, () => ({ next: spy, dispose() {} }))
 
-    dispose(model)
+    deactivate(model)
 
     expect(action).toThrowError()
     expect(spy).toHaveBeenCalledTimes(0)
@@ -59,8 +60,8 @@ describe(`performers:performer`, () => {
 
     expect(spy).toBeCalledTimes(1)
 
-    dispose(model)
-    setup(model)
+    deactivate(model)
+    activate(model)
 
     expect(spy).toBeCalledTimes(2)
   })

@@ -1,7 +1,8 @@
 import { Draft, produce } from 'immer'
 
 import { SetStateSymbol } from '../const'
-import type { OrchModel, OrchModelState } from '../model'
+import type { OrchModel } from '../model'
+import type { OrchModelState } from '../types'
 
 export type MutationFn<State, P extends any[]> = (draft: Draft<State>, ...params: P) => void
 

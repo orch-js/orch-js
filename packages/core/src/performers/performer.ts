@@ -24,16 +24,18 @@ export function performer<P, R = void>(
     current = factory()
   }
 
-  model.on.setup(setup)
-  model.on.dispose(dispose)
+  model.on.activate(setup)
+  model.on.deactivate(dispose)
 
-  if (!model.isDisposed) {
+  if (model.status === 'active') {
     setup()
   }
 
   return ((payload) => {
     if (!current) {
-      throw new Error('orch: performer has been disposed')
+      throw new Error(
+        `Cannot trigger a performer, since the model [${model.constructor.name}] is in "${model.status}" status`,
+      )
     }
 
     return current.next(payload)

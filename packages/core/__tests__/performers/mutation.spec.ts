@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { mutation, OrchModel } from '../../src'
+import { activate, mutation, OrchModel } from '../../src'
 
 describe(`performers:mutation`, () => {
   it(`should use current state to produce`, () => {
@@ -11,6 +11,8 @@ describe(`performers:mutation`, () => {
     }
 
     const model = new CountModel({ count: 0 })
+
+    activate(model)
 
     model.addCount(1)
     model.addCount(2)
@@ -27,6 +29,8 @@ describe(`performers:mutation`, () => {
 
     const model = new CountModel({ count: 0 })
 
+    activate(model)
+
     model.setCount(44)
 
     expect(model.getState()).toEqual({ count: 44 })
@@ -38,6 +42,8 @@ describe(`performers:mutation`, () => {
     }
 
     const model = new CountModel({ count: 0 })
+
+    activate(model)
 
     model.setCount(44)
 
@@ -57,6 +63,8 @@ describe(`performers:mutation`, () => {
 
     const model = new CountModel({ count: 0 })
 
+    activate(model)
+
     expect(() => model.setCount(-1)).toThrow()
 
     model.setCount(55)
@@ -70,6 +78,8 @@ describe(`performers:mutation`, () => {
     }
 
     const model = new CountModel({ count: 0 })
+
+    activate(model)
 
     model.add(1, 2)
 

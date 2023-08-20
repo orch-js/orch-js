@@ -1,8 +1,8 @@
 import * as React from 'react'
 
 import {
-  dispose,
-  setup,
+  activate,
+  deactivate,
   type InitiatedOrchModel,
   type OrchModelConstructor,
   type OrchModelParams,
@@ -19,8 +19,8 @@ export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   )
 
   React.useEffect(() => {
-    setup(model)
-    return () => dispose(model)
+    activate(model)
+    return () => deactivate(model)
   }, [model])
 
   return model

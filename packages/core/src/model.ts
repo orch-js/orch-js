@@ -1,10 +1,10 @@
-import { DisposeSymbol, SetStateSymbol, SetupSymbol } from './const'
+import { ActivateSymbol, DeactivateSymbol, SetStateSymbol } from './const'
 import type { DisposeFn } from './types'
 
 export type OrchModelEventMap<S> = {
   change: (state: Readonly<S>, oldState: Readonly<S>) => void
-  setup: () => void
-  dispose: () => void
+  activate: () => void
+  deactivate: () => void
 }
 
 export type OrchModelEventListenerMap<State> = {
@@ -15,21 +15,23 @@ export type OrchModelEventListenFnMap<State> = {
   [K in keyof OrchModelEventMap<State>]: (fn: OrchModelEventMap<State>[K]) => DisposeFn
 }
 
+export type OrchModelStatus = 'initialized' | 'active' | 'inactive'
+
 export class OrchModel<State> {
   #state: State
-  #isDisposed: boolean
+  #status: OrchModelStatus
   readonly #listeners: OrchModelEventListenerMap<State>
   readonly on: OrchModelEventListenFnMap<State>
 
   constructor(state: State) {
     this.#state = state
-    this.#isDisposed = false
-    this.#listeners = { change: new Set(), setup: new Set(), dispose: new Set() }
+    this.#status = 'initialized'
+    this.#listeners = { change: new Set(), activate: new Set(), deactivate: new Set() }
     this.on = _on(this.#listeners)
   }
 
-  get isDisposed() {
-    return this.#isDisposed
+  get status() {
+    return this.#status
   }
 
   getState(): Readonly<State> {
@@ -38,27 +40,27 @@ export class OrchModel<State> {
 
   protected setState = this[SetStateSymbol];
 
-  [DisposeSymbol]() {
-    if (this.#isDisposed) {
-      throw new Error('the model has already been disposed of.')
+  [DeactivateSymbol]() {
+    if (this.status === 'inactive') {
+      throw new Error('the model is already inactive.')
     }
 
-    notify(this.#listeners.dispose)
-    this.#isDisposed = true
+    notify(this.#listeners.deactivate)
+    this.#status = 'inactive'
   }
 
-  [SetupSymbol]() {
-    if (!this.#isDisposed) {
-      throw new Error('the model has already been set up.')
+  [ActivateSymbol]() {
+    if (this.status === 'active') {
+      throw new Error('the model is already active.')
     }
 
-    this.#isDisposed = false
-    notify(this.#listeners.setup)
+    this.#status = 'active'
+    notify(this.#listeners.activate)
   }
 
   [SetStateSymbol](newState: State) {
-    if (this.isDisposed) {
-      throw new Error('model has been disposed')
+    if (this.status !== 'active') {
+      throw new Error(`Unable to update state, since the model is in "${this.status}" status`)
     }
 
     const oldState = this.getState()
@@ -70,15 +72,15 @@ export class OrchModel<State> {
   }
 }
 
-export function setup<M extends OrchModel<any>>(model: M) {
-  if (model.isDisposed) {
-    model[SetupSymbol]()
+export function activate<M extends OrchModel<any>>(model: M) {
+  if (model.status !== 'active') {
+    model[ActivateSymbol]()
   }
 }
 
-export function dispose<M extends OrchModel<any>>(model: M) {
-  if (!model.isDisposed) {
-    model[DisposeSymbol]()
+export function deactivate<M extends OrchModel<any>>(model: M) {
+  if (model.status !== 'inactive') {
+    model[DeactivateSymbol]()
   }
 }
 

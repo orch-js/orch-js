@@ -1,3 +1,3 @@
-export const SetupSymbol: unique symbol = Symbol.for('orch:setup')
-export const DisposeSymbol: unique symbol = Symbol.for('orch:dispose')
+export const ActivateSymbol: unique symbol = Symbol.for('orch:activate')
+export const DeactivateSymbol: unique symbol = Symbol.for('orch:deactivate')
 export const SetStateSymbol: unique symbol = Symbol.for('orch:setState')

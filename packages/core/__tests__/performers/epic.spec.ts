@@ -1,7 +1,7 @@
 import { debounceTime, endWith, map, startWith } from 'rxjs/operators'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { dispose, epic, mutation, OrchModel, setup } from '../../src'
+import { activate, deactivate, epic, mutation, OrchModel } from '../../src'
 import { ignoreConsole } from './utils'
 
 class CountModel extends OrchModel<{ count: number }> {
@@ -15,6 +15,7 @@ describe(`performers/epic`, () => {
 
   beforeEach(() => {
     model = new OrchModel({})
+    activate(model)
   })
 
   it(`should handle action properly`, () => {
@@ -84,7 +85,7 @@ describe(`performers/epic`, () => {
       ),
     )
 
-    dispose(model)
+    deactivate(model)
 
     expect(spy.mock.calls).toEqual([['end']])
   })
@@ -121,6 +122,8 @@ describe(`performers/epic`, () => {
 
       const model = new CountModel({ count: 0 })
 
+      activate(model)
+
       epic<string>(model, ({ action, state$ }) => state$(model).pipe(action.map(spy)))
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }]])
@@ -129,8 +132,8 @@ describe(`performers/epic`, () => {
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }]])
 
-      dispose(model)
-      setup(model)
+      deactivate(model)
+      activate(model)
 
       expect(spy.mock.calls).toEqual([[{ count: 0 }], [{ count: 2 }], [{ count: 2 }]])
     })

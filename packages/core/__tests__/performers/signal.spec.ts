@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { OrchModel, signal } from '../../src'
+import { activate, OrchModel, signal } from '../../src'
 import { ignoreConsole } from './utils'
 
 describe(`performers:signal`, () => {
@@ -9,6 +9,7 @@ describe(`performers:signal`, () => {
 
   beforeEach(() => {
     model = new OrchModel({})
+    activate(model)
   })
 
   it(`should emit payload if trigger signal performer`, () => {

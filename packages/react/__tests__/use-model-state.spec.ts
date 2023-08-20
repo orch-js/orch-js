@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { mutation, OrchModel } from '@orch/core'
+import { activate, mutation, OrchModel } from '@orch/core'
 
 import { useModelState } from '../src'
 
@@ -22,6 +22,7 @@ describe(`useModelState`, () => {
 
   beforeEach(() => {
     model = new CountModel()
+    activate(model)
   })
 
   it(`should return current state`, () => {

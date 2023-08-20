@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AsyncContext, dispose, exhaustAsync, OrchModel, switchAsync } from '../../src'
+import { activate, AsyncContext, deactivate, exhaustAsync, OrchModel, switchAsync } from '../../src'
 
 describe(`switchAsync`, () => {
   let model: OrchModel<NonNullable<unknown>>
 
   beforeEach(() => {
     model = new OrchModel({})
+    activate(model)
   })
 
   it(`should run with correct params`, async () => {
@@ -87,7 +88,7 @@ describe(`switchAsync`, () => {
     )
 
     action()
-    dispose(model)
+    deactivate(model)
 
     expect(abortSpy).toBeCalledTimes(1)
     expect(handlerSpy).toBeCalledTimes(0)
@@ -99,6 +100,7 @@ describe(`exhaustAsync`, () => {
 
   beforeEach(() => {
     model = new OrchModel({})
+    activate(model)
   })
 
   it(`should run with correct params`, async () => {
@@ -182,7 +184,7 @@ describe(`exhaustAsync`, () => {
     })
 
     action()
-    dispose(model)
+    deactivate(model)
 
     expect(abortSpy).toBeCalledTimes(1)
   })
