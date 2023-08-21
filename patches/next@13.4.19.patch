@@ -1,0 +1,26 @@
+diff --git a/dist/build/swc/options.js b/dist/build/swc/options.js
+index e1fa0a2c3504cf4eae755f5dca382c222836c130..9117ffdb652ebfc53a07f23bca4743931f2d93b3 100644
+--- a/dist/build/swc/options.js
++++ b/dist/build/swc/options.js
+@@ -35,7 +35,7 @@ function getParserOptions({ filename , jsConfig , ...rest }) {
+         ...rest,
+         syntax: isTypeScript ? "typescript" : "ecmascript",
+         dynamicImport: true,
+-        decorators: enableDecorators,
++        decorators: true,
+         // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
+         [isTypeScript ? "tsx" : "jsx"]: !isTSFile,
+         importAssertions: true
+diff --git a/dist/esm/build/swc/options.js b/dist/esm/build/swc/options.js
+index cf3b6768cb5b73c0ac808b1d6977437d90d008c3..920846eabc9dec926e84c2fbfef15c4e831322fd 100644
+--- a/dist/esm/build/swc/options.js
++++ b/dist/esm/build/swc/options.js
+@@ -9,7 +9,7 @@ export function getParserOptions({ filename , jsConfig , ...rest }) {
+         ...rest,
+         syntax: isTypeScript ? "typescript" : "ecmascript",
+         dynamicImport: true,
+-        decorators: enableDecorators,
++        decorators: true,
+         // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
+         [isTypeScript ? "tsx" : "jsx"]: !isTSFile,
+         importAssertions: true
