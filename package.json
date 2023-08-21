@@ -1,6 +1,6 @@
 {
   "name": "orch-js",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "repository": {
     "url": "https://github.com/orch-js/orch-js"
