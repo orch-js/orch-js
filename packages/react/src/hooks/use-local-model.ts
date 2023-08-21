@@ -2,6 +2,7 @@ import * as React from 'react'
 
 import {
   activate,
+  autoActivate,
   deactivate,
   type InitiatedOrchModel,
   type OrchModelConstructor,
@@ -14,7 +15,7 @@ export function useLocalModel<T extends OrchModelConstructor<any, any>>(
   extraDeps: React.DependencyList = [],
 ): InitiatedOrchModel<T> {
   const model = React.useMemo(
-    () => new Model(...(params as any)),
+    () => autoActivate.deferActivation(() => new Model(...(params as any))),
     [Model, ...(params as any), ...extraDeps],
   )
 
