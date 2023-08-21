@@ -1,0 +1,42 @@
+diff --git a/dist/build/swc/options.js b/dist/build/swc/options.js
+index e1fa0a2c3504cf4eae755f5dca382c222836c130..a7c6db0d9d8157d52760779adc761f7fc909991d 100644
+--- a/dist/build/swc/options.js
++++ b/dist/build/swc/options.js
+@@ -35,7 +35,7 @@ function getParserOptions({ filename , jsConfig , ...rest }) {
+         ...rest,
+         syntax: isTypeScript ? "typescript" : "ecmascript",
+         dynamicImport: true,
+-        decorators: enableDecorators,
++        decorators: true,
+         // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
+         [isTypeScript ? "tsx" : "jsx"]: !isTSFile,
+         importAssertions: true
+@@ -77,6 +77,7 @@ function getBaseSWCOptions({ filename , jest , development , hasReactRefresh , g
+                 } : {},
+                 legacyDecorator: enableDecorators,
+                 decoratorMetadata: emitDecoratorMetadata,
++                decoratorVersion: "2022-03",
+                 useDefineForClassFields: useDefineForClassFields,
+                 react: {
+                     importSource: (jsConfig == null ? void 0 : (_jsConfig_compilerOptions4 = jsConfig.compilerOptions) == null ? void 0 : _jsConfig_compilerOptions4.jsxImportSource) ?? ((compilerOptions == null ? void 0 : compilerOptions.emotion) ? "@emotion/react" : "react"),
+diff --git a/dist/esm/build/swc/options.js b/dist/esm/build/swc/options.js
+index cf3b6768cb5b73c0ac808b1d6977437d90d008c3..f8c23cbaae6bb4d9a3662e3a780c08a9ae7d1500 100644
+--- a/dist/esm/build/swc/options.js
++++ b/dist/esm/build/swc/options.js
+@@ -9,7 +9,7 @@ export function getParserOptions({ filename , jsConfig , ...rest }) {
+         ...rest,
+         syntax: isTypeScript ? "typescript" : "ecmascript",
+         dynamicImport: true,
+-        decorators: enableDecorators,
++        decorators: true,
+         // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
+         [isTypeScript ? "tsx" : "jsx"]: !isTSFile,
+         importAssertions: true
+@@ -51,6 +51,7 @@ function getBaseSWCOptions({ filename , jest , development , hasReactRefresh , g
+                 } : {},
+                 legacyDecorator: enableDecorators,
+                 decoratorMetadata: emitDecoratorMetadata,
++                decoratorVersion: "2022-03",
+                 useDefineForClassFields: useDefineForClassFields,
+                 react: {
+                     importSource: (jsConfig == null ? void 0 : (_jsConfig_compilerOptions4 = jsConfig.compilerOptions) == null ? void 0 : _jsConfig_compilerOptions4.jsxImportSource) ?? ((compilerOptions == null ? void 0 : compilerOptions.emotion) ? "@emotion/react" : "react"),
