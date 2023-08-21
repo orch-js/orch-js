@@ -1,6 +1,6 @@
 import { endWith, map, startWith, switchMap } from 'rxjs/operators'
 
-import { epic, mutation, OrchModel } from '@orch/core'
+import { autoActivate, epic, mutation, OrchModel } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -17,6 +17,7 @@ export type HomeState = {
   list: ListValue[]
 }
 
+@autoActivate()
 export class HomeModel extends OrchModel<HomeState> {
   get hasData() {
     return this.getState().list.length > 0

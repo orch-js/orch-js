@@ -33,7 +33,7 @@ describe(`withContextModelProvider`, () => {
     const model = new CountModel()
 
     const renderResult = create(
-      <ContextModelProvider value={[[CountModel, model]]}>
+      <ContextModelProvider value={[model]}>
         <App />
       </ContextModelProvider>,
     )
@@ -49,15 +49,10 @@ describe(`withContextModelProvider`, () => {
     const nameModel = new NameModel()
 
     const renderResult = create(
-      <ContextModelProvider
-        value={[
-          [CountModel, modelA],
-          [NameModel, nameModel],
-        ]}
-      >
+      <ContextModelProvider value={[modelA, nameModel]}>
         <App id="parent" />
 
-        <ContextModelProvider value={[[CountModel, modelB]]}>
+        <ContextModelProvider value={[modelB]}>
           <App id="child" />
         </ContextModelProvider>
       </ContextModelProvider>,

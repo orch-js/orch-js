@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
 
-import { activate, waitUntil } from '@orch/core'
+import { waitUntil } from '@orch/core'
 import { useLocalModel, withContextModelProvider } from '@orch/react'
 
 import { DetailComponent } from '@/modules/detail'
@@ -11,14 +11,12 @@ export default withContextModelProvider(
   ({ defaultState }: { defaultState: DetailState }) => {
     const model = useLocalModel(DetailModel, [defaultState])
 
-    return [[DetailModel, model]]
+    return [model]
   },
 )
 
 export const getServerSideProps: GetServerSideProps = async (req) => {
   const model = new DetailModel({ detailId: `${req.query.detailId}` })
-
-  activate(model)
 
   await waitUntil(model, ({ detail }) => detail.status !== 'loading')
 

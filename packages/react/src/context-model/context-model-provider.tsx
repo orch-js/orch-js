@@ -1,9 +1,11 @@
 import React from 'react'
 
-import { ContextModelContext, ContextModelContextEntriesValue } from './context-model-context'
+import { OrchModel } from '@orch/core'
+
+import { ContextModelContext } from './context-model-context'
 
 export type ContextModelProviderProps = {
-  value: ContextModelContextEntriesValue
+  value: OrchModel<any>[]
   children: React.ReactNode
 }
 
@@ -11,8 +13,13 @@ export function ContextModelProvider({ value, children }: ContextModelProviderPr
   const context = React.useContext(ContextModelContext)
 
   const providerValue = React.useMemo(
-    () => new Map(Array.from(context.entries()).concat(value)),
-    [context, value],
+    () =>
+      new Map(
+        Array.from(context.entries()).concat(
+          value.map((model) => [Object.getPrototypeOf(model).constructor, model]),
+        ),
+      ),
+    [context, ...value],
   )
 
   return (

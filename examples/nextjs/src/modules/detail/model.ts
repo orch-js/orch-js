@@ -1,7 +1,7 @@
 import { catchError, filter, map, startWith, switchMap } from 'rxjs/operators'
 import { MarkOptional } from 'ts-essentials'
 
-import { epic, mutation, OrchModel } from '@orch/core'
+import { autoActivate, epic, mutation, OrchModel } from '@orch/core'
 
 import { rxAxios } from '@/utils'
 
@@ -14,6 +14,7 @@ export type DetailState = {
   detail: Status<'loading' | 'failed'> | Status<'success', DetailData>
 }
 
+@autoActivate()
 export class DetailModel extends OrchModel<DetailState> {
   get needFetchData() {
     return this.getState().detail.status !== 'success'

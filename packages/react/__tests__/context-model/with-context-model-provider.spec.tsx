@@ -23,7 +23,7 @@ describe(`withContextModelProvider`, () => {
   it(`should provide context`, () => {
     const model = new CountModel()
 
-    const CountApp = withContextModelProvider(CountComponent, () => [[CountModel, model]])
+    const CountApp = withContextModelProvider(CountComponent, () => [model])
 
     const renderResult = create(<CountApp />)
 
@@ -33,7 +33,7 @@ describe(`withContextModelProvider`, () => {
   it(`should be able to use hooks`, () => {
     const CountApp = withContextModelProvider(CountComponent, () => {
       const model = useLocalModel(CountModel, [])
-      return [[CountModel, model]]
+      return [model]
     })
 
     const renderResult = create(<CountApp />)

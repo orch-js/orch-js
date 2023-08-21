@@ -26,7 +26,7 @@ describe(`useContextModel`, () => {
     const model = new CountModel()
     const { result } = renderHook(() => useContextModel(CountModel), {
       wrapper: ({ children }: React.PropsWithChildren) => (
-        <ContextModelProvider value={[[CountModel, model]]}>{children}</ContextModelProvider>
+        <ContextModelProvider value={[model]}>{children}</ContextModelProvider>
       ),
     })
 
@@ -45,17 +45,17 @@ describe(`useContextModel`, () => {
     }
 
     const App = () => (
-      <ContextModelProvider value={[[CountModel, modelA]]}>
+      <ContextModelProvider value={[modelA]}>
         <CountApp id="a" />
 
-        <ContextModelProvider value={[[CountModel, modelB]]}>
+        <ContextModelProvider value={[modelB]}>
           <CountApp id="b" />
         </ContextModelProvider>
 
-        <ContextModelProvider value={[[CountModel, modelC]]}>
+        <ContextModelProvider value={[modelC]}>
           <CountApp id="c" />
 
-          <ContextModelProvider value={[[CountModel, modelD]]}>
+          <ContextModelProvider value={[modelD]}>
             <CountApp id="d" />
           </ContextModelProvider>
         </ContextModelProvider>

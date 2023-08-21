@@ -1,11 +1,12 @@
 import React from 'react'
 
-import { ContextModelContextEntriesValue } from './context-model-context'
+import type { OrchModel } from '@orch/core'
+
 import { ContextModelProvider } from './context-model-provider'
 
 export function withContextModelProvider<P extends NonNullable<unknown>>(
   Component: React.ComponentType<P>,
-  useGetModelContextValue: (props: P) => ContextModelContextEntriesValue,
+  useGetModelContextValue: (props: P) => OrchModel<any>[],
 ): React.ComponentType<P> {
   return (props) => {
     const value = useGetModelContextValue(props)
