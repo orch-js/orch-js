@@ -1,7 +1,6 @@
 import { catchError, map, Observable, Subject, tap, type OperatorFunction } from 'rxjs'
 
 import type { OrchModel } from '../model'
-import type { OrchModelState } from '../types'
 import { performer } from './performer'
 
 export type ValidEpicAction = null | (() => void)
@@ -20,9 +19,7 @@ export type EpicAction = {
   map<P>(func: (payload: P) => void): OperatorFunction<P, ValidEpicAction>
 }
 
-export type ToObservableState = <M extends OrchModel<any>>(
-  model: M,
-) => Observable<OrchModelState<M>>
+export type ToObservableState = <S>(model: OrchModel<S>) => Observable<S>
 
 const action: EpicAction = Object.assign(
   function action<P extends any[]>(func: (...params: P) => void, ...params: P) {
@@ -35,15 +32,15 @@ const action: EpicAction = Object.assign(
   },
 )
 
-const state$ = (<M extends OrchModel<any>>(model: M) => {
-  return new Observable<Readonly<OrchModelState<M>>>((observer) => {
+const state$: ToObservableState = (model) => {
+  return new Observable((observer) => {
     observer.next(model.getState())
 
     return model.on.change(() => {
       observer.next(model.getState())
     })
   })
-}) as ToObservableState
+}
 
 export function epic<P = void>(
   model: OrchModel<any>,

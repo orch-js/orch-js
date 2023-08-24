@@ -3,7 +3,7 @@ import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/w
 
 import { OrchModel, OrchModelState } from '@orch/core'
 
-const defaultSelector = <M extends OrchModel<any>>(state: OrchModelState<M>) => state
+const defaultSelector = <S>(state: S) => state
 
 export function useModelState<M extends OrchModel<any>>(model: M): OrchModelState<M>
 export function useModelState<R, M extends OrchModel<any>>(
