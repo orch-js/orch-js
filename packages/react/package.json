@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@orch/core": "workspace:*",
-    "@types/use-sync-external-store": "^0.0.3",
+    "@types/use-sync-external-store": "^0.0.4",
     "immer": "^10.0.2",
     "use-sync-external-store": "^1.2.0"
   },
