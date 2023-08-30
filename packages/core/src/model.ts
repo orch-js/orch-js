@@ -67,7 +67,7 @@ export class OrchModel<State> {
   }
 
   [SetStateSymbol](newState: State) {
-    if (this.status !== 'active') {
+    if (this.status === 'inactive') {
       throw new Error(`Unable to update state, since the model is in "${this.status}" status`)
     }
 
