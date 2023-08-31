@@ -27,15 +27,7 @@ export class OrchModel<State> {
     this.#state = state
     this.#status = 'initialized'
     this.#listeners = { change: new Set(), activate: new Set(), deactivate: new Set() }
-    this.on = _on(this.#listeners, {
-      change: () => {
-        if (this.status !== 'active') {
-          console.warn(
-            `${this.constructor.name} is in "${this.status}" status, it won't be able to emit "change" event.`,
-          )
-        }
-      },
-    })
+    this.on = _on(this.#listeners)
   }
 
   get status() {
@@ -92,17 +84,11 @@ export function deactivate<M extends OrchModel<any>>(model: M) {
   }
 }
 
-type OnSubscribeMap<State> = Partial<Record<keyof OrchModelEventMap<State>, () => void>>
-
-function _on<State>(
-  listeners: OrchModelEventListenerMap<State>,
-  onSubscribe: OnSubscribeMap<State>,
-) {
+function _on<State>(listeners: OrchModelEventListenerMap<State>) {
   return Object.fromEntries(
     Object.entries(listeners).map(([key, cache]) => [
       key,
       (fn: (...params: unknown[]) => void) => {
-        onSubscribe[key as keyof OrchModelEventMap<State>]?.()
         cache.add(fn)
         return () => cache.delete(fn)
       },
