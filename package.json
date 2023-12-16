@@ -12,7 +12,7 @@
     "build:lib": "tsc -b packages/*/tsconfig.cjs.json packages/*/tsconfig.esm.json",
     "clean": "pnpm run -r clean",
     "coverage": "vitest run --coverage",
-    "format:package": "yarn format-package '**/package.json' -w -c format-package.json",
+    "format:package": "format-package '**/package.json' -w -c format-package.json",
     "lint": "run-s lint:eslint lint:tsc",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix --max-warnings 0",
     "lint:tsc": "pnpm run -r lint:tsc",
