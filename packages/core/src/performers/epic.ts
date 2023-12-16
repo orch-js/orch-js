@@ -9,7 +9,7 @@ export type EpicFactory<P> = (params: {
   payload$: Observable<P>
   action: EpicAction
   state$: ToObservableState
-}) => Observable<ValidEpicAction>
+}) => Observable<ValidEpicAction | ValidEpicAction[]>
 
 export type EpicConfig = { factoryToLog?: unknown }
 
@@ -51,7 +51,9 @@ export function epic<P = void>(
     const subject = new Subject<P>()
     const subscription = factory({ payload$: subject.asObservable(), action, state$ })
       .pipe(
-        tap((epicAction) => epicAction?.()),
+        tap((epicAction) =>
+          (Array.isArray(epicAction) ? epicAction : [epicAction]).forEach((fn) => fn?.()),
+        ),
         logAngIgnoreError(config?.factoryToLog ?? factory),
       )
       .subscribe()

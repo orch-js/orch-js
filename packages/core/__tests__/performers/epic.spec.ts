@@ -50,6 +50,20 @@ describe(`performers/epic`, () => {
     expect(spy.mock.calls).toEqual([[1], [3]])
   })
 
+  it(`should accept a list of actions`, () => {
+    const spy = vi.fn()
+
+    const _epic = epic<number>(model, ({ payload$, action }) =>
+      payload$.pipe(map((num) => [action(spy, num), null])),
+    )
+
+    _epic(1)
+    _epic(2)
+    _epic(3)
+
+    expect(spy.mock.calls).toEqual([[1], [2], [3]])
+  })
+
   it(`should keep working after error`, () => {
     const spy = vi.fn()
 
